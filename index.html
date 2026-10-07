@@ -457,18 +457,6 @@ h2 .emo { font-size: 1.4rem; margin-right: 4px; }
 }
 .reveal-back img { width: 100%; height: 100%; object-fit: contain; border-radius: 8px; }
 
-.rarity-burst {
-  position: absolute; inset: -20px;
-  border-radius: 50%;
-  pointer-events: none;
-  display: none;
-}
-.rarity-burst.show { display: block; animation: burst 1s; }
-@keyframes burst {
-  0% { box-shadow: 0 0 0 0 rgba(255,203,5,.8); transform: scale(0.5); }
-  100% { box-shadow: 0 0 0 80px rgba(255,203,5,0); transform: scale(1.5); }
-}
-
 .pack-actions {
   display: flex; gap: 10px; margin-top: 24px;
   width: 100%; max-width: 320px;
@@ -666,15 +654,216 @@ h2 .emo { font-size: 1.4rem; margin-right: 4px; }
   width: 26px; height: 26px; border-radius: 8px; cursor: pointer;
 }
 
+/* ============ FIRMA / RIBBON ============ */
+.signature {
+  margin-top: 24px;
+  padding: 14px 16px;
+  background: linear-gradient(135deg, #fff5f8, #ffe8f0);
+  border: 1px solid #ffc9dc;
+  border-radius: 16px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.signature::before {
+  content: '❤️';
+  position: absolute;
+  top: -8px; right: -8px;
+  font-size: 3rem;
+  opacity: 0.15;
+  transform: rotate(15deg);
+}
+.signature .sig-line1 {
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: #b8336a;
+  letter-spacing: 0.3px;
+}
+.signature .sig-line2 {
+  font-size: 1.05rem;
+  font-weight: 900;
+  color: #d61e5f;
+  margin: 4px 0;
+}
+.signature .sig-heart {
+  font-size: 1.4rem;
+  display: inline-block;
+  animation: heartbeat 1.4s ease-in-out infinite;
+}
+@keyframes heartbeat {
+  0%, 100% { transform: scale(1); }
+  15% { transform: scale(1.2); }
+  30% { transform: scale(1); }
+  45% { transform: scale(1.15); }
+  60% { transform: scale(1); }
+}
+
+/* ============ BIENVENIDA INICIAL ============ */
+.welcome-overlay {
+  position: fixed; inset: 0; z-index: 1000;
+  background: radial-gradient(circle at center, #2a1d5a 0%, #0a0b1e 70%);
+  display: none;
+  align-items: center; justify-content: center;
+  flex-direction: column;
+  padding: 30px 24px;
+  text-align: center;
+  overflow: hidden;
+}
+.welcome-overlay.show { display: flex; animation: packIn 0.6s; }
+.welcome-overlay::before {
+  content: '';
+  position: absolute; inset: -50%;
+  background: conic-gradient(from 0deg, transparent, rgba(255,203,5,.12), transparent 30%, rgba(255,92,138,.12), transparent 60%);
+  animation: rotate 12s linear infinite;
+  pointer-events: none;
+}
+.welcome-inner { position: relative; z-index: 2; max-width: 380px; }
+
+.welcome-pokeball {
+  width: 110px; height: 110px;
+  margin: 0 auto 18px;
+  filter: drop-shadow(0 10px 30px rgba(255,59,48,.5));
+  animation: welcomeSpin 3s ease-in-out infinite;
+}
+@keyframes welcomeSpin {
+  0%, 100% { transform: rotate(-8deg) scale(1); }
+  50% { transform: rotate(8deg) scale(1.08); }
+}
+
+.welcome-tag {
+  display: inline-block;
+  background: rgba(255,203,5,.15);
+  border: 1px solid rgba(255,203,5,.4);
+  color: var(--yellow);
+  padding: 5px 14px;
+  border-radius: 99px;
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  margin-bottom: 16px;
+  animation: fadeUp 0.6s 0.2s backwards;
+}
+
+.welcome-title {
+  font-size: 2.6rem;
+  font-weight: 900;
+  color: white;
+  line-height: 1;
+  letter-spacing: -1.5px;
+  margin-bottom: 10px;
+  text-shadow: 0 4px 30px rgba(255,203,5,.4);
+  animation: fadeUp 0.6s 0.35s backwards;
+}
+.welcome-title .highlight {
+  background: linear-gradient(135deg, #ffd700, #ff6b35);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: block;
+  margin-top: 4px;
+}
+
+.welcome-heart {
+  font-size: 2.5rem;
+  margin: 12px 0;
+  display: inline-block;
+  animation: heartbeat 1.4s ease-in-out infinite;
+  filter: drop-shadow(0 0 20px rgba(255,92,138,.8));
+}
+
+.welcome-msg {
+  color: #d8d8f0;
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 8px 0 28px;
+  font-weight: 500;
+  animation: fadeUp 0.6s 0.55s backwards;
+}
+.welcome-msg strong { color: white; font-weight: 900; }
+.welcome-msg em {
+  color: var(--yellow);
+  font-style: normal;
+  font-weight: 900;
+}
+
+.welcome-btn {
+  background: linear-gradient(135deg, var(--red), var(--red-d));
+  color: white;
+  border: none;
+  padding: 16px 40px;
+  border-radius: 16px;
+  font-family: inherit;
+  font-weight: 900;
+  font-size: 1rem;
+  cursor: pointer;
+  box-shadow: 0 12px 30px rgba(238,21,21,.5);
+  transition: transform 0.15s;
+  letter-spacing: 0.3px;
+  animation: fadeUp 0.6s 0.75s backwards;
+}
+.welcome-btn:active { transform: scale(0.95); }
+
+.welcome-hearts-bg {
+  position: absolute; inset: 0;
+  pointer-events: none; overflow: hidden;
+}
+.welcome-hearts-bg span {
+  position: absolute;
+  bottom: -40px;
+  font-size: 1.5rem;
+  opacity: 0.7;
+  animation: heartFloat linear infinite;
+}
+@keyframes heartFloat {
+  0% { transform: translateY(0) rotate(0); opacity: 0; }
+  10% { opacity: 0.8; }
+  90% { opacity: 0.8; }
+  100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
+}
+
 /* ============ RESPONSIVE ============ */
 @media (max-width: 400px) {
   .grid-cards { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
   .featured-card img { width: 120px; }
   .hud-brand { font-size: 0.95rem; }
+  .welcome-title { font-size: 2.1rem; }
+  .welcome-pokeball { width: 90px; height: 90px; }
 }
 </style>
 </head>
 <body>
+
+<!-- ============ PANTALLA DE BIENVENIDA (solo primera vez) ============ -->
+<div class="welcome-overlay" id="welcome-overlay">
+  <div class="welcome-hearts-bg" id="welcome-hearts"></div>
+  <div class="welcome-inner">
+    <svg class="welcome-pokeball" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="50" cy="50" r="45" fill="#fff" stroke="#1a1a2e" stroke-width="5"/>
+      <path d="M5 50 A45 45 0 0 1 95 50 Z" fill="#ee1515"/>
+      <rect x="5" y="45" width="90" height="10" fill="#1a1a2e"/>
+      <circle cx="50" cy="50" r="16" fill="#fff" stroke="#1a1a2e" stroke-width="5"/>
+      <circle cx="50" cy="50" r="6" fill="#1a1a2e"/>
+    </svg>
+
+    <div class="welcome-tag">✨ Un regalo especial ✨</div>
+
+    <h1 class="welcome-title">
+      Para Blas
+      <span class="highlight">de la tía</span>
+    </h1>
+
+    <div class="welcome-heart">❤️</div>
+
+    <p class="welcome-msg">
+      Hecho con mucho <em>amor</em>,<br>
+      para que tu colección Pokémon<br>
+      sea <strong>tan especial como vos</strong>.
+    </p>
+
+    <button class="welcome-btn" onclick="cerrarBienvenida()">⚡ ¡Empezar la aventura!</button>
+  </div>
+</div>
 
 <!-- HUD -->
 <div class="hud">
@@ -736,6 +925,13 @@ h2 .emo { font-size: 1.4rem; margin-right: 4px; }
     <button class="btn btn-primary" onclick="guardarHistoria()">💾 Guardar historia (+20 XP, +8 💰)</button>
   </div>
   <div id="story-list"></div>
+
+  <!-- FIRMA PERMANENTE DE LA TÍA -->
+  <div class="signature">
+    <div class="sig-line1">Un regalito hecho a mano</div>
+    <div class="sig-line2">Para Blas, con amor <span class="sig-heart">❤️</span></div>
+    <div class="sig-line1">— De la tía</div>
+  </div>
 </section>
 
 <!-- VISTA ÁLBUM -->
@@ -882,10 +1078,8 @@ h2 .emo { font-size: 1.4rem; margin-right: 4px; }
 <script>
 /* =====================================================================
    ⚙️  CONFIGURACIÓN DE LA API
-   Andá a https://dev.pokemontcg.io, creá una cuenta gratis y pegá tu key.
-   (Sin API Key también funciona, pero con menos cartas por request).
    ===================================================================== */
-const API_KEY = ''; // ← PEGÁ TU API KEY ACÁ
+const API_KEY = ''; // ← PEGÁ TU API KEY ACÁ (https://dev.pokemontcg.io)
 const API_URL = 'https://api.pokemontcg.io/v2/cards';
 const PAGE_SIZE = 30;
 
@@ -899,7 +1093,6 @@ let cargando = false;
 let busquedaActual = '';
 let tabAlbum = 'buscar';
 
-// Progreso del jugador
 const KEY = {
   coleccion: 'pokeblas_v3_col',
   historias: 'pokeblas_v3_his',
@@ -910,7 +1103,8 @@ const KEY = {
   misiones: 'pokeblas_v3_mis',
   misionFecha: 'pokeblas_v3_mf',
   ultimoRegalo: 'pokeblas_v3_reg',
-  logros: 'pokeblas_v3_log'
+  logros: 'pokeblas_v3_log',
+  bienvenida: 'pokeblas_bienvenida_vista'
 };
 
 let misCartas = JSON.parse(localStorage.getItem(KEY.coleccion) || '{}');
@@ -924,14 +1118,11 @@ let misionFecha = localStorage.getItem(KEY.misionFecha) || '';
 let ultimoRegalo = localStorage.getItem(KEY.ultimoRegalo) || '';
 let logros = JSON.parse(localStorage.getItem(KEY.logros) || '{}');
 
-// Arena
 let slot1 = null, slot2 = null, slotActivo = null;
-
-// Sobre actual
 let sobreActual = null;
 
 /* =====================================================================
-   SONIDO (Web Audio API)
+   SONIDO
    ===================================================================== */
 let audioCtx = null;
 function getCtx() {
@@ -961,7 +1152,8 @@ const SND = {
   hit: () => { tone(180, 0.15, 0.2, 'sawtooth'); tone(90, 0.3, 0.15, 'sawtooth', 0.05); },
   levelUp: () => { [523, 659, 784, 1047, 1319, 1568].forEach((f, i) => tone(f, 0.4, 0.16, 'triangle', i * 0.11)); },
   pack: () => { for (let i = 0; i < 6; i++) tone(400 + i * 100, 0.1, 0.1, 'square', i * 0.05); },
-  open: () => { tone(200, 0.5, 0.2, 'sawtooth'); tone(400, 0.5, 0.15, 'sawtooth', 0.05); tone(800, 0.5, 0.1, 'sawtooth', 0.1); }
+  open: () => { tone(200, 0.5, 0.2, 'sawtooth'); tone(400, 0.5, 0.15, 'sawtooth', 0.05); tone(800, 0.5, 0.1, 'sawtooth', 0.1); },
+  welcome: () => { [523, 659, 784, 1047].forEach((f, i) => tone(f, 0.5, 0.18, 'triangle', i * 0.15)); }
 };
 
 /* =====================================================================
@@ -985,7 +1177,7 @@ function confetti(count = 40) {
 }
 
 /* =====================================================================
-   POPUP FLOTANTE
+   POPUP / TOAST
    ===================================================================== */
 function floatPopup(x, y, text, color = 'gold') {
   const el = document.createElement('div');
@@ -996,10 +1188,6 @@ function floatPopup(x, y, text, color = 'gold') {
   document.body.appendChild(el);
   setTimeout(() => el.remove(), 1700);
 }
-
-/* =====================================================================
-   TOAST
-   ===================================================================== */
 function toast(msg) {
   const t = document.createElement('div');
   t.className = 'toast';
@@ -1009,10 +1197,45 @@ function toast(msg) {
 }
 
 /* =====================================================================
+   BIENVENIDA ESPECIAL
+   ===================================================================== */
+function chequearBienvenida() {
+  if (localStorage.getItem(KEY.bienvenida)) return;
+  const overlay = document.getElementById('welcome-overlay');
+  overlay.classList.add('show');
+
+  // Corazones flotantes
+  const heartsBg = document.getElementById('welcome-hearts');
+  const heartEmojis = ['❤️', '💕', '💖', '💗', '✨', '⭐', '💛', '🧡'];
+  for (let i = 0; i < 14; i++) {
+    const s = document.createElement('span');
+    s.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
+    s.style.left = Math.random() * 100 + '%';
+    s.style.fontSize = (1 + Math.random() * 1.2) + 'rem';
+    s.style.animationDuration = (6 + Math.random() * 6) + 's';
+    s.style.animationDelay = (Math.random() * 4) + 's';
+    heartsBg.appendChild(s);
+  }
+
+  // Fanfarria + confeti
+  setTimeout(() => SND.welcome(), 300);
+  setTimeout(() => confetti(60), 400);
+  setTimeout(() => confetti(40), 1200);
+}
+
+function cerrarBienvenida() {
+  localStorage.setItem(KEY.bienvenida, '1');
+  const overlay = document.getElementById('welcome-overlay');
+  overlay.classList.remove('show');
+  SND.success();
+  confetti(50);
+  setTimeout(() => SND.coin(), 300);
+}
+
+/* =====================================================================
    XP / NIVEL / MONEDAS
    ===================================================================== */
 function xpNeeded(lv) { return 100 + (lv - 1) * 50; }
-
 function gainXP(amount) {
   xp += amount;
   let leveled = false;
@@ -1024,17 +1247,13 @@ function gainXP(amount) {
   localStorage.setItem(KEY.xp, xp);
   localStorage.setItem(KEY.level, level);
   updateHUD();
-  if (leveled) {
-    setTimeout(() => mostrarLevelModal(level), 400);
-  }
+  if (leveled) setTimeout(() => mostrarLevelModal(level), 400);
 }
-
 function gainCoins(amount) {
   coins += amount;
   localStorage.setItem(KEY.coins, coins);
   updateHUD();
 }
-
 function updateHUD() {
   document.getElementById('hud-level').textContent = level;
   document.getElementById('hud-coins').textContent = coins;
@@ -1042,7 +1261,6 @@ function updateHUD() {
   const need = xpNeeded(level);
   document.getElementById('hud-xp').style.width = Math.min(100, (xp / need) * 100) + '%';
   document.getElementById('hud-xp-text').textContent = `${xp}/${need}`;
-  // Precios de tienda
   ['basico','epico','legendario'].forEach(p => {
     const prices = { basico: 30, epico: 70, legendario: 150 };
     const el = document.getElementById('price-' + p);
@@ -1051,7 +1269,6 @@ function updateHUD() {
       el.textContent = prices[p] + ' 💰';
     }
   });
-  // Regalo diario
   const hoy = new Date().toDateString();
   const regaloEl = document.getElementById('price-diario');
   if (regaloEl) {
@@ -1064,7 +1281,6 @@ function updateHUD() {
     }
   }
 }
-
 function mostrarLevelModal(lv) {
   SND.levelUp();
   confetti(80);
@@ -1079,10 +1295,9 @@ function cerrarLevelModal() {
 }
 
 /* =====================================================================
-   MISIONES DIARIAS
+   MISIONES
    ===================================================================== */
 function hoyISO() { return new Date().toISOString().slice(0, 10); }
-
 function misionesDefecto() {
   return [
     { id: 'nuevas', ico: '⭐', txt: 'Agregá 3 cartas nuevas', need: 3, cur: 0, coin: 30 },
@@ -1090,7 +1305,6 @@ function misionesDefecto() {
     { id: 'historia', ico: '✍️', txt: 'Escribí una historia', need: 1, cur: 0, coin: 25 }
   ];
 }
-
 function cargarMisiones() {
   const hoy = hoyISO();
   if (misionFecha !== hoy || !misiones) {
@@ -1100,11 +1314,9 @@ function cargarMisiones() {
     localStorage.setItem(KEY.misionFecha, hoy);
   }
 }
-
 function progresoMision(id, incremento = 1) {
   const m = misiones.find(x => x.id === id);
-  if (!m) return;
-  if (m.cur >= m.need) return;
+  if (!m || m.cur >= m.need) return;
   m.cur = Math.min(m.need, m.cur + incremento);
   localStorage.setItem(KEY.misiones, JSON.stringify(misiones));
   if (m.cur >= m.need) {
@@ -1116,7 +1328,6 @@ function progresoMision(id, incremento = 1) {
   renderMisiones();
   updateNavNotif();
 }
-
 function renderMisiones() {
   const cont = document.getElementById('misiones-container');
   const completadas = misiones.filter(m => m.cur >= m.need).length;
@@ -1137,7 +1348,6 @@ function renderMisiones() {
   }).join('');
   updateNavNotif();
 }
-
 function updateNavNotif() {
   const hayNuevas = misiones.some(m => m.cur >= m.need);
   document.getElementById('nav-home').classList.toggle('has-notif', hayNuevas);
@@ -1158,10 +1368,9 @@ const LOGROS_DEF = [
   { id: 'h5', ico: '📝', txt: '5 historias escritas', check: () => historias.length >= 5 },
   { id: 'lv5', ico: '🌟', txt: 'Alcanzá el nivel 5', check: () => level >= 5 },
   { id: 'lv10', ico: '👑', txt: 'Alcanzá el nivel 10', check: () => level >= 10 },
-  { id: 'p1', ico: '🎁', txt: 'Abrí un sobre', check: () => logros.packCount >= 1 },
+  { id: 'p1', ico: '🎁', txt: 'Abrí un sobre', check: () => (logros.packCount || 0) >= 1 },
   { id: 'p10', ico: '🎊', txt: 'Abrí 10 sobres', check: () => (logros.packCount || 0) >= 10 },
 ];
-
 function renderLogros() {
   const cont = document.getElementById('logros-list');
   cont.innerHTML = LOGROS_DEF.map(l => {
@@ -1193,7 +1402,7 @@ function irA(vista) {
 }
 
 /* =====================================================================
-   API: CARGA DE CARTAS
+   API
    ===================================================================== */
 async function cargarCartas(query = '', page = 1, append = false) {
   if (cargando) return;
@@ -1236,14 +1445,12 @@ async function cargarCartas(query = '', page = 1, append = false) {
     actualizarBotonMas();
   }
 }
-
 function actualizarBotonMas() {
   const btn = document.getElementById('btn-mas');
   btn.style.display = (hayMas && tabAlbum === 'buscar') ? 'inline-flex' : 'none';
   btn.disabled = cargando;
   btn.textContent = cargando ? '⏳ Cargando...' : '➕ Cargar más';
 }
-
 function cargarMas() {
   if (cargando || !hayMas) return;
   paginaActual++;
@@ -1251,10 +1458,13 @@ function cargarMas() {
 }
 
 /* =====================================================================
-   BUSCADOR
+   BUSCADOR + INIT
    ===================================================================== */
 let debTimer = null;
 document.addEventListener('DOMContentLoaded', () => {
+  // Bienvenida primero
+  chequearBienvenida();
+
   const buscador = document.getElementById('buscador');
   const clearBtn = document.getElementById('search-x');
   buscador.addEventListener('input', () => {
@@ -1294,7 +1504,6 @@ function cambiarTab(tab) {
   document.getElementById('panel-coleccion').style.display = tab === 'coleccion' ? 'block' : 'none';
   renderAlbum();
 }
-
 function renderAlbum() {
   if (tabAlbum === 'coleccion') { renderColeccion(); return; }
   const grid = document.getElementById('album-grid');
@@ -1309,7 +1518,6 @@ function renderAlbum() {
   });
   actualizarBotonMas();
 }
-
 function renderColeccion() {
   const grid = document.getElementById('coleccion-grid');
   const arr = Object.values(misCartas);
@@ -1323,7 +1531,6 @@ function renderColeccion() {
     el.onclick = (e) => toggleCarta(el.dataset.id, e);
   });
 }
-
 function cardTileHTML(c, i) {
   const owned = !!misCartas[c.id];
   return `
@@ -1335,7 +1542,6 @@ function cardTileHTML(c, i) {
       </div>
     </div>`;
 }
-
 function toggleCarta(id, ev) {
   if (misCartas[id]) {
     delete misCartas[id];
@@ -1346,7 +1552,6 @@ function toggleCarta(id, ev) {
     if (!carta) return;
     misCartas[id] = carta;
     SND.success();
-    // FX en la posición del click
     const x = ev?.clientX || window.innerWidth / 2;
     const y = ev?.clientY || window.innerHeight / 2;
     floatPopup(x, y, '+10 XP', 'green');
@@ -1354,7 +1559,6 @@ function toggleCarta(id, ev) {
     gainXP(10);
     gainCoins(2);
     progresoMision('nuevas');
-    // Confeti si es rara
     if (esRara(carta.rareza)) {
       confetti(60);
       SND.rare();
@@ -1369,27 +1573,23 @@ function toggleCarta(id, ev) {
   renderHistorias();
   renderLogros();
 }
-
 function buscarEnCache(id) {
   return Object.values(misCartas).find(c => c.id === id);
 }
-
 function esRara(rareza) {
   if (!rareza) return false;
   const r = rareza.toLowerCase();
-  return r.includes('rare') && !r.includes('common') || r.includes('ultra') || r.includes('secret') || r.includes('holo') && r.includes('rare');
+  return r.includes('rare') && !r.includes('common') || r.includes('ultra') || r.includes('secret') || (r.includes('holo') && r.includes('rare'));
 }
 
 /* =====================================================================
    HOME
    ===================================================================== */
 function renderHome() {
-  // Saludo
   const h = new Date().getHours();
   const saludo = h < 12 ? '¡Buenos días' : h < 20 ? '¡Buenas tardes' : '¡Buenas noches';
   document.getElementById('greeting').textContent = `${saludo}, Entrenador!`;
 
-  // Carta destacada
   const arr = Object.values(misCartas);
   const feat = document.getElementById('featured');
   if (!arr.length) {
@@ -1421,10 +1621,7 @@ function renderHistorias() {
   document.getElementById('story-p2').innerHTML = html || '<option value="">(Sin cartas)</option>';
 
   const lista = document.getElementById('story-list');
-  if (!historias.length) {
-    lista.innerHTML = '';
-    return;
-  }
+  if (!historias.length) { lista.innerHTML = ''; return; }
   lista.innerHTML = historias.slice().reverse().map(h => `
     <div class="story-card">
       <button class="del" onclick="borrarHistoria(${h.id})">🗑️</button>
@@ -1433,21 +1630,17 @@ function renderHistorias() {
       <small>${escapeHTML(h.p1)} y ${escapeHTML(h.p2)} · ${h.fecha}</small>
     </div>`).join('');
 }
-
 function guardarHistoria() {
   const p1 = document.getElementById('story-p1').value;
   const p2 = document.getElementById('story-p2').value;
   const esc = document.getElementById('story-esc').value.trim();
   const con = document.getElementById('story-con').value.trim();
   const txt = document.getElementById('story-txt').value.trim();
-
   if (!p1 || !p2) { toast('Elegí dos Pokémon'); return; }
   if (p1 === p2) { toast('Elegí dos distintos'); return; }
   if (!txt) { toast('Escribí tu historia'); return; }
-
   const c1 = misCartas[p1]?.nombre || '?';
   const c2 = misCartas[p2]?.nombre || '?';
-
   historias.push({
     id: Date.now(),
     titulo: `${c1} y ${c2} en ${esc || 'una aventura'}`,
@@ -1455,11 +1648,9 @@ function guardarHistoria() {
     fecha: new Date().toLocaleDateString('es-AR')
   });
   localStorage.setItem(KEY.historias, JSON.stringify(historias));
-
   document.getElementById('story-esc').value = '';
   document.getElementById('story-con').value = '';
   document.getElementById('story-txt').value = '';
-
   SND.success();
   gainXP(20);
   gainCoins(8);
@@ -1470,7 +1661,6 @@ function guardarHistoria() {
   renderLogros();
   renderHome();
 }
-
 function borrarHistoria(id) {
   if (!confirm('¿Borrar historia?')) return;
   historias = historias.filter(h => h.id !== id);
@@ -1503,11 +1693,9 @@ function abrirSelector(n) {
   }
   modal.classList.add('show');
 }
-
 function cerrarSelector() {
   document.getElementById('selector-modal').classList.remove('show');
 }
-
 function elegirParaArena(id) {
   const c = misCartas[id];
   if (!c) return;
@@ -1516,7 +1704,6 @@ function elegirParaArena(id) {
   SND.click();
   cerrarSelector();
 }
-
 function pintarSlot(n, c) {
   const slot = document.getElementById('slot-' + n);
   slot.innerHTML = `
@@ -1525,7 +1712,6 @@ function pintarSlot(n, c) {
     <div class="slot-hp"><div style="width:100%"></div></div>`;
   slot.classList.add('selected');
 }
-
 async function pelear() {
   if (!slot1 || !slot2) { toast('¡Elegí dos cartas!'); return; }
   const btn = document.getElementById('btn-fight');
@@ -1540,7 +1726,6 @@ async function pelear() {
   const hp2max = slot2.hp || 50;
   let hp1 = hp1max, hp2 = hp2max;
 
-  // Bonus por rareza
   const bonus = r => {
     const x = (r || '').toLowerCase();
     if (x.includes('secret')) return 60;
@@ -1553,26 +1738,21 @@ async function pelear() {
 
   const turnos = [];
   let turno = 1;
-  // Simular hasta que alguien caiga o 5 turnos
   let atacante = Math.random() > 0.5 ? 1 : 2;
   while ((hp1 > 0 && hp2 > 0) && turno <= 8) {
     if (atacante === 1) {
       const dmg = dmgBase(slot1);
-      hp2 = Math.max(0, hp2 - dmg);
       const crit = Math.random() > 0.85;
-      const realDmg = crit ? dmg * 2 : dmg;
-      if (crit) hp2 = Math.max(0, hp2 - dmg); // doble
-      turnos.push(`T${turno} · <b>${escapeHTML(slot1.nombre)}</b> ataca · ${crit ? '<span class="crit">¡CRÍTICO!</span> ' : ''}<span class="hit">-${crit ? dmg : dmg} HP</span>`);
-      // animar
+      hp2 = Math.max(0, hp2 - dmg);
+      turnos.push(`T${turno} · <b>${escapeHTML(slot1.nombre)}</b> ataca · ${crit ? '<span class="crit">¡CRÍTICO!</span> ' : ''}<span class="hit">-${dmg} HP</span>`);
       animarHit(2);
     } else {
       const dmg = dmgBase(slot2);
-      hp1 = Math.max(0, hp1 - dmg);
       const crit = Math.random() > 0.85;
+      hp1 = Math.max(0, hp1 - dmg);
       turnos.push(`T${turno} · <b>${escapeHTML(slot2.nombre)}</b> ataca · ${crit ? '<span class="crit">¡CRÍTICO!</span> ' : ''}<span class="hit">-${dmg} HP</span>`);
       animarHit(1);
     }
-    // Actualizar barra
     setTimeout(() => {
       actualizarHP(1, hp1, hp1max);
       actualizarHP(2, hp2, hp2max);
@@ -1582,7 +1762,6 @@ async function pelear() {
     await sleep(350);
   }
 
-  // Determinar ganador
   let ganador;
   if (hp1 > 0 && hp2 <= 0) ganador = 1;
   else if (hp2 > 0 && hp1 <= 0) ganador = 2;
@@ -1617,7 +1796,6 @@ async function pelear() {
   btn.textContent = '⚔️ ¡Pelear de nuevo! (+15 XP, +5 💰)';
   renderLogros();
 }
-
 function actualizarHP(n, hp, max) {
   const slot = document.getElementById('slot-' + n);
   const bar = slot.querySelector('.slot-hp > div');
@@ -1628,14 +1806,12 @@ function actualizarHP(n, hp, max) {
     else if (pct < 60) bar.style.background = 'linear-gradient(90deg, #ffb800, #ff6b35)';
   }
 }
-
 function animarHit(n) {
   const slot = document.getElementById('slot-' + n);
   slot.classList.add('shake', 'hit-flash');
   SND.hit();
   setTimeout(() => slot.classList.remove('shake', 'hit-flash'), 500);
 }
-
 function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
 
 /* =====================================================================
@@ -1651,8 +1827,6 @@ async function comprarSobre(tipo) {
   }
   gainCoins(-precios[tipo]);
   SND.pack();
-
-  // Traer cartas aleatorias de la API
   toast('Abriendo sobre...');
   try {
     const url = `${API_URL}?pageSize=${cantidades[tipo]}&orderBy=-set.releaseDate&page=${Math.floor(Math.random() * 20) + 1}`;
@@ -1675,7 +1849,6 @@ async function comprarSobre(tipo) {
     toast('Error al abrir el sobre');
   }
 }
-
 function mostrarPack() {
   document.getElementById('pack-overlay').classList.add('show');
   document.getElementById('pack-envelope').style.display = 'grid';
@@ -1684,7 +1857,6 @@ function mostrarPack() {
   document.getElementById('pack-title').textContent = `Sobre ${sobreActual.tipo}`;
   document.getElementById('pack-sub').textContent = 'Tocá el sobre para abrirlo';
 }
-
 function abrirSobre() {
   const env = document.getElementById('pack-envelope');
   env.classList.add('opening');
@@ -1694,13 +1866,9 @@ function abrirSobre() {
     mostrarSiguienteCarta();
   }, 500);
 }
-
 function mostrarSiguienteCarta() {
   const { cartas, index } = sobreActual;
-  if (index >= cartas.length) {
-    cerrarSobre();
-    return;
-  }
+  if (index >= cartas.length) { cerrarSobre(); return; }
   const carta = cartas[index];
   const rev = document.getElementById('pack-reveal');
   rev.classList.add('show');
@@ -1713,7 +1881,6 @@ function mostrarSiguienteCarta() {
   rar.textContent = carta.rareza;
   document.getElementById('pack-actions').style.display = 'none';
 
-  // Flip automático
   setTimeout(() => {
     document.getElementById('reveal-card').classList.add('flipped');
     if (rarClass === 'ultra') { SND.rare(); confetti(80); }
@@ -1724,13 +1891,11 @@ function mostrarSiguienteCarta() {
     }, 600);
   }, 300);
 }
-
 function esUltra(rareza) {
   if (!rareza) return false;
   const x = rareza.toLowerCase();
   return x.includes('ultra') || x.includes('secret') || x.includes('rainbow') || x.includes('special');
 }
-
 function guardarDelSobre() {
   const carta = sobreActual.cartas[sobreActual.index];
   if (carta && !misCartas[carta.id]) {
@@ -1744,7 +1909,6 @@ function guardarDelSobre() {
   if (sobreActual.index >= sobreActual.cartas.length) cerrarSobre();
   else mostrarSiguienteCarta();
 }
-
 function cerrarSobre() {
   document.getElementById('pack-overlay').classList.remove('show');
   logros.packCount = (logros.packCount || 0) + 1;
@@ -1755,7 +1919,6 @@ function cerrarSobre() {
   renderHome();
   renderLogros();
 }
-
 function recargarGratis() {
   const hoy = new Date().toDateString();
   if (ultimoRegalo === hoy) { toast('Ya reclamaste hoy'); return; }

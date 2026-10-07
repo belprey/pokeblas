@@ -677,6 +677,76 @@ h2 .emo { font-size: 1.4rem; margin-right: 4px; }
   <div class="shop-grid" id="shop-grid"></div>
 </section>
 
+<!-- VISTA HISTORIAS -->
+<section class="view" id="view-historias">
+  <h2><span class="emo">✍️</span>Taller de Historias</h2>
+  <p class="sub">Elegí dos Pokémon, un lugar y un problema. ¡Vos inventás el resto!</p>
+
+  <div class="card">
+    <h3>📝 Nueva historia</h3>
+    <label style="display:block;font-size:0.75rem;font-weight:800;color:var(--muted);margin-bottom:6px;margin-top:4px;">PROTAGONISTA 1</label>
+    <select id="story-p1" style="width:100%;padding:11px;border-radius:12px;border:2px solid #e6ecff;font-family:inherit;font-size:0.9rem;font-weight:600;margin-bottom:12px;outline:none;background:white;"></select>
+
+    <label style="display:block;font-size:0.75rem;font-weight:800;color:var(--muted);margin-bottom:6px;">PROTAGONISTA 2</label>
+    <select id="story-p2" style="width:100%;padding:11px;border-radius:12px;border:2px solid #e6ecff;font-family:inherit;font-size:0.9rem;font-weight:600;margin-bottom:12px;outline:none;background:white;"></select>
+
+    <label style="display:block;font-size:0.75rem;font-weight:800;color:var(--muted);margin-bottom:6px;">¿DÓNDE PASA?</label>
+    <select id="story-lugar" style="width:100%;padding:11px;border-radius:12px;border:2px solid #e6ecff;font-family:inherit;font-size:0.9rem;font-weight:600;margin-bottom:12px;outline:none;background:white;">
+      <optgroup label="🌳 Bosques y naturaleza">
+        <option value="el Bosque Verde">🌲 Bosque Verde</option>
+        <option value="el Bosque Eterna">🍃 Bosque Eterna</option>
+        <option value="los Jardines de Floaroma">🌺 Jardines de Floaroma</option>
+        <option value="el Valle de Sinnoh">🏞️ Valle de Sinnoh</option>
+        <option value="la Selva de Alola">🌴 Selva de Alola</option>
+      </optgroup>
+      <optgroup label="🏙️ Ciudades y pueblos">
+        <option value="Pueblo Paleta">🏘️ Pueblo Paleta</option>
+        <option value="Ciudad Verde">🏙️ Ciudad Verde</option>
+        <option value="Ciudad Azulona">🏢 Ciudad Azulona</option>
+        <option value="Ciudad Trigal">🌃 Ciudad Trigal</option>
+        <option value="Pueblo Lavanda">👻 Pueblo Lavanda</option>
+      </optgroup>
+      <optgroup label="⛰️ Montañas y cuevas">
+        <option value="el Monte Moon">⛰️ Monte Moon</option>
+        <option value="el Monte Cenizo">🌋 Monte Cenizo</option>
+        <option value="la Cueva Celeste">🕳️ Cueva Celeste</option>
+        <option value="el Monte Corona">❄️ Monte Corona</option>
+      </optgroup>
+      <optgroup label="🌊 Mares y playas">
+        <option value="las Islas Espuma">🌊 Islas Espuma</option>
+        <option value="la Playa Arena">🏖️ Playa Arena</option>
+        <option value="el Puerto Olivo">🐚 Puerto Olivo</option>
+        <option value="el Fondo del Mar">🐟 Fondo del Mar</option>
+      </optgroup>
+      <optgroup label="🏟️ Lugares especiales">
+        <option value="la Liga Pokémon">🏆 Liga Pokémon</option>
+        <option value="un Centro Pokémon">🏥 Centro Pokémon</option>
+        <option value="el escondite del Team Rocket">🚀 Escondite del Team Rocket</option>
+        <option value="la Torre Batalla">🏰 Torre Batalla</option>
+        <option value="el espacio exterior">🌌 El espacio exterior</option>
+        <option value="el mundo de los sueños">💭 El mundo de los sueños</option>
+      </optgroup>
+      <optgroup label="✏️ Personalizado">
+        <option value="otro">✏️ Otro lugar (escribilo vos)</option>
+      </optgroup>
+    </select>
+    <input type="text" id="story-lugar-custom" placeholder="Escribí el lugar acá..." style="display:none;width:100%;padding:11px;border-radius:12px;border:2px solid #e6ecff;font-family:inherit;font-size:0.9rem;font-weight:600;margin-bottom:12px;outline:none;">
+
+    <label style="display:block;font-size:0.75rem;font-weight:800;color:var(--muted);margin-bottom:6px;">¿CUÁL ES EL PROBLEMA?</label>
+    <input type="text" id="story-problema" placeholder="Ej: Un Team Rocket robó una Pokébola..." style="width:100%;padding:11px;border-radius:12px;border:2px solid #e6ecff;font-family:inherit;font-size:0.9rem;font-weight:600;margin-bottom:12px;outline:none;">
+
+    <label style="display:block;font-size:0.75rem;font-weight:800;color:var(--muted);margin-bottom:6px;">ESCRIBÍ TU HISTORIA</label>
+    <textarea id="story-texto" placeholder="Había una vez..." style="width:100%;min-height:120px;padding:11px;border-radius:12px;border:2px solid #e6ecff;font-family:inherit;font-size:0.9rem;font-weight:600;margin-bottom:12px;outline:none;resize:vertical;line-height:1.5;"></textarea>
+
+    <button class="btn btn-primary" onclick="guardarHistoria()">💾 Guardar historia (+25 XP, +10 💰)</button>
+  </div>
+
+  <div class="card">
+    <h3>📚 Tus historias <span class="pill info" id="historias-count">0</span></h3>
+    <div id="historias-lista"></div>
+  </div>
+</section>   
+   
 <!-- NAV -->
 <nav class="bottom-nav">
   <button class="nav-btn active" onclick="irA('base')" id="nav-base">
@@ -689,6 +759,9 @@ h2 .emo { font-size: 1.4rem; margin-right: 4px; }
   <button class="nav-btn" onclick="irA('juegos')" id="nav-juegos">
     <span class="nav-ico">🎮</span>Juegos
   </button>
+  <button class="nav-btn" onclick="irA('historias')" id="nav-historias">
+    <span class="nav-ico">✍️</span>Historias
+  </button> 
   <button class="nav-btn" onclick="irA('tienda')" id="nav-tienda">
     <span class="nav-ico">🎁</span>Tienda
     <span class="nav-dot"></span>
@@ -1531,6 +1604,7 @@ function irA(vista) {
   if (vista === 'base') { renderBuddy(); renderMisiones(); }
   if (vista === 'album') renderAlbum();
   if (vista === 'juegos') renderJuegos();
+  if (vista === 'historias') renderHistorias(); 
   if (vista === 'tienda') renderShop();
 }
 
@@ -1608,6 +1682,95 @@ function chequearStreak() {
 }
 
 /* ============================================================
+   HISTORIAS
+   ============================================================ */
+let historias = JSON.parse(localStorage.getItem(KEY.historias) || '[]');
+
+function renderHistorias() {
+  // Llenar los selects con los Pokémon disponibles
+  const html = STARTERS.map(s => `<option value="${s.id}">${s.name}</option>`).join('');
+  const sel1 = $('#story-p1');
+  const sel2 = $('#story-p2');
+  const val1 = sel1.value;
+  const val2 = sel2.value;
+  sel1.innerHTML = html;
+  sel2.innerHTML = html;
+  if (val1) sel1.value = val1;
+  if (val2 && val2 !== sel1.value) sel2.value = val2;
+  else if (sel2.options[1]) sel2.selectedIndex = 1; // Segundo por defecto distinto
+
+  // Lista de historias guardadas
+  const lista = $('#historias-lista');
+  $('#historias-count').textContent = historias.length;
+  if (!historias.length) {
+    lista.innerHTML = `<div class="empty-state" style="padding:20px 10px;"><span class="big" style="font-size:2rem;">📭</span><p style="font-size:0.8rem;">Todavía no escribiste ninguna historia.<br>¡Animáte, te va a salir genial!</p></div>`;
+    return;
+  }
+  lista.innerHTML = historias.slice().reverse().map(h => `
+    <div style="background:linear-gradient(135deg,#fff,#f8f4ff);border-left:4px solid var(--purple);border-radius:12px;padding:12px;margin-bottom:10px;position:relative;">
+      <button onclick="borrarHistoria(${h.id})" style="position:absolute;top:8px;right:8px;background:#fdecec;border:none;color:var(--red);width:24px;height:24px;border-radius:8px;cursor:pointer;font-size:0.75rem;">🗑️</button>
+      <h4 style="font-size:0.88rem;color:var(--blue);margin-bottom:6px;padding-right:30px;">📖 ${escapeHTML(h.titulo)}</h4>
+      <p style="font-size:0.82rem;color:#444;line-height:1.5;white-space:pre-wrap;margin-bottom:6px;">${escapeHTML(h.texto)}</p>
+      <div style="font-size:0.68rem;color:var(--muted);font-weight:700;">${escapeHTML(h.p1)} y ${escapeHTML(h.p2)} · ${h.fecha}</div>
+    </div>
+  `).join('');
+}
+
+function guardarHistoria() {
+  const p1Id = parseInt($('#story-p1').value);
+  const p2Id = parseInt($('#story-p2').value);
+  let lugar = $('#story-lugar').value;
+  const problema = $('#story-problema').value.trim();
+  const texto = $('#story-texto').value.trim();
+
+  if (lugar === 'otro') {
+    lugar = $('#story-lugar-custom').value.trim();
+    if (!lugar) { toast('Escribí el lugar que inventaste'); return; }
+  }
+  if (p1Id === p2Id) { toast('Elegí dos Pokémon distintos'); return; }
+  if (!texto) { toast('¡Escribí tu historia!'); return; }
+  if (texto.length < 10) { toast('La historia es muy corta, ¡dale más!'); return; }
+
+  const p1 = STARTERS.find(s => s.id === p1Id);
+  const p2 = STARTERS.find(s => s.id === p2Id);
+
+  historias.push({
+    id: Date.now(),
+    titulo: `${p1.name} y ${p2.name} en ${lugar}`,
+    p1: p1.name,
+    p2: p2.name,
+    lugar,
+    problema,
+    texto,
+    fecha: new Date().toLocaleDateString('es-AR', { day: '2-digit', month: '2-digit', year: 'numeric' })
+  });
+  localStorage.setItem(KEY.historias, JSON.stringify(historias));
+
+  // Limpiar form
+  $('#story-problema').value = '';
+  $('#story-texto').value = '';
+  $('#story-lugar-custom').value = '';
+  $('#story-lugar-custom').style.display = 'none';
+  $('#story-lugar').value = 'el Bosque Verde';
+
+  SND.success();
+  gainXP(25);
+  gainCoins(10);
+  confetti(50);
+  toast('¡Historia guardada! +25 XP, +10 💰');
+  renderHistorias();
+}
+
+function borrarHistoria(id) {
+  if (!confirm('¿Borrar esta historia? No se puede recuperar.')) return;
+  historias = historias.filter(h => h.id !== id);
+  localStorage.setItem(KEY.historias, JSON.stringify(historias));
+  renderHistorias();
+  SND.click();
+  toast('Historia borrada');
+}   
+   
+/* ============================================================
    INIT
    ============================================================ */
 document.addEventListener('DOMContentLoaded', () => {
@@ -1622,7 +1785,24 @@ document.addEventListener('DOMContentLoaded', () => {
   cargarCartas('', 1, false);
   renderShop();
   renderJuegos();
+    renderShop();
+  renderJuegos();
+  renderHistorias();
+
+  // Mostrar input custom cuando elige "Otro lugar"
+  const selLugar = $('#story-lugar');
+  const inputCustom = $('#story-lugar-custom');
+  selLugar.addEventListener('change', () => {
+    if (selLugar.value === 'otro') {
+      inputCustom.style.display = 'block';
+      inputCustom.focus();
+    } else {
+      inputCustom.style.display = 'none';
+      inputCustom.value = '';
+    }
+  });
 });
+
 </script>
 </body>
 </html>

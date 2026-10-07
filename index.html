@@ -768,9 +768,16 @@ function toggleMute() {
    DATOS DE POKÉMON (starters y compañeros)
    ============================================================ */
 const STARTERS = [
-  { id: 25, dex: 25, name: 'Pikachu', type: 'Eléctrico', sprite: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/25.gif' },
-  { id: 4, dex: 4, name: 'Charmander', type: 'Fuego', sprite: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/4.gif' },
-  { id: 133, dex: 133, name: 'Eevee', type: 'Normal', sprite: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/133.gif' }
+  { id: 25,  dex: 25,  name: 'Pikachu',   type: 'Eléctrico',       emoji: '⚡', color: '#ffcb05', sprite: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/25.gif' },
+  { id: 4,   dex: 4,   name: 'Charmander',type: 'Fuego',           emoji: '🔥', color: '#ff6b35', sprite: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/4.gif' },
+  { id: 7,   dex: 7,   name: 'Squirtle',  type: 'Agua',            emoji: '💧', color: '#3b82f6', sprite: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/7.gif' },
+  { id: 1,   dex: 1,   name: 'Bulbasaur', type: 'Planta',          emoji: '🌿', color: '#10b981', sprite: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/1.gif' },
+  { id: 133, dex: 133, name: 'Eevee',     type: 'Normal',          emoji: '⭐', color: '#a8a878', sprite: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/133.gif' },
+  { id: 155, dex: 155, name: 'Cyndaquil', type: 'Fuego',           emoji: '🔥', color: '#ff6b35', sprite: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/155.gif' },
+  { id: 258, dex: 258, name: 'Mudkip',    type: 'Agua',            emoji: '💧', color: '#3b82f6', sprite: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/258.gif' },
+  { id: 175, dex: 175, name: 'Togepi',    type: 'Hada',            emoji: '🌸', color: '#f472b6', sprite: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/175.gif' },
+  { id: 447, dex: 447, name: 'Riolu',     type: 'Lucha',           emoji: '👊', color: '#dc2626', sprite: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/447.gif' },
+  { id: 147, dex: 147, name: 'Dratini',   type: 'Dragón',          emoji: '🐉', color: '#4f46e5', sprite: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/147.gif' }
 ];
 
 /* ============================================================
@@ -1084,16 +1091,34 @@ function alimentar(itemId) {
 }
 
 function abrirCambiarBuddy() {
-  const html = STARTERS.map(s => {
-    const activo = s.id === buddy.speciesId;
-    return `<div class="shop-item" onclick="cambiarBuddy(${s.id})" style="border-top-color:${activo ? 'var(--green)' : 'var(--gold)'}">
-      <img src="${s.sprite}" style="width:60px;height:60px;margin:0 auto;display:block;">
-      <h4>${s.name}</h4>
-      <p>${s.type}</p>
-      ${activo ? '<div class="price" style="background:var(--green);color:white;">✓ Activo</div>' : ''}
-    </div>`;
-  }).join('');
-  mostrarModal('Elegir compañero', `<div class="shop-grid">${html}</div>`);
+  const html = `<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">` +
+    STARTERS.map(s => {
+      const activo = s.id === buddy.speciesId;
+      return `<div onclick="cambiarBuddy(${s.id})" style="
+        background:${activo ? 'linear-gradient(135deg, #dbf3e5, #fff)' : 'white'};
+        border:${activo ? '3px solid var(--green)' : '2px solid #e6ecff'};
+        border-radius:14px;
+        padding:8px 4px;
+        text-align:center;
+        cursor:pointer;
+        transition:transform 0.15s;
+        position:relative;
+        overflow:hidden;
+      " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+        <div style="
+          position:absolute;top:4px;right:4px;
+          background:${s.color};color:white;
+          width:20px;height:20px;border-radius:50%;
+          display:flex;align-items:center;justify-content:center;
+          font-size:0.7rem;
+        ">${s.emoji}</div>
+        ${activo ? '<div style="position:absolute;top:4px;left:4px;font-size:0.8rem;">✅</div>' : ''}
+        <img src="${s.sprite}" alt="${s.name}" style="width:56px;height:56px;image-rendering:pixelated;display:block;margin:0 auto;">
+        <div style="font-size:0.7rem;font-weight:800;margin-top:2px;color:var(--text);">${s.name}</div>
+        <div style="font-size:0.6rem;color:var(--muted);font-weight:700;">${s.type}</div>
+      </div>`;
+    }).join('') + `</div>`;
+  mostrarModal('🎒 Elegí tu compañero', html + `<p style="text-align:center;color:var(--muted);font-size:0.75rem;margin-top:14px;">¡Podés cambiarlo las veces que quieras!</p>`);
 }
 
 function cambiarBuddy(id) {

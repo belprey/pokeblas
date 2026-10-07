@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>PokeBlas - Mi Colección</title>
+    <style>
+        :root {
+            --pk-red: #ee1515;
+            --pk-red-dark: #c41212;
+            --pk-blue: #3b4cca;
+            --pk-yellow: #ffcb05;
+            --pk-dark: #1a1a2e;
+            --pk-light: #f8f9fa;
+            --pk-gray: #e9ecef;
+            --shadow: 0 4px 15px rgba(0,0,0,0.1);
+            --radius: 16px;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--pk-light);
+            color: var(--pk-dark);
+            padding-bottom: 80px;
+            overflow-x: hidden;
+        }
+
+        /* --- HEADER --- */
+        header {
+            background: linear-gradient(135deg, var(--pk-red), var(--pk-red-dark));
+            color: white;
+            padding: 12px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.25);
+        }
+        header .brand {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 1.35rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+        header .brand svg { width: 32px; height: 32px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
+        header .brand .pk-word {
+            color: var(--pk-yellow);
+            -webkit-text-stroke: 1.5px #2a2a5a;
+            text-shadow: 2px 2px 0 #2a2a5a;
+        }
+        header .brand .blas-word {
+            color: #fff;
+            -webkit-text-stroke: 1.5px #2a2a5a;
+            text-shadow: 2px 2px 0 #2a2a5a;
+        }
+        header .top-btn {
+            background: rgba(255,255,255,0.18);
+            border: none;
+            color: white;
+            font-size: 1.1rem;
+            cursor: pointer;
+            width: 38px; height: 38px;
+            border-radius: 12px;
+            display: grid; place-items: center;
+            transition: 0.15s;
+        }
+        header .top-btn:active { transform: scale(0.92); }
+
+        /* --- NAVEGACIÓN INFERIOR --- */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0; left: 0; right: 0;
+            background: white;
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+            box-shadow: 0 -2px 15px rgba(0,0,0,0.08);
+            z-index: 100;
+            border-top: 1px solid #eee;
+        }
+        .nav-btn {
+            background: none; border: none;
+            display: flex; flex-direction: column; align-items: center;
+            font-size: 0.68rem; color: #888; font-weight: 700;
+            cursor: pointer; width: 100%; padding: 4px 0;
+            transition: 0.2s;
+            font-family: inherit;
+        }
+        .nav-btn span { font-size: 1.4rem; margin-bottom: 1px; transition: transform 0.2s; }
+        .nav-btn.active { color: var(--pk-red); }
+        .nav-btn.active span { transform: scale(1.15) translateY(-1px); }
+
+        /* --- VISTAS --- */
+        .view { display: none; padding: 18px; animation: fadeIn 0.25s ease; }
+        .view.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+        h2 { font-size: 1.25rem; margin-bottom: 6px; color: var(--pk-blue); letter-spacing: -0.3px; }
+        p.sub { font-size: 0.85rem; color: #666; margin-bottom: 16px; line-height: 1.4; }
+
+        /* --- BOTONES --- */
+        .btn-primary {
+            background: var(--pk-blue); color: white; border: none;
+            padding: 14px; border-radius: 12px; font-weight: 700;
+            font-size: 0.95rem; width: 100%; cursor: pointer;
+            transition: 0.15s; box-shadow: 0 4px 12px rgba(59,76,202,0.3);
+            font-family: inherit;
+        }
+        .btn-primary:active { transform: scale(0.98); }
+        .btn-primary.red { background: var(--pk-red); box-shadow: 0 4px 12px rgba(238,21,21,0.3); }
+        .btn-secondary {
+            background: var(--pk-yellow); color: var(--pk-dark); border: none;
+            padding: 12px; border-radius: 12px; font-weight: 700;
+            font-size: 0.9rem; width: 100%; cursor: pointer;
+            margin-top: 10px; font-family: inherit;
+            transition: 0.15s;
+        }
+        .btn-secondary:active { transform: scale(0.98); }
+        .btn-load-more {
+            background: white; color: var(--pk-blue); border: 2px solid var(--pk-blue);
+            padding: 12px; border-radius: 12px; font-weight: 700;
+            font-size: 0.9rem; width: 100%; cursor: pointer;
+            margin-top: 14px; font-family: inherit;
+            transition: 0.15s;
+        }
+        .btn-load-more:active { transform: scale(0.98); }
+        .btn-load-more:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* --- TABS --- */
+        .tabs { display: flex; gap: 8px; margin-bottom: 14px; }
+        .tab {
+            flex: 1;
+            background: white; border: 2px solid var(--pk-gray);
+            padding: 10px 8px; border-radius: 12px; font-weight: 700;
+            font-size: 0.82rem; cursor: pointer; white-space: nowrap;
+            transition: 0.2s; color: #666; font-family: inherit;
+        }
+        .tab.active { background: var(--pk-blue); color: white; border-color: var(--pk-blue); }
+
+        /* --- BUSCADOR --- */
+        .search-wrap { position: relative; margin-bottom: 14px; }
+        .search-box {
+            width: 100%; padding: 13px 42px 13px 42px; border-radius: 12px;
+            border: 2px solid var(--pk-gray); font-size: 0.95rem;
+            outline: none; transition: 0.2s; font-family: inherit;
+            background: white;
+        }
+        .search-box:focus { border-color: var(--pk-yellow); box-shadow: 0 0 0 3px rgba(255,203,5,0.2); }
+        .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 1.1rem; opacity: 0.5; }
+        .search-clear {
+            position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+            background: #eee; border: none; width: 24px; height: 24px;
+            border-radius: 50%; cursor: pointer; font-size: 0.8rem; color: #666;
+            display: none;
+        }
+        .search-clear.show { display: block; }
+
+        /* --- GRID DE CARTAS --- */
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 12px;
+        }
+
+        .card-item {
+            background: white; border-radius: 14px;
+            padding: 8px; box-shadow: var(--shadow);
+            text-align: center; cursor: pointer;
+            transition: transform 0.15s, box-shadow 0.2s, border-color 0.2s;
+            border: 3px solid transparent;
+            position: relative;
+            overflow: hidden;
+            animation: cardIn 0.3s ease;
+        }
+        @keyframes cardIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: none; } }
+        .card-item:active { transform: scale(0.97); }
+        .card-item img { width: 100%; border-radius: 8px; display: block; aspect-ratio: 245/342; object-fit: cover; background: #f0f0f0; }
+
+        .card-item.owned { border-color: var(--pk-yellow); box-shadow: 0 6px 18px rgba(255,203,5,0.35); }
+        .card-item.owned::after {
+            content: '⭐'; position: absolute; top: 8px; right: 8px;
+            font-size: 1.1rem; background: white; border-radius: 50%;
+            width: 26px; height: 26px; display: grid; place-items: center;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+        }
+
+        .card-info h3 { font-size: 0.82rem; margin: 6px 0 1px; line-height: 1.2; }
+        .card-info p { font-size: 0.7rem; color: #777; margin: 0; }
+        .card-info .rarity {
+            display: inline-block; margin-top: 4px;
+            font-size: 0.62rem; padding: 2px 6px; border-radius: 6px;
+            background: #eef2ff; color: #3b4cca; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.3px;
+        }
+
+        /* --- ESTADOS VACÍOS / CARGANDO --- */
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center; padding: 40px 20px; color: #888;
+        }
+        .empty-state .big { font-size: 2.5rem; margin-bottom: 10px; display: block; }
+        .empty-state p { font-size: 0.9rem; line-height: 1.5; }
+        .spinner {
+            width: 40px; height: 40px; margin: 0 auto 12px;
+            border: 4px solid var(--pk-gray); border-top-color: var(--pk-red);
+            border-radius: 50%; animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* --- VISTA INICIO --- */
+        .progress-card {
+            background: white; padding: 20px; border-radius: var(--radius);
+            box-shadow: var(--shadow); margin-bottom: 18px;
+            text-align: center;
+            border-top: 5px solid var(--pk-yellow);
+        }
+        .progress-pct {
+            font-size: 2.8rem; font-weight: 900; color: var(--pk-red);
+            line-height: 1; letter-spacing: -2px;
+        }
+        .progress-card .label { color: #666; font-size: 0.9rem; margin-top: 4px; }
+        .progress-bar-bg {
+            background: var(--pk-gray); height: 12px; border-radius: 6px;
+            margin-top: 14px; overflow: hidden;
+        }
+        .progress-bar-fill {
+            background: linear-gradient(90deg, var(--pk-yellow), var(--pk-red));
+            height: 100%; transition: width 0.6s ease;
+            border-radius: 6px;
+        }
+        .stat-row {
+            display: flex; justify-content: space-around;
+            margin-top: 16px; padding-top: 14px; border-top: 1px solid #eee;
+        }
+        .stat-row div { text-align: center; }
+        .stat-row b { display: block; font-size: 1.3rem; color: var(--pk-blue); }
+        .stat-row small { font-size: 0.7rem; color: #888; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; }
+
+        .featured-card {
+            background: white; padding: 18px; border-radius: var(--radius);
+            box-shadow: var(--shadow); text-align: center;
+            border-top: 5px solid var(--pk-red);
+        }
+        .featured-card img {
+            width: 140px; border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.18);
+            margin-bottom: 10px;
+        }
+        .featured-card h3 { font-size: 1.1rem; margin-bottom: 4px; }
+        .featured-card p { color: #666; font-size: 0.85rem; }
+
+        /* --- TALLER DE HISTORIAS --- */
+        .form-group { margin-bottom: 14px; }
+        .form-group label {
+            display: block; font-weight: 700; font-size: 0.82rem;
+            margin-bottom: 6px; color: #444;
+        }
+        .form-group select, .form-group textarea, .form-group input {
+            width: 100%; padding: 12px; border-radius: 12px;
+            border: 2px solid var(--pk-gray); font-family: inherit;
+            font-size: 0.92rem; background: white; outline: none;
+            transition: border-color 0.2s;
+        }
+        .form-group select:focus, .form-group textarea:focus, .form-group input:focus {
+            border-color: var(--pk-blue);
+        }
+        .form-group textarea { resize: vertical; min-height: 100px; line-height: 1.5; }
+
+        .story-list { margin-top: 24px; }
+        .story-card {
+            background: white; padding: 16px; border-radius: var(--radius);
+            box-shadow: var(--shadow); margin-bottom: 12px;
+            border-left: 5px solid var(--pk-red);
+            position: relative;
+        }
+        .story-card h4 { margin: 0 0 6px 0; font-size: 1rem; color: var(--pk-blue); padding-right: 30px; }
+        .story-card p { font-size: 0.88rem; color: #444; line-height: 1.5; margin: 0; white-space: pre-wrap; }
+        .story-card .meta { font-size: 0.72rem; color: #999; margin-top: 10px; display: block; }
+        .story-card .del-story {
+            position: absolute; top: 12px; right: 12px;
+            background: #fdecec; border: none; color: #e5484d;
+            width: 26px; height: 26px; border-radius: 8px;
+            cursor: pointer; font-size: 0.85rem;
+        }
+
+        /* --- ARENA --- */
+        .arena-slots { display: flex; gap: 12px; justify-content: center; margin-bottom: 18px; }
+        .arena-slot {
+            width: 48%; background: white; border-radius: var(--radius);
+            padding: 10px; box-shadow: var(--shadow); text-align: center;
+            min-height: 200px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            border: 3px dashed var(--pk-gray);
+            cursor: pointer; position: relative;
+            transition: border-color 0.2s;
+        }
+        .arena-slot img { max-width: 100%; border-radius: 8px; }
+        .arena-slot .placeholder { color: #aaa; font-size: 0.8rem; font-weight: 600; }
+        .arena-slot.selected { border-style: solid; border-color: var(--pk-red); border-width: 3px; }
+        .arena-slot .slot-name {
+            font-size: 0.78rem; font-weight: 700; margin-top: 6px; color: var(--pk-dark);
+        }
+
+        .battle-result {
+            background: white; padding: 22px; border-radius: var(--radius);
+            box-shadow: var(--shadow); text-align: center; margin-top: 18px;
+            display: none;
+            border-top: 5px solid var(--pk-yellow);
+        }
+        .battle-result.show { display: block; animation: fadeIn 0.4s; }
+        .battle-result h3 { color: var(--pk-red); margin-bottom: 10px; font-size: 1.2rem; }
+        .battle-result p { font-size: 0.95rem; line-height: 1.5; }
+        .battle-result .score {
+            font-family: ui-monospace, monospace;
+            background: #f5f5f5; padding: 10px; border-radius: 8px;
+            margin: 12px 0; font-size: 0.85rem;
+        }
+
+        /* --- MODAL --- */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.65); z-index: 200;
+            display: none; justify-content: center; align-items: flex-end;
+        }
+        .modal-overlay.show { display: flex; animation: fadeIn 0.2s; }
+        .modal-content {
+            background: white; width: 100%; max-width: 520px;
+            border-radius: 24px 24px 0 0; padding: 20px;
+            max-height: 85vh; overflow-y: auto;
+            animation: slideUp 0.3s ease;
+            padding-bottom: calc(20px + env(safe-area-inset-bottom));
+        }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .modal-header {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #eee;
+        }
+        .modal-header h3 { margin: 0; font-size: 1.1rem; }
+        .close-modal {
+            background: #f0f0f0; border: none; font-size: 1rem;
+            cursor: pointer; color: #666; width: 32px; height: 32px;
+            border-radius: 10px; display: grid; place-items: center;
+            transition: 0.15s;
+        }
+        .close-modal:active { transform: scale(0.92); }
+        .modal-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(95px, 1fr));
+            gap: 8px;
+        }
+        .modal-grid .card-item { padding: 5px; border-width: 2px; }
+        .modal-grid .card-info { display: none; }
+
+        /* --- TOAST --- */
+        .toast {
+            position: fixed;
+            top: 70px;
+            left: 50%; transform: translateX(-50%);
+            background: var(--pk-dark); color: white;
+            padding: 12px 20px; border-radius: 12px;
+            font-size: 0.88rem; font-weight: 600;
+            z-index: 500; max-width: 90vw;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            animation: toastIn 0.3s ease;
+            text-align: center;
+        }
+        .toast.ok { background: linear-gradient(135deg, #22b573, #149a5a); }
+        .toast.warn { background: linear-gradient(135deg, #f0a020, #c07a00); }
+        .toast.error { background: linear-gradient(135deg, #e5484d, #b52a2f); }
+        @keyframes toastIn { from { opacity: 0; transform: translate(-50%, -10px); } to { opacity: 1; transform: translate(-50%, 0); } }
+
+        /* --- INFO BANNER --- */
+        .info-banner {
+            background: #fff8e1; border: 1px solid #ffe082;
+            border-left: 4px solid #ffa726;
+            padding: 12px 14px; border-radius: 10px;
+            font-size: 0.8rem; color: #6b4f00;
+            line-height: 1.45; margin-bottom: 14px;
+        }
+        .info-banner strong { color: #4a3600; }
+
+        .api-key-warn {
+            background: #fdecec; border: 1px solid #f5b5b7;
+            border-left: 4px solid #e5484d;
+            padding: 12px 14px; border-radius: 10px;
+            font-size: 0.82rem; color: #7a1c1f;
+            line-height: 1.5; margin-bottom: 14px;
+        }
+        .api-key-warn code {
+            background: #fff; padding: 2px 6px; border-radius: 4px;
+            font-family: ui-monospace, monospace; font-size: 0.78rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <header>
+        <div class="brand">
+            <!-- Pokébola SVG -->
+            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                <circle cx="50" cy="50" r="45" fill="#fff" stroke="#1a1a2e" stroke-width="5"/>
+                <path d="M5 50 A45 45 0 0 1 95 50 Z" fill="#ee1515"/>
+                <rect x="5" y="45" width="90" height="10" fill="#1a1a2e"/>
+                <circle cx="50" cy="50" r="16" fill="#fff" stroke="#1a1a2e" stroke-width="5"/>
+                <circle cx="50" cy="50" r="6" fill="#1a1a2e"/>
+            </svg>
+            <span><span class="pk-word">Poke</span><span class="blas-word">Blas</span></span>
+        </div>
+        <button class="top-btn" onclick="borrarTodo()" title="Borrar todo">🗑️</button>
+    </header>
+
+    <!-- VISTA INICIO -->
+    <section class="view active" id="view-inicio">
+        <h2>¡Hola, Entrenador! 👋</h2>
+        <p class="sub">Este es tu centro de comando Pokémon. Gestioná tu colección, escribí historias y batallá con tus cartas.</p>
+
+        <div class="progress-card" id="resumen-coleccion">
+            <div class="progress-pct">0%</div>
+            <div class="label">Cargando...</div>
+        </div>
+
+        <h3 style="margin-bottom: 10px; font-size: 1rem; color: var(--pk-dark);">🌟 Carta Destacada</h3>
+        <div class="featured-card" id="carta-destacada">
+            <p style="color:#888; padding: 20px;">Cargando...</p>
+        </div>
+    </section>
+
+    <!-- VISTA ÁLBUM -->
+    <section class="view" id="view-album">
+        <h2>Mi Álbum 📖</h2>
+        <p class="sub">Buscá cualquier carta de Pokémon y marcala como tuya con un toque.</p>
+
+        <div class="tabs">
+            <button class="tab active" id="tab-buscar" onclick="cambiarTab('buscar')">🔍 Buscar</button>
+            <button class="tab" id="tab-coleccion" onclick="cambiarTab('coleccion')">⭐ Mi Colección</button>
+        </div>
+
+        <div id="panel-buscar">
+            <div class="search-wrap">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-box" id="buscador"
+                       placeholder="Ej: Charizard, Pikachu, Mewtwo..."
+                       autocomplete="off">
+                <button class="search-clear" id="search-clear" onclick="limpiarBusqueda()">✕</button>
+            </div>
+            <div class="grid-container" id="album-grid">
+                <div class="empty-state">
+                    <div class="spinner"></div>
+                    <p>Buscando cartas...</p>
+                </div>
+            </div>
+            <button class="btn-load-more" id="btn-mas" onclick="cargarMas()" style="display:none;">➕ Cargar más cartas</button>
+        </div>
+
+        <div id="panel-coleccion" style="display:none;">
+            <div class="grid-container" id="coleccion-grid">
+                <div class="empty-state">
+                    <span class="big">📭</span>
+                    <p>Todavía no marcaste ninguna carta como tuya.<br>¡Andá a la pestaña Buscar y empezá!</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- VISTA HISTORIAS -->
+    <section class="view" id="view-historias">
+        <h2>Taller de Historias ✍️</h2>
+        <p class="sub">Elegí tus Pokémon y creá una aventura épica. Solo se puede elegir entre las cartas que ya tenés.</p>
+
+        <div class="form-group">
+            <label>1. Protagonista 1</label>
+            <select id="story-pokemon-1"></select>
+        </div>
+
+        <div class="form-group">
+            <label>2. Protagonista 2</label>
+            <select id="story-pokemon-2"></select>
+        </div>
+
+        <div class="form-group">
+            <label>3. ¿Dónde ocurre la historia?</label>
+            <input type="text" id="story-escenario" placeholder="Ej: El Bosque Verde, una cueva oscura...">
+        </div>
+
+        <div class="form-group">
+            <label>4. ¿Cuál es el problema o conflicto?</label>
+            <input type="text" id="story-conflicto" placeholder="Ej: Un Team Rocket robó una Pokébola...">
+        </div>
+
+        <div class="form-group">
+            <label>5. Escribí tu historia</label>
+            <textarea id="story-texto" placeholder="Había una vez..."></textarea>
+        </div>
+
+        <button class="btn-primary" onclick="guardarHistoria()">💾 Guardar Historia</button>
+
+        <div class="story-list" id="story-list"></div>
+    </section>
+
+    <!-- VISTA ARENA -->
+    <section class="view" id="view-arena">
+        <h2>Arena de Batalla ⚔️</h2>
+        <p class="sub">Seleccioná dos cartas de tu colección. El ganador se define por HP + bono de rareza.</p>
+
+        <div class="arena-slots">
+            <div class="arena-slot" id="slot-1" onclick="abrirSelector(1)">
+                <div class="placeholder">Elegir<br>Carta 1</div>
+            </div>
+            <div class="arena-slot" id="slot-2" onclick="abrirSelector(2)">
+                <div class="placeholder">Elegir<br>Carta 2</div>
+            </div>
+        </div>
+
+        <button class="btn-primary red" onclick="simularBatalla()">⚔️ ¡Iniciar Batalla!</button>
+
+        <div class="battle-result" id="battle-result"></div>
+    </section>
+
+    <!-- MODAL PARA SELECCIONAR CARTA EN ARENA -->
+    <div class="modal-overlay" id="modal-selector" onclick="if(event.target===this)cerrarSelector()">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Elegí una carta</h3>
+                <button class="close-modal" onclick="cerrarSelector()">✕</button>
+            </div>
+            <div class="modal-grid" id="modal-grid"></div>
+        </div>
+    </div>
+
+    <!-- NAVEGACIÓN INFERIOR -->
+    <nav class="bottom-nav">
+        <button class="nav-btn active" onclick="irA('inicio')" id="nav-inicio">
+            <span>🏠</span> Inicio
+        </button>
+        <button class="nav-btn" onclick="irA('album')" id="nav-album">
+            <span>📖</span> Álbum
+        </button>
+        <button class="nav-btn" onclick="irA('historias')" id="nav-historias">
+            <span>✍️</span> Historias
+        </button>
+        <button class="nav-btn" onclick="irA('arena')" id="nav-arena">
+            <span>⚔️</span> Arena
+        </button>
+    </nav>
+
+    <script>
+        // ============================================================
+        //  ⚙️  CONFIGURACIÓN DE LA API DE POKÉMON TCG
+        // ============================================================
+        //  1. Andá a https://dev.pokemontcg.io
+        //  2. Creá una cuenta gratis y generá tu API Key
+        //  3. Pegala abajo entre las comillas
+        //
+        //  ⚠️ IMPORTANTE: No subas tu API Key a GitHub público.
+        // ============================================================
+        const API_KEY = ''; // ← PEGÁ TU API KEY ACÁ
+        const API_URL = 'https://api.pokemontcg.io/v2/cards';
+        const PAGE_SIZE = 30;
+
+        // ============================================================
+        //  ESTADO GLOBAL
+        // ============================================================
+        let BASE_DATOS = [];           // Cartas actualmente cargadas desde la API
+        let paginaActual = 1;
+        let hayMasCartas = false;
+        let cargando = false;
+        let busquedaActual = '';
+        let tabActual = 'buscar';
+
+        // Mis cartas: objeto { id: {datos de la carta} } guardado en localStorage
+        let misCartas = JSON.parse(localStorage.getItem('pokeblasColeccion')) || {};
+
+        // Historias guardadas
+        let historias = JSON.parse(localStorage.getItem('pokeblasHistorias')) || [];
+
+        // Arena
+        let slot1Seleccionado = null;
+        let slot2Seleccionado = null;
+        let slotActivo = null;
+
+        // ============================================================
+        //  NAVEGACIÓN
+        // ============================================================
+        function irA(vista) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById('view-' + vista).classList.add('active');
+            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById('nav-' + vista).classList.add('active');
+            window.scrollTo(0, 0);
+
+            if (vista === 'inicio') renderInicio();
+            if (vista === 'album') renderAlbum();
+            if (vista === 'historias') renderHistorias();
+            if (vista === 'arena') renderArenaSlots();
+        }
+
+        // ============================================================
+        //  TOAST
+        // ============================================================
+        function toast(msg, tipo = '') {
+            const t = document.createElement('div');
+            t.className = 'toast ' + tipo;
+            t.textContent = msg;
+            document.body.appendChild(t);
+            setTimeout(() => t.remove(), 2800);
+        }
+
+        // ============================================================
+        //  CARGA DE CARTAS DESDE LA API
+        // ============================================================
+        async function cargarCartasDesdeAPI(query = '', page = 1, append = false) {
+            if (cargando) return;
+            cargando = true;
+
+            const grid = document.getElementById('album-grid');
+            if (!append) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <div class="spinner"></div>
+                        <p>Buscando cartas...</p>
+                    </div>`;
+            }
+
+            try {
+                // Construir la URL
+                let url = `${API_URL}?page=${page}&pageSize=${PAGE_SIZE}&orderBy=-set.releaseDate`;
+                if (query) {
+                    // Búsqueda por nombre con comodines
+                    url += `&q=name:*${encodeURIComponent(query)}*`;
+                }
+
+                // Headers (con API Key si está configurada)
+                const headers = { 'Content-Type': 'application/json' };
+                if (API_KEY) headers['X-Api-Key'] = API_KEY;
+
+                const response = await fetch(url, { headers });
+
+                if (!response.ok) {
+                    throw new Error(`Error ${response.status}: ${response.statusText}`);
+                }
+
+                const json = await response.json();
+
+                // Mapear respuesta al formato interno
+                const cartasMapeadas = (json.data || []).map(carta => ({
+                    id: carta.id,
+                    nombre: carta.name,
+                    tipo: carta.types ? carta.types.join(' / ') : 'Normal',
+                    hp: carta.hp ? parseInt(carta.hp, 10) : 0,
+                    rareza: carta.rarity || 'Común',
+                    img: carta.images?.small || '',
+                    imgGrande: carta.images?.large || '',
+                    set: carta.set?.name || '',
+                    numero: carta.number || ''
+                }));
+
+                if (append) {
+                    BASE_DATOS = BASE_DATOS.concat(cartasMapeadas);
+                } else {
+                    BASE_DATOS = cartasMapeadas;
+                }
+
+                hayMasCartas = cartasMapeadas.length === PAGE_SIZE;
+
+                renderAlbum();
+
+            } catch (error) {
+                console.error('Error al cargar cartas:', error);
+                if (!append) {
+                    grid.innerHTML = `
+                        <div class="empty-state">
+                            <span class="big">😵</span>
+                            <p><strong>No se pudieron cargar las cartas.</strong></p>
+                            <p style="font-size:0.78rem; color:#999; margin-top:8px;">${error.message}</p>
+                            <p style="font-size:0.78rem; color:#999; margin-top:8px;">Verificá tu conexión o la API Key.</p>
+                        </div>`;
+                } else {
+                    toast('No se pudieron cargar más cartas', 'error');
+                }
+            } finally {
+                cargando = false;
+                actualizarBotonMas();
+            }
+        }
+
+        function actualizarBotonMas() {
+            const btn = document.getElementById('btn-mas');
+            if (!btn) return;
+            btn.style.display = (hayMasCartas && tabActual === 'buscar') ? 'block' : 'none';
+            btn.disabled = cargando;
+            btn.textContent = cargando ? '⏳ Cargando...' : '➕ Cargar más cartas';
+        }
+
+        function cargarMas() {
+            if (cargando || !hayMasCartas) return;
+            paginaActual++;
+            cargarCartasDesdeAPI(busquedaActual, paginaActual, true);
+        }
+
+        // ============================================================
+        //  BUSCADOR CON DEBOUNCE
+        // ============================================================
+        let debounceTimer = null;
+        document.addEventListener('DOMContentLoaded', () => {
+            const buscador = document.getElementById('buscador');
+            const clearBtn = document.getElementById('search-clear');
+
+            buscador.addEventListener('input', () => {
+                const val = buscador.value.trim();
+                clearBtn.classList.toggle('show', val.length > 0);
+
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    busquedaActual = val;
+                    paginaActual = 1;
+                    cargarCartasDesdeAPI(val, 1, false);
+                }, 500); // 500ms de espera tras dejar de escribir
+            });
+
+            // Carga inicial: cartas recientes
+            cargarCartasDesdeAPI('', 1, false);
+
+            // Inicializar resto de vistas
+            renderInicio();
+            renderHistorias();
+        });
+
+        function limpiarBusqueda() {
+            document.getElementById('buscador').value = '';
+            document.getElementById('search-clear').classList.remove('show');
+            busquedaActual = '';
+            paginaActual = 1;
+            cargarCartasDesdeAPI('', 1, false);
+        }
+
+        // ============================================================
+        //  TABS DEL ÁLBUM
+        // ============================================================
+        function cambiarTab(tab) {
+            tabActual = tab;
+            document.getElementById('tab-buscar').classList.toggle('active', tab === 'buscar');
+            document.getElementById('tab-coleccion').classList.toggle('active', tab === 'coleccion');
+            document.getElementById('panel-buscar').style.display = tab === 'buscar' ? 'block' : 'none';
+            document.getElementById('panel-coleccion').style.display = tab === 'coleccion' ? 'block' : 'none';
+            renderAlbum();
+        }
+
+        // ============================================================
+        //  RENDER: ÁLBUM
+        // ============================================================
+        function renderAlbum() {
+            if (tabActual === 'coleccion') {
+                renderColeccion();
+                return;
+            }
+
+            const grid = document.getElementById('album-grid');
+            const cartas = BASE_DATOS;
+
+            if (!cartas.length) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <span class="big">🔍</span>
+                        <p>No se encontraron cartas para esa búsqueda.</p>
+                    </div>`;
+                actualizarBotonMas();
+                return;
+            }
+
+            grid.innerHTML = cartas.map(carta => renderCardHTML(carta)).join('');
+            grid.querySelectorAll('[data-toggle-id]').forEach(el => {
+                el.onclick = () => toggleCarta(el.dataset.toggleId);
+            });
+            actualizarBotonMas();
+        }
+
+        function renderColeccion() {
+            const grid = document.getElementById('coleccion-grid');
+            const cartas = Object.values(misCartas);
+
+            if (!cartas.length) {
+                grid.innerHTML = `
+                    <div class="empty-state">
+                        <span class="big">📭</span>
+                        <p>Todavía no marcaste ninguna carta como tuya.<br>¡Andá a la pestaña <b>Buscar</b> y empezá!</p>
+                    </div>`;
+                return;
+            }
+
+            // Ordenar alfabéticamente
+            cartas.sort((a, b) => a.nombre.localeCompare(b.nombre));
+            grid.innerHTML = cartas.map(carta => renderCardHTML(carta, true)).join('');
+            grid.querySelectorAll('[data-toggle-id]').forEach(el => {
+                el.onclick = () => toggleCarta(el.dataset.toggleId);
+            });
+        }
+
+        function renderCardHTML(carta, forzarOwned = false) {
+            const owned = forzarOwned || !!misCartas[carta.id];
+            const rarezaCorta = (carta.rareza || '').replace(/^(Rare |Rare )/i, '').slice(0, 18);
+            return `
+                <div class="card-item ${owned ? 'owned' : ''}" data-toggle-id="${carta.id}">
+                    <img src="${carta.img}" alt="${escapeHTML(carta.nombre)}" loading="lazy"
+                         onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 245 342%22><rect fill=%22%23f0f0f0%22 width=%22245%22 height=%22342%22/><text x=%22122%22 y=%22180%22 font-size=%2240%22 text-anchor=%22middle%22>❓</text></svg>'">
+                    <div class="card-info">
+                        <h3>${escapeHTML(carta.nombre)}</h3>
+                        <p>${escapeHTML(carta.tipo)} · ${carta.hp} HP</p>
+                        ${rarezaCorta ? `<span class="rarity">${escapeHTML(rarezaCorta)}</span>` : ''}
+                    </div>
+                </div>`;
+        }
+
+        // ============================================================
+        //  MARCAR / DESMARCAR CARTA
+        // ============================================================
+        function toggleCarta(id) {
+            if (misCartas[id]) {
+                delete misCartas[id];
+                toast('Carta quitada de tu colección');
+            } else {
+                const carta = BASE_DATOS.find(c => c.id === id);
+                if (!carta) return;
+                misCartas[id] = carta;
+                toast('¡Carta agregada! ⭐', 'ok');
+            }
+            localStorage.setItem('pokeblasColeccion', JSON.stringify(misCartas));
+
+            if (tabActual === 'buscar') renderAlbum();
+            else renderColeccion();
+
+            renderInicio();
+            renderHistorias();
+        }
+
+        // ============================================================
+        //  RENDER: INICIO
+        // ============================================================
+        function renderInicio() {
+            const total = Object.keys(misCartas).length;
+
+            // Estimamos un total "conocido" para el porcentaje
+            // (la API tiene miles de cartas, así que usamos un número simbólico)
+            const TOTAL_MUNDO = 20000;
+            const porcentaje = Math.min(100, Math.round((total / TOTAL_MUNDO) * 100 * 10) / 10);
+
+            document.getElementById('resumen-coleccion').innerHTML = `
+                <div class="progress-pct">${porcentaje}%</div>
+                <div class="label">del mundo Pokémon conocido</div>
+                <div class="progress-bar-bg">
+                    <div class="progress-bar-fill" style="width:${Math.min(100, porcentaje * 20)}%"></div>
+                </div>
+                <div class="stat-row">
+                    <div>
+                        <b>${total}</b>
+                        <small>Cartas tuyas</small>
+                    </div>
+                    <div>
+                        <b>${historias.length}</b>
+                        <small>Historias</small>
+                    </div>
+                    <div>
+                        <b>${porcentaje}%</b>
+                        <small>Del total</small>
+                    </div>
+                </div>
+            `;
+
+            const cartasObtenidas = Object.values(misCartas);
+            const contenedor = document.getElementById('carta-destacada');
+
+            if (!cartasObtenidas.length) {
+                contenedor.innerHTML = `<p style="color:#888; padding: 20px;">Cuando agregues cartas a tu colección, van a aparecer acá.</p>`;
+                return;
+            }
+
+            const random = cartasObtenidas[Math.floor(Math.random() * cartasObtenidas.length)];
+            contenedor.innerHTML = `
+                <img src="${random.img}" alt="${escapeHTML(random.nombre)}" loading="lazy">
+                <h3>${escapeHTML(random.nombre)}</h3>
+                <p>${escapeHTML(random.tipo)} · ${random.hp} HP · ${escapeHTML(random.rareza)}</p>
+                ${random.set ? `<p style="font-size:0.75rem; color:#aaa; margin-top:4px;">${escapeHTML(random.set)} #${random.numero}</p>` : ''}
+            `;
+        }
+
+        // ============================================================
+        //  RENDER: HISTORIAS
+        // ============================================================
+        function renderHistorias() {
+            const opciones = Object.values(misCartas).sort((a, b) => a.nombre.localeCompare(b.nombre));
+            const htmlOpciones = opciones.map(c => `<option value="${c.id}">${escapeHTML(c.nombre)}</option>`).join('');
+
+            const s1 = document.getElementById('story-pokemon-1');
+            const s2 = document.getElementById('story-pokemon-2');
+            const val1 = s1.value, val2 = s2.value;
+
+            s1.innerHTML = htmlOpciones || '<option value="">(No tenés cartas todavía)</option>';
+            s2.innerHTML = htmlOpciones || '<option value="">(No tenés cartas todavía)</option>';
+
+            if (val1 && misCartas[val1]) s1.value = val1;
+            if (val2 && misCartas[val2]) s2.value = val2;
+
+            const lista = document.getElementById('story-list');
+            if (!historias.length) {
+                lista.innerHTML = `
+                    <div class="empty-state" style="padding:30px 10px;">
+                        <span class="big">📚</span>
+                        <p>Todavía no escribiste ninguna historia.</p>
+                    </div>`;
+            } else {
+                lista.innerHTML = historias.slice().reverse().map(h => `
+                    <div class="story-card">
+                        <button class="del-story" onclick="borrarHistoria(${h.id})">🗑️</button>
+                        <h4>📖 ${escapeHTML(h.titulo)}</h4>
+                        <p>${escapeHTML(h.texto)}</p>
+                        <span class="meta">Protagonistas: ${escapeHTML(h.pokemon1)} y ${escapeHTML(h.pokemon2)} · ${h.fecha}</span>
+                    </div>
+                `).join('');
+            }
+        }
+
+        function guardarHistoria() {
+            const p1 = document.getElementById('story-pokemon-1').value;
+            const p2 = document.getElementById('story-pokemon-2').value;
+            const escenario = document.getElementById('story-escenario').value.trim();
+            const conflicto = document.getElementById('story-conflicto').value.trim();
+            const texto = document.getElementById('story-texto').value.trim();
+
+            if (!p1 || !p2) {
+                toast('¡Elegí dos Pokémon!', 'warn');
+                return;
+            }
+            if (!texto) {
+                toast('¡Escribí tu historia!', 'warn');
+                return;
+            }
+            if (p1 === p2) {
+                toast('Elegí dos Pokémon distintos', 'warn');
+                return;
+            }
+
+            const carta1 = misCartas[p1].nombre;
+            const carta2 = misCartas[p2].nombre;
+
+            historias.push({
+                id: Date.now(),
+                titulo: `${carta1} y ${carta2} en ${escenario || 'una aventura'}`,
+                pokemon1: carta1,
+                pokemon2: carta2,
+                escenario,
+                conflicto,
+                texto,
+                fecha: new Date().toLocaleDateString('es-AR')
+            });
+
+            localStorage.setItem('pokeblasHistorias', JSON.stringify(historias));
+
+            document.getElementById('story-escenario').value = '';
+            document.getElementById('story-conflicto').value = '';
+            document.getElementById('story-texto').value = '';
+
+            renderHistorias();
+            renderInicio();
+            toast('¡Historia guardada! 🌟', 'ok');
+        }
+
+        function borrarHistoria(id) {
+            if (!confirm('¿Borrar esta historia?')) return;
+            historias = historias.filter(h => h.id !== id);
+            localStorage.setItem('pokeblasHistorias', JSON.stringify(historias));
+            renderHistorias();
+            renderInicio();
+        }
+
+        // ============================================================
+        //  RENDER: ARENA
+        // ============================================================
+        function renderArenaSlots() {
+            if (slot1Seleccionado) pintarSlot(1, slot1Seleccionado);
+            if (slot2Seleccionado) pintarSlot(2, slot2Seleccionado);
+        }
+
+        function pintarSlot(n, carta) {
+            const slot = document.getElementById('slot-' + n);
+            slot.innerHTML = `
+                <img src="${carta.img}" alt="${escapeHTML(carta.nombre)}">
+                <div class="slot-name">${escapeHTML(carta.nombre)}</div>
+            `;
+            slot.classList.add('selected');
+        }
+
+        function abrirSelector(slot) {
+            slotActivo = slot;
+            const modal = document.getElementById('modal-selector');
+            const grid = document.getElementById('modal-grid');
+            grid.innerHTML = '';
+
+            const cartas = Object.values(misCartas).sort((a, b) => a.nombre.localeCompare(b.nombre));
+
+            if (!cartas.length) {
+                grid.innerHTML = `
+                    <div class="empty-state" style="grid-column:1/-1;">
+                        <span class="big">📭</span>
+                        <p>No tenés cartas en tu colección.<br>¡Andá al Álbum y marcá algunas!</p>
+                    </div>`;
+            } else {
+                cartas.forEach(carta => {
+                    const div = document.createElement('div');
+                    div.className = 'card-item owned';
+                    div.innerHTML = `<img src="${carta.img}" alt="${escapeHTML(carta.nombre)}" loading="lazy">`;
+                    div.onclick = () => seleccionarParaArena(carta);
+                    grid.appendChild(div);
+                });
+            }
+            modal.classList.add('show');
+        }
+
+        function cerrarSelector() {
+            document.getElementById('modal-selector').classList.remove('show');
+        }
+
+        function seleccionarParaArena(carta) {
+            if (slotActivo === 1) slot1Seleccionado = carta;
+            else slot2Seleccionado = carta;
+            pintarSlot(slotActivo, carta);
+            cerrarSelector();
+        }
+
+        function simularBatalla() {
+            const resultDiv = document.getElementById('battle-result');
+
+            if (!slot1Seleccionado || !slot2Seleccionado) {
+                toast('¡Elegí dos cartas para batallar!', 'warn');
+                return;
+            }
+
+            const bonus = { 'Común': 0, 'Uncommon': 10, 'Rara': 20, 'Rare': 20, 'Rare Holo': 30, 'Ultra Rara': 50, 'Rare Ultra': 50, 'Rare Secret': 60, 'Rare Rainbow': 70 };
+            const bono1 = bonus[slot1Seleccionado.rareza] ?? 15;
+            const bono2 = bonus[slot2Seleccionado.rareza] ?? 15;
+            const puntaje1 = (slot1Seleccionado.hp || 0) + bono1;
+            const puntaje2 = (slot2Seleccionado.hp || 0) + bono2;
+
+            let mensaje, ganador;
+            if (puntaje1 > puntaje2) {
+                ganador = slot1Seleccionado;
+                mensaje = `¡<b>${escapeHTML(ganador.nombre)}</b> venció a ${escapeHTML(slot2Seleccionado.nombre)}!`;
+            } else if (puntaje2 > puntaje1) {
+                ganador = slot2Seleccionado;
+                mensaje = `¡<b>${escapeHTML(ganador.nombre)}</b> venció a ${escapeHTML(slot1Seleccionado.nombre)}!`;
+            } else {
+                mensaje = `¡Empate! Ambos tienen <b>${puntaje1} puntos</b> de poder.`;
+            }
+
+            resultDiv.innerHTML = `
+                <h3>🏆 Resultado</h3>
+                <p>${mensaje}</p>
+                <div class="score">
+                    ${escapeHTML(slot1Seleccionado.nombre)}: ${slot1Seleccionado.hp} HP + ${bono1} bono = <b>${puntaje1}</b><br>
+                    ${escapeHTML(slot2Seleccionado.nombre)}: ${slot2Seleccionado.hp} HP + ${bono2} bono = <b>${puntaje2}</b>
+                </div>
+                <button class="btn-secondary" onclick="resetArena()">🔄 Nueva Batalla</button>
+            `;
+            resultDiv.classList.add('show');
+        }
+
+        function resetArena() {
+            slot1Seleccionado = null;
+            slot2Seleccionado = null;
+            document.getElementById('slot-1').innerHTML = '<div class="placeholder">Elegir<br>Carta 1</div>';
+            document.getElementById('slot-2').innerHTML = '<div class="placeholder">Elegir<br>Carta 2</div>';
+            document.getElementById('slot-1').classList.remove('selected');
+            document.getElementById('slot-2').classList.remove('selected');
+            document.getElementById('battle-result').classList.remove('show');
+        }
+
+        // ============================================================
+        //  BORRAR TODO
+        // ============================================================
+        function borrarTodo() {
+            if (!confirm('¿Borrar TODA tu colección e historias? Esta acción no se puede deshacer.')) return;
+            localStorage.removeItem('pokeblasColeccion');
+            localStorage.removeItem('pokeblasHistorias');
+            misCartas = {};
+            historias = [];
+            slot1Seleccionado = null;
+            slot2Seleccionado = null;
+            renderInicio();
+            renderAlbum();
+            renderHistorias();
+            resetArena();
+            toast('Datos borrados. ¡Empezás de cero!', 'ok');
+        }
+
+        // ============================================================
+        //  UTILIDADES
+        // ============================================================
+        function escapeHTML(s) {
+            return String(s ?? '').replace(/[&<>"']/g, c => ({
+                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+            }[c]));
+        }
+
+        // Cerrar modal con tecla ESC
+        document.addEventListener('keydown', e => {
+            if (e.key === 'Escape') cerrarSelector();
+        });
+    </script>
+</body>
+</html>

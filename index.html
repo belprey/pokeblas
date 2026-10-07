@@ -917,6 +917,53 @@ h2 .emo { font-size: 1.4rem; margin-right: 4px; }
     <label>Protagonista 2</label>
     <select id="story-p2"></select>
     <label>¿Dónde pasa?</label>
+<select id="story-esc">
+  <optgroup label="🌳 Bosques y naturaleza">
+    <option value="el Bosque Verde">🌲 Bosque Verde</option>
+    <option value="el Bosque Eterna">🍃 Bosque Eterna</option>
+    <option value="los Jardines de Floaroma">🌺 Jardines de Floaroma</option>
+    <option value="el Valle de Sinnoh">🏞️ Valle de Sinnoh</option>
+    <option value="la Selva de Alola">🌴 Selva de Alola</option>
+  </optgroup>
+  <optgroup label="🏙️ Ciudades y pueblos">
+    <option value="Pueblo Paleta">🏘️ Pueblo Paleta</option>
+    <option value="Ciudad Verde">🏙️ Ciudad Verde</option>
+    <option value="Ciudad Azulona">🏢 Ciudad Azulona</option>
+    <option value="Ciudad Trigal">🌃 Ciudad Trigal</option>
+    <option value="Ciudad Porcelana">🎡 Ciudad Porcelana</option>
+    <option value="Pueblo Lavanda">👻 Pueblo Lavanda</option>
+  </optgroup>
+  <optgroup label="⛰️ Montañas y cuevas">
+    <option value="el Monte Moon">⛰️ Monte Moon</option>
+    <option value="el Monte Cenizo">🌋 Monte Cenizo</option>
+    <option value="la Cueva Celeste">🕳️ Cueva Celeste</option>
+    <option value="el Monte Corona">❄️ Monte Corona</option>
+    <option value="la Cueva Ígnea">🔥 Cueva Ígnea</option>
+  </optgroup>
+  <optgroup label="🌊 Mares y playas">
+    <option value="las Islas Espuma">🌊 Islas Espuma</option>
+    <option value="la Playa Arena">🏖️ Playa Arena</option>
+    <option value="el Puerto Olivo">🐚 Puerto Olivo</option>
+    <option value="la Ruta 21">🌅 Ruta 21</option>
+    <option value="el Fondo del Mar">🐟 Fondo del Mar</option>
+  </optgroup>
+  <optgroup label="🏟️ Lugares especiales">
+    <option value="la Liga Pokémon">🏆 Liga Pokémon</option>
+    <option value="la Academia Pokémon">🎓 Academia Pokémon</option>
+    <option value="un Centro Pokémon">🏥 Centro Pokémon</option>
+    <option value="una Tienda Pokémon">🏪 Tienda Pokémon</option>
+    <option value="el escondite del Team Rocket">🚀 Escondite del Team Rocket</option>
+    <option value="la Torre Batalla">🏰 Torre Batalla</option>
+    <option value="el espacio exterior">🌌 El espacio exterior</option>
+    <option value="el mundo de los sueños">💭 El mundo de los sueños</option>
+    <option value="una dimensión misteriosa">🌀 Una dimensión misteriosa</option>
+  </optgroup>
+  <optgroup label="✏️ Personalizado">
+    <option value="otro">✏️ Otro lugar (escribilo vos)</option>
+  </optgroup>
+</select>
+<input type="text" id="story-esc-custom" placeholder="Escribí el lugar acá..." style="display:none;">
+    <label>¿Dónde pasa?</label>
     <input type="text" id="story-esc" placeholder="Ej: Bosque Verde...">
     <label>¿Cuál es el problema?</label>
     <input type="text" id="story-con" placeholder="Ej: Un Team Rocket robó...">
@@ -1483,7 +1530,18 @@ document.addEventListener('DOMContentLoaded', () => {
   renderHome();
   updateHUD();
   renderHistorias();
-});
+  // Mostrar/ocultar input custom cuando elige "Otro lugar"
+  const selEsc = document.getElementById('story-esc');
+  const inputEscCustom = document.getElementById('story-esc-custom');
+  selEsc.addEventListener('change', () => {
+    if (selEsc.value === 'otro') {
+      inputEscCustom.style.display = 'block';
+      inputEscCustom.focus();
+    } else {
+      inputEscCustom.style.display = 'none';
+      inputEscCustom.value = '';
+    }
+  });
 
 function limpiarBusqueda() {
   document.getElementById('buscador').value = '';
@@ -1633,14 +1691,24 @@ function renderHistorias() {
 function guardarHistoria() {
   const p1 = document.getElementById('story-p1').value;
   const p2 = document.getElementById('story-p2').value;
-  const esc = document.getElementById('story-esc').value.trim();
+  
+  // Leer el lugar (con soporte para "Otro")
+  let esc = document.getElementById('story-esc').value;
+  if (esc === 'otro') {
+    esc = document.getElementById('story-esc-custom').value.trim();
+    if (!esc) { toast('Escribí el lugar que inventaste'); return; }
+  }
+  
   const con = document.getElementById('story-con').value.trim();
   const txt = document.getElementById('story-txt').value.trim();
+
   if (!p1 || !p2) { toast('Elegí dos Pokémon'); return; }
   if (p1 === p2) { toast('Elegí dos distintos'); return; }
   if (!txt) { toast('Escribí tu historia'); return; }
+
   const c1 = misCartas[p1]?.nombre || '?';
   const c2 = misCartas[p2]?.nombre || '?';
+
   historias.push({
     id: Date.now(),
     titulo: `${c1} y ${c2} en ${esc || 'una aventura'}`,
@@ -1648,9 +1716,14 @@ function guardarHistoria() {
     fecha: new Date().toLocaleDateString('es-AR')
   });
   localStorage.setItem(KEY.historias, JSON.stringify(historias));
-  document.getElementById('story-esc').value = '';
+
+  // Limpiar formulario
   document.getElementById('story-con').value = '';
   document.getElementById('story-txt').value = '';
+  document.getElementById('story-esc-custom').value = '';
+  document.getElementById('story-esc-custom').style.display = 'none';
+  document.getElementById('story-esc').value = 'el Bosque Verde'; // volver al primero
+
   SND.success();
   gainXP(20);
   gainCoins(8);
@@ -1660,7 +1733,7 @@ function guardarHistoria() {
   renderHistorias();
   renderLogros();
   renderHome();
-}
+}  
 function borrarHistoria(id) {
   if (!confirm('¿Borrar historia?')) return;
   historias = historias.filter(h => h.id !== id);

@@ -4,43 +4,49 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="theme-color" content="#ee1515">
-<title>PokeBlas ⚡ Tu aventura Pokémon</title>
+<title>PokeBlas ⚡ Aventura Pokémon</title>
 <style>
+/* ============================================================
+   SISTEMA DE DISEÑO
+   ============================================================ */
 :root {
   --red: #ff3b30; --red-d: #d61e1e;
   --orange: #ff6b35;
   --blue: #3b4cca; --blue-l: #5a6ee8;
   --yellow: #ffcb05; --gold: #ffb800;
-  --green: #22c55e;
+  --green: #22c55e; --emerald: #10b981;
   --purple: #a855f7;
   --pink: #ff5c8a;
   --dark: #0a0b1e; --dark-2: #1a1d3a; --dark-3: #242850;
   --light: #f0f3ff; --white: #fff;
+  --text: #16223a; --muted: #6b7a90;
+  --shadow-sm: 0 4px 12px rgba(10,11,30,.08);
   --shadow: 0 10px 30px rgba(10,11,30,.15);
   --shadow-lg: 0 20px 60px rgba(10,11,30,.3);
   --r: 18px; --r-sm: 12px;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-html, body { overscroll-behavior: none; }
+html, body { overscroll-behavior: none; height: 100%; }
 body {
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   background: var(--light);
-  color: var(--dark);
-  padding-bottom: 95px;
+  color: var(--text);
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
+  padding-bottom: 90px;
 }
 body::before {
-  content: '';
-  position: fixed; inset: 0;
+  content: ''; position: fixed; inset: 0;
   background:
-    radial-gradient(circle at 10% 10%, rgba(255,59,48,.08), transparent 40%),
-    radial-gradient(circle at 90% 20%, rgba(59,76,202,.08), transparent 40%),
-    radial-gradient(circle at 50% 90%, rgba(255,203,5,.08), transparent 40%);
+    radial-gradient(circle at 10% 10%, rgba(255,59,48,.06), transparent 45%),
+    radial-gradient(circle at 90% 20%, rgba(59,76,202,.06), transparent 45%),
+    radial-gradient(circle at 50% 90%, rgba(255,203,5,.06), transparent 45%);
   z-index: -1; pointer-events: none;
 }
 
-/* ============ HUD SUPERIOR ============ */
+/* ============================================================
+   HUD SUPERIOR
+   ============================================================ */
 .hud {
   position: sticky; top: 0; z-index: 90;
   background: linear-gradient(135deg, var(--red), var(--red-d));
@@ -48,14 +54,8 @@ body::before {
   color: white;
   box-shadow: 0 4px 20px rgba(238,21,21,.4);
 }
-.hud-top {
-  display: flex; align-items: center; justify-content: space-between;
-  gap: 10px; margin-bottom: 6px;
-}
-.hud-brand {
-  display: flex; align-items: center; gap: 8px;
-  font-weight: 900; font-size: 1.05rem; letter-spacing: -0.3px;
-}
+.hud-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
+.hud-brand { display: flex; align-items: center; gap: 8px; font-weight: 900; font-size: 1.05rem; letter-spacing: -0.3px; }
 .hud-brand svg { width: 26px; height: 26px; filter: drop-shadow(0 2px 4px rgba(0,0,0,.35)); }
 .hud-brand .poke { color: var(--yellow); text-shadow: 1px 1px 0 rgba(0,0,0,.4); }
 .hud-brand .blas { color: white; text-shadow: 1px 1px 0 rgba(0,0,0,.4); }
@@ -70,7 +70,7 @@ body::before {
 }
 .stat-chip.coins { background: linear-gradient(135deg, #ffd700, #ffb800); color: #4a3600; }
 .stat-chip.fire { background: linear-gradient(135deg, #ff6b35, #d61e1e); }
-
+.stat-chip.mute { cursor: pointer; padding: 4px 8px; }
 .xp-row { display: flex; align-items: center; gap: 8px; }
 .level-badge {
   background: white; color: var(--red);
@@ -80,17 +80,10 @@ body::before {
   box-shadow: 0 4px 12px rgba(0,0,0,.25);
   flex: none;
 }
-.xp-bar-bg {
-  flex: 1; height: 10px; background: rgba(0,0,0,.25);
-  border-radius: 99px; overflow: hidden;
-  box-shadow: inset 0 2px 4px rgba(0,0,0,.2);
-}
+.xp-bar-bg { flex: 1; height: 10px; background: rgba(0,0,0,.25); border-radius: 99px; overflow: hidden; box-shadow: inset 0 2px 4px rgba(0,0,0,.2); }
 .xp-bar-fill {
-  height: 100%;
-  background: linear-gradient(90deg, #ffd700, #ffb800, #ff6b35);
-  border-radius: 99px;
-  transition: width 0.6s cubic-bezier(.4,0,.2,1);
-  box-shadow: 0 0 12px rgba(255,203,5,.8);
+  height: 100%; background: linear-gradient(90deg, #ffd700, #ffb800, #ff6b35);
+  border-radius: 99px; transition: width 0.6s cubic-bezier(.4,0,.2,1);
   position: relative; overflow: hidden;
 }
 .xp-bar-fill::after {
@@ -101,164 +94,174 @@ body::before {
 @keyframes shine { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
 .xp-text { font-size: 0.7rem; font-weight: 800; opacity: .9; min-width: 55px; text-align: right; }
 
-/* ============ VISTAS ============ */
-.view { display: none; padding: 16px 14px; animation: viewIn 0.35s ease; }
+/* ============================================================
+   VISTAS
+   ============================================================ */
+.view { display: none; padding: 16px 14px; animation: viewIn 0.3s ease; }
 .view.active { display: block; }
-@keyframes viewIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
-
+@keyframes viewIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 h2 { font-size: 1.3rem; margin-bottom: 4px; letter-spacing: -0.5px; }
 h2 .emo { font-size: 1.4rem; margin-right: 4px; }
-.sub { font-size: 0.85rem; color: #666; margin-bottom: 16px; line-height: 1.4; }
+.sub { font-size: 0.85rem; color: var(--muted); margin-bottom: 16px; line-height: 1.4; }
 
-/* ============ BOTONES ============ */
+/* ============================================================
+   BOTONES
+   ============================================================ */
 .btn {
-  border: none; border-radius: 14px; padding: 14px 18px;
-  font-family: inherit; font-weight: 800; font-size: 0.95rem;
-  cursor: pointer; transition: transform 0.1s, box-shadow 0.2s;
-  display: inline-flex; align-items: center; justify-content: center;
-  gap: 8px;
+  border: none; border-radius: 14px; padding: 12px 18px;
+  font-family: inherit; font-weight: 800; font-size: 0.92rem;
+  cursor: pointer; transition: transform 0.1s;
+  display: inline-flex; align-items: center; justify-content: center; gap: 8px;
 }
 .btn:active { transform: scale(0.96); }
-.btn-primary {
-  background: linear-gradient(135deg, var(--blue), var(--blue-l));
-  color: white; width: 100%;
-  box-shadow: 0 8px 20px rgba(59,76,202,.35);
+.btn-primary { background: linear-gradient(135deg, var(--blue), var(--blue-l)); color: white; width: 100%; box-shadow: 0 8px 20px rgba(59,76,202,.35); }
+.btn-red { background: linear-gradient(135deg, var(--red), var(--red-d)); color: white; width: 100%; box-shadow: 0 8px 20px rgba(238,21,21,.4); }
+.btn-gold { background: linear-gradient(135deg, #ffd700, #ffb800); color: #4a3600; width: 100%; box-shadow: 0 8px 20px rgba(255,184,0,.4); }
+.btn-ghost { background: white; color: var(--blue); border: 2px solid #d8dffd; width: 100%; }
+.btn-sm { padding: 8px 14px; font-size: 0.82rem; width: auto; border-radius: 10px; }
+
+/* ============================================================
+   CARDS GENÉRICAS
+   ============================================================ */
+.card {
+  background: white; border-radius: var(--r); padding: 16px;
+  box-shadow: var(--shadow-sm); margin-bottom: 14px;
 }
-.btn-red {
-  background: linear-gradient(135deg, var(--red), var(--red-d));
-  color: white; width: 100%;
-  box-shadow: 0 8px 20px rgba(238,21,21,.4);
+.card h3 { font-size: 1rem; margin-bottom: 10px; display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.pill {
+  display: inline-block; padding: 3px 9px; border-radius: 99px;
+  font-size: 0.7rem; font-weight: 800; letter-spacing: .2px;
 }
-.btn-gold {
-  background: linear-gradient(135deg, #ffd700, #ffb800);
-  color: #4a3600; width: 100%;
-  box-shadow: 0 8px 20px rgba(255,184,0,.4);
+.pill.ok { background: #dbf3e5; color: #149a5a; }
+.pill.info { background: #dbf0f7; color: #1a86b8; }
+.pill.warn { background: #fef3dd; color: #a76a00; }
+.pill.danger { background: #fde9e9; color: #c92c32; }
+
+/* ============================================================
+   COMPAÑERO (BUDDY)
+   ============================================================ */
+.buddy-stage {
+  background: linear-gradient(160deg, #1a1d3a, #242850);
+  border-radius: var(--r); padding: 20px;
+  text-align: center; color: white;
+  box-shadow: var(--shadow);
+  position: relative; overflow: hidden;
+  margin-bottom: 14px;
 }
-.btn-ghost {
-  background: white; color: var(--blue);
-  border: 2px solid #d8dffd; width: 100%;
+.buddy-stage::before {
+  content: ''; position: absolute; inset: -50%;
+  background: conic-gradient(from 0deg, transparent 0%, rgba(255,203,5,.12) 20%, transparent 40%);
+  animation: rotate 10s linear infinite; pointer-events: none;
+}
+@keyframes rotate { to { transform: rotate(360deg); } }
+.buddy-inner { position: relative; z-index: 2; }
+.buddy-sprite-wrap {
+  position: relative; width: 180px; height: 180px;
+  margin: 0 auto 10px; display: flex; align-items: center; justify-content: center;
+  cursor: pointer; user-select: none;
+}
+.buddy-sprite-wrap img {
+  width: 160px; height: 160px; object-fit: contain;
+  filter: drop-shadow(0 15px 30px rgba(0,0,0,.5));
+  animation: float 3s ease-in-out infinite;
+  transition: transform 0.2s;
+}
+@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+.buddy-sprite-wrap.bounce img { animation: bounce 0.4s ease; }
+@keyframes bounce { 0%,100% { transform: scale(1); } 50% { transform: scale(1.15) translateY(-12px); } }
+.buddy-name { font-size: 1.4rem; font-weight: 900; letter-spacing: -0.5px; margin-bottom: 2px; }
+.buddy-info { font-size: 0.8rem; opacity: .75; margin-bottom: 14px; }
+.buddy-meters { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+.meter { text-align: left; }
+.meter-head { display: flex; justify-content: space-between; font-size: 0.72rem; font-weight: 800; margin-bottom: 4px; }
+.meter-bar { height: 8px; background: rgba(0,0,0,.3); border-radius: 99px; overflow: hidden; }
+.meter-bar > div { height: 100%; border-radius: 99px; transition: width 0.4s; }
+.meter.friend .meter-bar > div { background: linear-gradient(90deg, #ff5c8a, #ff9db1); }
+.meter.hunger .meter-bar > div { background: linear-gradient(90deg, #ffb800, #ffd54a); }
+.meter.hp .meter-bar > div { background: linear-gradient(90deg, #22c55e, #4ade80); }
+.meter.xp .meter-bar > div { background: linear-gradient(90deg, #5a6ee8, #8a9aee); }
+.buddy-actions { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
+.action-btn {
+  background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.15);
+  color: white; padding: 10px 6px; border-radius: 12px;
+  font-family: inherit; font-weight: 800; font-size: 0.72rem;
+  cursor: pointer; transition: 0.15s;
+  display: flex; flex-direction: column; align-items: center; gap: 2px;
+}
+.action-btn:active { transform: scale(0.94); background: rgba(255,255,255,.22); }
+.action-btn .ico { font-size: 1.3rem; }
+
+/* Corazones flotantes */
+.heart-float {
+  position: absolute; font-size: 1.5rem; pointer-events: none;
+  animation: heartUp 1.2s ease-out forwards;
+  z-index: 5;
+}
+@keyframes heartUp {
+  0% { opacity: 0; transform: translate(-50%, 0) scale(0.5); }
+  30% { opacity: 1; transform: translate(-50%, -30px) scale(1.2); }
+  100% { opacity: 0; transform: translate(-50%, -90px) scale(1); }
 }
 
-/* ============ TARJETAS DE MISIÓN ============ */
+/* ============================================================
+   MISIONES
+   ============================================================ */
 .mission-card {
-  background: white; border-radius: var(--r); padding: 14px;
-  box-shadow: var(--shadow); margin-bottom: 10px;
+  background: white; border-radius: var(--r-sm); padding: 12px;
+  box-shadow: var(--shadow-sm); margin-bottom: 10px;
   display: flex; align-items: center; gap: 12px;
-  border-left: 5px solid var(--blue);
-  transition: all 0.3s;
-  position: relative; overflow: hidden;
+  border-left: 4px solid var(--blue);
+  transition: 0.3s;
 }
 .mission-card.done { border-left-color: var(--green); background: linear-gradient(135deg, #f0fff5, #fff); }
-.mission-card.done::before {
-  content: '✓'; position: absolute; top: 8px; right: 12px;
-  color: var(--green); font-weight: 900; font-size: 1.4rem;
-}
-.mission-ico { font-size: 1.8rem; flex: none; }
+.mission-ico { font-size: 1.6rem; flex: none; }
 .mission-body { flex: 1; min-width: 0; }
-.mission-body strong { font-size: 0.92rem; display: block; margin-bottom: 4px; }
-.mission-progress {
-  background: #eee; height: 6px; border-radius: 99px; overflow: hidden; margin-bottom: 4px;
-}
-.mission-progress > div {
-  height: 100%; background: linear-gradient(90deg, var(--blue), var(--blue-l));
-  border-radius: 99px; transition: width 0.4s;
-}
-.mission-body small { font-size: 0.72rem; color: #888; font-weight: 700; }
+.mission-body strong { font-size: 0.85rem; display: block; margin-bottom: 4px; }
+.mission-progress { background: #eee; height: 5px; border-radius: 99px; overflow: hidden; margin-bottom: 3px; }
+.mission-progress > div { height: 100%; background: linear-gradient(90deg, var(--blue), var(--blue-l)); border-radius: 99px; transition: width 0.4s; }
+.mission-body small { font-size: 0.68rem; color: var(--muted); font-weight: 700; }
 .mission-reward {
   background: linear-gradient(135deg, #ffd700, #ffb800);
   color: #4a3600; padding: 4px 8px; border-radius: 8px;
-  font-size: 0.72rem; font-weight: 900; flex: none;
+  font-size: 0.7rem; font-weight: 900; flex: none;
 }
 
-/* ============ CARTA DESTACADA ============ */
-.featured-card {
-  background: linear-gradient(160deg, #1a1d3a, #242850);
-  border-radius: var(--r); padding: 22px 18px;
-  text-align: center; color: white;
-  box-shadow: var(--shadow-lg);
-  position: relative; overflow: hidden;
-  perspective: 1000px;
-}
-.featured-card::before {
-  content: ''; position: absolute; inset: -50%;
-  background: conic-gradient(from 0deg, transparent 0%, rgba(255,203,5,.15) 20%, transparent 40%);
-  animation: rotate 8s linear infinite; pointer-events: none;
-}
-@keyframes rotate { to { transform: rotate(360deg); } }
-.featured-inner { position: relative; z-index: 2; }
-.featured-card img {
-  width: 150px; border-radius: 10px;
-  box-shadow: 0 15px 40px rgba(0,0,0,.5), 0 0 30px rgba(255,203,5,.3);
-  margin-bottom: 12px;
-  animation: float 3s ease-in-out infinite;
-}
-@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
-.featured-card h3 { font-size: 1.15rem; margin-bottom: 4px; }
-.featured-card p { font-size: 0.82rem; opacity: .8; }
-.featured-card .star-label {
-  display: inline-block; margin-top: 10px;
-  background: linear-gradient(135deg, #ffd700, #ffb800);
-  color: #4a3600; padding: 5px 12px; border-radius: 99px;
-  font-size: 0.72rem; font-weight: 900; letter-spacing: 0.5px;
-}
-
-/* ============ SECCIÓN TÍTULO ============ */
-.section-title {
-  display: flex; align-items: center; justify-content: space-between;
-  margin: 20px 0 10px;
-}
-.section-title h3 { font-size: 1rem; letter-spacing: -0.3px; }
-.section-title .badge {
-  background: var(--blue); color: white;
-  padding: 3px 9px; border-radius: 99px;
-  font-size: 0.7rem; font-weight: 800;
-}
-
-/* ============ GRID DE CARTAS ============ */
-.grid-cards {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-  gap: 12px;
-}
+/* ============================================================
+   GRID DE CARTAS
+   ============================================================ */
+.grid-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
 .card-tile {
   background: white; border-radius: 14px; padding: 8px;
-  box-shadow: 0 4px 12px rgba(10,11,30,.08);
+  box-shadow: var(--shadow-sm);
   cursor: pointer;
-  transition: transform 0.15s, box-shadow 0.3s, border-color 0.3s;
+  transition: transform 0.15s, box-shadow 0.2s, border-color 0.2s;
   border: 3px solid transparent;
   position: relative; overflow: hidden;
-  animation: tileIn 0.4s cubic-bezier(.34,1.56,.64,1) backwards;
 }
-.card-tile:nth-child(n) { animation-delay: calc(var(--i, 0) * 30ms); }
-@keyframes tileIn { from { opacity: 0; transform: scale(0.7) translateY(20px); } to { opacity: 1; transform: none; } }
 .card-tile:active { transform: scale(0.95); }
 .card-tile img {
   width: 100%; border-radius: 8px; display: block;
   aspect-ratio: 245/342; object-fit: cover; background: #f0f0f0;
 }
-.card-tile.owned {
-  border-color: var(--gold);
-  box-shadow: 0 8px 24px rgba(255,184,0,.4), 0 0 0 1px rgba(255,184,0,.3);
-}
+.card-tile.owned { border-color: var(--gold); box-shadow: 0 6px 18px rgba(255,184,0,.35); }
 .card-tile.owned::after {
   content: '⭐'; position: absolute; top: 6px; right: 6px;
   width: 26px; height: 26px; background: white; border-radius: 50%;
-  display: grid; place-items: center;
-  font-size: 0.85rem; box-shadow: 0 3px 8px rgba(0,0,0,.25);
-  animation: popIn 0.3s cubic-bezier(.34,1.56,.64,1);
+  display: grid; place-items: center; font-size: 0.85rem;
+  box-shadow: 0 3px 8px rgba(0,0,0,.25);
 }
-@keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
 .card-tile .tile-info { padding: 4px 2px 0; }
 .card-tile h4 { font-size: 0.78rem; margin: 0 0 1px; line-height: 1.15; }
-.card-tile small { font-size: 0.66rem; color: #888; font-weight: 600; }
+.card-tile small { font-size: 0.66rem; color: var(--muted); font-weight: 600; }
 
-/* ============ BUSCADOR ============ */
+/* ============================================================
+   BUSCADOR
+   ============================================================ */
 .search-wrap { position: relative; margin-bottom: 14px; }
 .search-input {
-  width: 100%; padding: 14px 42px;
-  border: 2px solid #d8dffd; border-radius: 14px;
-  font-size: 0.95rem; font-family: inherit; outline: none;
-  background: white; transition: 0.2s; font-weight: 600;
+  width: 100%; padding: 13px 42px; border: 2px solid #d8dffd;
+  border-radius: 14px; font-size: 0.95rem; font-family: inherit;
+  outline: none; background: white; transition: 0.2s; font-weight: 600;
 }
 .search-input:focus { border-color: var(--blue); box-shadow: 0 0 0 4px rgba(59,76,202,.15); }
 .search-ico { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 1.1rem; }
@@ -269,550 +272,279 @@ h2 .emo { font-size: 1.4rem; margin-right: 4px; }
 }
 .search-x.show { display: grid; place-items: center; }
 
-/* ============ TABS ============ */
+/* ============================================================
+   TABS
+   ============================================================ */
 .tabs { display: flex; gap: 6px; margin-bottom: 14px; }
 .tab {
   flex: 1; background: white; border: 2px solid #e6ecff;
-  padding: 10px; border-radius: 12px; font-weight: 800;
-  font-size: 0.82rem; cursor: pointer; transition: 0.2s;
+  padding: 9px; border-radius: 12px; font-weight: 800;
+  font-size: 0.8rem; cursor: pointer; transition: 0.2s;
   font-family: inherit; color: #666;
 }
-.tab.active {
-  background: linear-gradient(135deg, var(--blue), var(--blue-l));
-  color: white; border-color: var(--blue);
-  box-shadow: 0 4px 12px rgba(59,76,202,.35);
-}
+.tab.active { background: linear-gradient(135deg, var(--blue), var(--blue-l)); color: white; border-color: var(--blue); box-shadow: 0 4px 12px rgba(59,76,202,.35); }
 
-/* ============ ESTADOS ============ */
-.empty-state {
-  grid-column: 1/-1;
-  text-align: center; padding: 50px 20px; color: #888;
-}
-.empty-state .big { font-size: 3.5rem; margin-bottom: 12px; display: block; animation: float 2.5s ease-in-out infinite; }
-.empty-state p { font-size: 0.9rem; line-height: 1.5; }
+/* ============================================================
+   ESTADOS VACÍOS
+   ============================================================ */
+.empty-state { grid-column: 1/-1; text-align: center; padding: 40px 20px; color: var(--muted); }
+.empty-state .big { font-size: 3rem; margin-bottom: 12px; display: block; animation: float 2.5s ease-in-out infinite; }
+.empty-state p { font-size: 0.88rem; line-height: 1.5; }
 .spinner {
-  width: 44px; height: 44px; margin: 0 auto 14px;
-  border: 4px solid rgba(255,59,48,.15);
-  border-top-color: var(--red);
+  width: 40px; height: 40px; margin: 0 auto 12px;
+  border: 4px solid rgba(255,59,48,.15); border-top-color: var(--red);
   border-radius: 50%; animation: spin 0.8s linear infinite;
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/* ============ ARENA ============ */
-.arena-slots { display: flex; gap: 12px; margin-bottom: 18px; perspective: 1200px; }
-.arena-slot {
-  flex: 1; background: white; border-radius: var(--r);
-  padding: 12px; min-height: 210px;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-  border: 3px dashed #d8dffd; cursor: pointer;
-  transition: all 0.3s; box-shadow: var(--shadow);
-  position: relative; overflow: hidden;
-}
-.arena-slot.selected {
-  border-style: solid; border-color: var(--red);
-  box-shadow: 0 8px 24px rgba(238,21,21,.3);
-  background: linear-gradient(160deg, #fff5f5, #fff);
-}
-.arena-slot img { max-width: 100%; border-radius: 8px; margin-bottom: 6px; }
-.arena-slot .slot-name { font-size: 0.78rem; font-weight: 800; }
-.arena-slot .slot-placeholder { color: #aaa; font-size: 0.82rem; font-weight: 700; text-align: center; }
-.arena-slot .slot-hp {
-  position: absolute; bottom: 8px; left: 8px; right: 8px;
-  background: rgba(0,0,0,.7); border-radius: 99px; height: 8px; overflow: hidden;
-  display: none;
-}
-.arena-slot.selected .slot-hp { display: block; }
-.arena-slot .slot-hp > div {
-  height: 100%; background: linear-gradient(90deg, var(--green), #4ade80);
-  border-radius: 99px; transition: width 0.6s;
-}
-.arena-slot.shake { animation: shake 0.5s; }
-@keyframes shake {
-  0%,100% { transform: translateX(0); }
-  20% { transform: translateX(-8px) rotate(-2deg); }
-  40% { transform: translateX(8px) rotate(2deg); }
-  60% { transform: translateX(-6px); }
-  80% { transform: translateX(6px); }
-}
-.arena-slot.hit-flash::before {
-  content: ''; position: absolute; inset: 0;
-  background: rgba(255,59,48,.7); z-index: 10;
-  animation: flash 0.4s;
-}
-@keyframes flash { from { opacity: 1; } to { opacity: 0; } }
-
-.battle-log {
-  background: linear-gradient(160deg, #1a1d3a, #242850);
-  border-radius: var(--r); padding: 16px;
-  color: white; font-size: 0.88rem; line-height: 1.6;
-  margin-bottom: 14px; min-height: 80px;
-  font-family: ui-monospace, monospace;
-  box-shadow: var(--shadow-lg);
-}
-.battle-log .line { opacity: 0; animation: logIn 0.4s forwards; }
-.battle-log .line:nth-child(1) { animation-delay: 0s; }
-.battle-log .line:nth-child(2) { animation-delay: 0.5s; }
-.battle-log .line:nth-child(3) { animation-delay: 1s; }
-.battle-log .line:nth-child(4) { animation-delay: 1.5s; }
-.battle-log .line:nth-child(5) { animation-delay: 2s; }
-@keyframes logIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: none; } }
-.battle-log .crit { color: var(--yellow); font-weight: 900; }
-.battle-log .hit { color: var(--red); font-weight: 900; }
-.battle-log .win { color: var(--green); font-weight: 900; font-size: 1rem; }
-
-/* ============ SOBRES / TIENDA ============ */
-.shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+/* ============================================================
+   TIENDA
+   ============================================================ */
+.shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 .shop-item {
-  background: white; border-radius: var(--r); padding: 14px;
-  box-shadow: var(--shadow); text-align: center;
+  background: white; border-radius: var(--r); padding: 12px;
+  box-shadow: var(--shadow-sm); text-align: center;
   cursor: pointer; transition: transform 0.2s;
-  border-top: 5px solid var(--gold);
-  position: relative; overflow: hidden;
+  border-top: 4px solid var(--gold);
+  display: flex; flex-direction: column;
 }
 .shop-item:active { transform: scale(0.96); }
-.shop-item .shop-emoji { font-size: 2.5rem; margin-bottom: 6px; display: block; }
-.shop-item h4 { font-size: 0.9rem; margin-bottom: 4px; }
-.shop-item p { font-size: 0.72rem; color: #888; line-height: 1.3; min-height: 30px; }
+.shop-item .shop-emoji { font-size: 2rem; margin-bottom: 4px; display: block; }
+.shop-item h4 { font-size: 0.82rem; margin-bottom: 3px; }
+.shop-item p { font-size: 0.68rem; color: var(--muted); line-height: 1.3; flex: 1; }
 .shop-item .price {
   display: inline-block; margin-top: 8px;
   background: linear-gradient(135deg, #ffd700, #ffb800);
-  color: #4a3600; padding: 5px 12px; border-radius: 99px;
-  font-size: 0.78rem; font-weight: 900;
+  color: #4a3600; padding: 4px 10px; border-radius: 99px;
+  font-size: 0.72rem; font-weight: 900;
 }
 .shop-item .price.insuf { background: #eee; color: #999; }
 
-/* ============ OVERLAY DE SOBRE ============ */
-.pack-overlay {
-  position: fixed; inset: 0; z-index: 300;
-  background: radial-gradient(circle at center, #2a1d5a, #0a0b1e 70%);
-  display: none; align-items: center; justify-content: center;
-  flex-direction: column; padding: 20px;
-  text-align: center;
+/* ============================================================
+   MINI-JUEGO BAYA DASH
+   ============================================================ */
+.game-area {
+  position: relative; width: 100%; height: 320px;
+  background: linear-gradient(180deg, #1a1d3a, #0a0b1e);
+  border-radius: var(--r); overflow: hidden;
+  border: 2px solid var(--dark-3);
+  touch-action: none; cursor: ew-resize;
 }
-.pack-overlay.show { display: flex; animation: packIn 0.4s; }
-@keyframes packIn { from { opacity: 0; } to { opacity: 1; } }
-
-.pack-envelope {
-  width: 220px; height: 320px;
-  border-radius: 20px;
-  background: linear-gradient(160deg, #ff6b35, #d61e1e 60%, #8a1010);
-  box-shadow: 0 30px 80px rgba(0,0,0,.6), 0 0 60px rgba(255,107,53,.5);
-  display: grid; place-items: center;
-  cursor: pointer; position: relative;
-  animation: packShake 0.6s infinite;
-  transition: transform 0.2s;
+.game-hud {
+  position: absolute; top: 10px; left: 10px; right: 10px;
+  display: flex; justify-content: space-between;
+  color: white; font-weight: 900; font-size: 0.85rem;
+  z-index: 10; pointer-events: none;
 }
-@keyframes packShake {
-  0%,100% { transform: rotate(-3deg) scale(1); }
-  50% { transform: rotate(3deg) scale(1.03); }
+.game-hud .score { color: var(--yellow); }
+.game-hud .lives { color: var(--red); }
+.game-hud .time { color: var(--blue-l); }
+.falling-item {
+  position: absolute; font-size: 1.8rem;
+  transform: translate(-50%, -50%);
+  will-change: top, left;
 }
-.pack-envelope::before {
-  content: '⚡'; font-size: 5rem; filter: drop-shadow(0 0 20px #ffcb05);
+.game-player {
+  position: absolute; bottom: 10px;
+  transform: translateX(-50%);
+  transition: left 0.05s linear;
+  display: flex; flex-direction: column; align-items: center;
 }
-.pack-envelope::after {
-  content: ''; position: absolute; inset: 8px;
-  border: 2px solid rgba(255,255,255,.3); border-radius: 14px;
-  pointer-events: none;
-}
-.pack-envelope.opening { animation: packBurst 0.5s forwards; }
-@keyframes packBurst {
-  0% { transform: scale(1) rotate(0); }
-  50% { transform: scale(1.2) rotate(10deg); }
-  100% { transform: scale(0) rotate(30deg); opacity: 0; }
-}
-
-.pack-reveal {
-  perspective: 1000px;
-  display: none;
-  flex-direction: column; align-items: center;
-}
-.pack-reveal.show { display: flex; animation: fadeIn 0.5s; }
-.reveal-card {
-  width: 200px; height: 280px;
-  transform-style: preserve-3d;
-  transition: transform 0.8s cubic-bezier(.4,0,.2,1);
-  position: relative;
-}
-.reveal-card.flipped { transform: rotateY(180deg); }
-.reveal-face {
+.game-player img { width: 60px; height: 60px; object-fit: contain; filter: drop-shadow(0 4px 8px rgba(0,0,0,.5)); }
+.game-player .shadow { width: 50px; height: 6px; background: rgba(0,0,0,.5); border-radius: 50%; margin-top: -4px; filter: blur(2px); }
+.game-over {
   position: absolute; inset: 0;
-  backface-visibility: hidden;
-  border-radius: 14px;
-  display: grid; place-items: center;
-  overflow: hidden;
+  background: rgba(10,11,30,.9);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  color: white; text-align: center; padding: 20px;
+  z-index: 20;
 }
-.reveal-front {
-  background: linear-gradient(160deg, var(--blue), var(--blue-l));
-  color: white; font-size: 3rem;
-  box-shadow: 0 20px 50px rgba(0,0,0,.5);
-}
-.reveal-front::before {
-  content: '?'; font-size: 5rem; font-weight: 900; opacity: .8;
-}
-.reveal-back {
-  background: white; transform: rotateY(180deg);
-  padding: 8px;
-  box-shadow: 0 20px 50px rgba(0,0,0,.5);
-}
-.reveal-back img { width: 100%; height: 100%; object-fit: contain; border-radius: 8px; }
+.game-over h3 { font-size: 1.6rem; color: var(--yellow); margin-bottom: 6px; }
+.game-over p { font-size: 0.9rem; margin-bottom: 16px; opacity: 0.9; }
 
-.pack-actions {
-  display: flex; gap: 10px; margin-top: 24px;
-  width: 100%; max-width: 320px;
+/* ============================================================
+   POPUPS / CONFETTI / TOAST
+   ============================================================ */
+.float-popup {
+  position: fixed; z-index: 600;
+  background: white; padding: 8px 14px;
+  border-radius: 12px; font-weight: 900; font-size: 0.85rem;
+  box-shadow: var(--shadow);
+  pointer-events: none;
+  animation: floatUp 1.4s cubic-bezier(.4,0,.2,1) forwards;
 }
-.pack-actions button { flex: 1; padding: 14px; font-size: 0.9rem; }
-
-.pack-title {
-  font-size: 1.5rem; color: white; margin-bottom: 4px; font-weight: 900;
-  text-shadow: 0 4px 20px rgba(0,0,0,.5);
+.float-popup.gold { background: linear-gradient(135deg, #ffd700, #ffb800); color: #4a3600; }
+.float-popup.green { background: linear-gradient(135deg, #4ade80, #22c55e); color: white; }
+@keyframes floatUp {
+  0% { opacity: 0; transform: translate(-50%, 0) scale(0.5); }
+  20% { opacity: 1; transform: translate(-50%, -20px) scale(1.1); }
+  80% { opacity: 1; transform: translate(-50%, -50px) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -80px) scale(0.9); }
 }
-.pack-sub {
-  color: #b8b8d8; font-size: 0.85rem; margin-bottom: 24px; font-weight: 600;
-}
-.reveal-name {
-  color: white; font-size: 1.2rem; font-weight: 900; margin-top: 16px;
-  text-shadow: 0 4px 20px rgba(0,0,0,.5);
-}
-.reveal-rarity {
-  display: inline-block; margin-top: 6px;
-  padding: 4px 12px; border-radius: 99px;
-  font-size: 0.75rem; font-weight: 900; letter-spacing: 0.5px;
-}
-.reveal-rarity.comun { background: #d4d4d4; color: #333; }
-.reveal-rarity.rara { background: linear-gradient(135deg, #5a6ee8, #3b4cca); color: white; }
-.reveal-rarity.ultra {
-  background: linear-gradient(135deg, #ffd700, #ff6b35);
-  color: #4a3600; box-shadow: 0 0 20px rgba(255,215,0,.8);
-}
-
-/* ============ CONFETTI ============ */
 .confetti-piece {
   position: fixed; width: 10px; height: 10px;
   z-index: 500; pointer-events: none;
   animation: confettiFall linear forwards;
 }
-@keyframes confettiFall {
-  to { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+@keyframes confettiFall { to { transform: translateY(100vh) rotate(720deg); opacity: 0; } }
+.toast {
+  position: fixed; bottom: 100px; left: 50%; transform: translateX(-50%);
+  background: rgba(10,11,30,.95); color: white;
+  padding: 12px 20px; border-radius: 14px;
+  font-size: 0.85rem; font-weight: 700;
+  z-index: 700; max-width: 90vw;
+  box-shadow: var(--shadow);
+  animation: toastIn 0.3s cubic-bezier(.34,1.56,.64,1);
+  text-align: center; backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,.15);
 }
+@keyframes toastIn { from { opacity: 0; transform: translate(-50%, 20px) scale(0.9); } to { opacity: 1; transform: translate(-50%, 0) scale(1); } }
 
-/* ============ POPUP FLOTANTE ============ */
-.float-popup {
-  position: fixed; z-index: 600;
-  background: white; padding: 10px 16px;
-  border-radius: 14px; font-weight: 900; font-size: 0.9rem;
-  box-shadow: 0 10px 30px rgba(0,0,0,.3);
-  pointer-events: none;
-  animation: floatUp 1.6s cubic-bezier(.4,0,.2,1) forwards;
-}
-.float-popup.gold { background: linear-gradient(135deg, #ffd700, #ffb800); color: #4a3600; }
-.float-popup.green { background: linear-gradient(135deg, #4ade80, #22c55e); color: white; }
-.float-popup.red { background: linear-gradient(135deg, #ff6b35, #d61e1e); color: white; }
-@keyframes floatUp {
-  0% { opacity: 0; transform: translate(-50%, 0) scale(0.5); }
-  20% { opacity: 1; transform: translate(-50%, -20px) scale(1.1); }
-  80% { opacity: 1; transform: translate(-50%, -60px) scale(1); }
-  100% { opacity: 0; transform: translate(-50%, -90px) scale(0.9); }
-}
-
-/* ============ MODAL NIVEL ============ */
+/* ============================================================
+   MODAL NIVEL UP
+   ============================================================ */
 .level-modal {
   position: fixed; inset: 0; z-index: 800;
   background: radial-gradient(circle at center, rgba(59,76,202,.95), rgba(10,11,30,.98));
   display: none; align-items: center; justify-content: center;
   flex-direction: column; text-align: center; padding: 30px;
 }
-.level-modal.show { display: flex; animation: packIn 0.5s; }
+.level-modal.show { display: flex; animation: viewIn 0.5s; }
 .level-modal .level-num {
-  font-size: 8rem; font-weight: 900; color: var(--gold);
+  font-size: 7rem; font-weight: 900; color: var(--gold);
   line-height: 1; text-shadow: 0 0 60px rgba(255,203,5,.9);
   animation: popNum 0.8s cubic-bezier(.34,1.56,.64,1);
 }
-@keyframes popNum {
-  0% { transform: scale(0) rotate(-180deg); }
-  60% { transform: scale(1.2) rotate(10deg); }
-  100% { transform: scale(1) rotate(0); }
-}
-.level-modal .level-label {
-  color: white; font-size: 1.4rem; font-weight: 900;
-  letter-spacing: 4px; margin-top: 8px; opacity: 0;
-  animation: fadeUp 0.6s 0.4s forwards;
-}
-@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
-.level-modal .level-bonus {
-  color: var(--yellow); margin-top: 20px; font-weight: 800;
-  opacity: 0; animation: fadeUp 0.6s 0.8s forwards;
-}
+@keyframes popNum { 0% { transform: scale(0) rotate(-180deg); } 60% { transform: scale(1.2) rotate(10deg); } 100% { transform: scale(1); } }
+.level-modal .level-label { color: white; font-size: 1.3rem; font-weight: 900; letter-spacing: 4px; margin-top: 8px; opacity: 0; animation: fadeUp 0.6s 0.4s forwards; }
+.level-modal .level-bonus { color: var(--yellow); margin-top: 20px; font-weight: 800; opacity: 0; animation: fadeUp 0.6s 0.8s forwards; }
 .level-modal button {
-  margin-top: 30px; padding: 14px 40px;
-  border-radius: 14px; border: none;
-  background: white; color: var(--blue);
-  font-weight: 900; font-size: 1rem; cursor: pointer;
-  font-family: inherit;
+  margin-top: 30px; padding: 14px 40px; border-radius: 14px; border: none;
+  background: white; color: var(--blue); font-weight: 900; font-size: 1rem;
+  cursor: pointer; font-family: inherit;
   opacity: 0; animation: fadeUp 0.6s 1s forwards;
 }
+@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
 
-/* ============ TOAST ============ */
-.toast {
-  position: fixed;
-  bottom: 110px; left: 50%; transform: translateX(-50%);
-  background: rgba(10,11,30,.95); color: white;
-  padding: 12px 20px; border-radius: 14px;
-  font-size: 0.88rem; font-weight: 700;
-  z-index: 700; max-width: 90vw;
-  box-shadow: 0 10px 30px rgba(0,0,0,.4);
-  animation: toastIn 0.3s cubic-bezier(.34,1.56,.64,1);
-  text-align: center; backdrop-filter: blur(10px);
-  border: 1px solid rgba(255,255,255,.15);
-}
-@keyframes toastIn {
-  from { opacity: 0; transform: translate(-50%, 20px) scale(0.9); }
-  to { opacity: 1; transform: translate(-50%, 0) scale(1); }
-}
-
-/* ============ NAV INFERIOR ============ */
+/* ============================================================
+   NAV INFERIOR
+   ============================================================ */
 .bottom-nav {
-  position: fixed;
-  bottom: 0; left: 0; right: 0;
-  background: white;
-  display: flex; justify-content: space-around;
+  position: fixed; bottom: 0; left: 0; right: 0;
+  background: white; display: flex; justify-content: space-around;
   padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
   box-shadow: 0 -4px 20px rgba(10,11,30,.1);
-  z-index: 100;
-  border-top: 1px solid #f0f0f0;
+  z-index: 100; border-top: 1px solid #f0f0f0;
 }
 .nav-btn {
   background: none; border: none;
   display: flex; flex-direction: column; align-items: center;
-  font-size: 0.65rem; color: #999; font-weight: 800;
-  cursor: pointer; padding: 4px 8px;
-  font-family: inherit;
-  transition: 0.2s;
-  position: relative;
+  font-size: 0.62rem; color: #999; font-weight: 800;
+  cursor: pointer; padding: 4px 10px; font-family: inherit;
+  transition: 0.2s; position: relative;
 }
-.nav-btn .nav-ico {
-  font-size: 1.5rem;
-  margin-bottom: 1px;
-  transition: transform 0.25s cubic-bezier(.34,1.56,.64,1);
-  display: block;
-}
+.nav-btn .nav-ico { font-size: 1.4rem; margin-bottom: 1px; display: block; transition: transform 0.25s cubic-bezier(.34,1.56,.64,1); }
 .nav-btn.active { color: var(--red); }
 .nav-btn.active .nav-ico { transform: scale(1.2) translateY(-2px); }
 .nav-btn .nav-dot {
-  position: absolute; top: 0; right: 12px;
+  position: absolute; top: 0; right: 10px;
   width: 8px; height: 8px; background: var(--red);
   border-radius: 50%; box-shadow: 0 0 8px var(--red);
-  animation: pulse 1.5s infinite;
   display: none;
 }
-.nav-btn.has-notif .nav-dot { display: block; }
-@keyframes pulse { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.4); opacity: 0.6; } }
+.nav-btn.has-notif .nav-dot { display: block; animation: pulse 1.5s infinite; }
+@keyframes pulse { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.4); opacity: .6; } }
 
-/* ============ MODAL SELECTOR ============ */
-.selector-modal {
+/* ============================================================
+   MODAL GENÉRICO
+   ============================================================ */
+.modal-overlay {
   position: fixed; inset: 0; z-index: 400;
   background: rgba(10,11,30,.7); backdrop-filter: blur(6px);
   display: none; align-items: flex-end; justify-content: center;
 }
-.selector-modal.show { display: flex; animation: fadeIn 0.25s; }
+.modal-overlay.show { display: flex; animation: fadeIn 0.25s; }
 @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-.selector-content {
+.modal-content {
   background: white; width: 100%; max-width: 540px;
   border-radius: 24px 24px 0 0;
   padding: 20px 16px calc(20px + env(safe-area-inset-bottom));
-  max-height: 80vh; overflow-y: auto;
+  max-height: 85vh; overflow-y: auto;
   animation: slideUp 0.35s cubic-bezier(.34,1.56,.64,1);
 }
 @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-.selector-content h3 { margin-bottom: 14px; font-size: 1.05rem; }
-
-/* ============ HISTORIAS ============ */
-.story-form { background: white; border-radius: var(--r); padding: 16px; box-shadow: var(--shadow); margin-bottom: 16px; }
-.story-form label { display: block; font-size: 0.8rem; font-weight: 800; color: #666; margin-bottom: 6px; }
-.story-form select, .story-form input, .story-form textarea {
-  width: 100%; padding: 12px; border-radius: 12px;
-  border: 2px solid #e6ecff; font-family: inherit;
-  font-size: 0.9rem; margin-bottom: 12px; outline: none;
-  font-weight: 600;
-}
-.story-form select:focus, .story-form input:focus, .story-form textarea:focus {
-  border-color: var(--blue); box-shadow: 0 0 0 4px rgba(59,76,202,.1);
-}
-.story-form textarea { min-height: 100px; resize: vertical; line-height: 1.5; }
-.story-card {
-  background: white; border-radius: var(--r); padding: 16px;
-  box-shadow: var(--shadow); margin-bottom: 12px;
-  border-left: 5px solid var(--purple);
-  position: relative;
-}
-.story-card h4 { color: var(--blue); font-size: 0.98rem; margin-bottom: 6px; padding-right: 30px; }
-.story-card p { font-size: 0.85rem; line-height: 1.55; color: #444; white-space: pre-wrap; }
-.story-card small { display: block; margin-top: 8px; color: #999; font-size: 0.72rem; font-weight: 700; }
-.story-card .del {
-  position: absolute; top: 12px; right: 12px;
-  background: #fdecec; border: none; color: var(--red);
-  width: 26px; height: 26px; border-radius: 8px; cursor: pointer;
+.modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #eee; }
+.modal-header h3 { margin: 0; font-size: 1.05rem; }
+.close-modal {
+  background: #f0f0f0; border: none; font-size: 1rem;
+  cursor: pointer; color: #666; width: 32px; height: 32px;
+  border-radius: 10px; display: grid; place-items: center;
 }
 
-/* ============ FIRMA / RIBBON ============ */
+/* ============================================================
+   FIRMA / DEDICATORIA
+   ============================================================ */
 .signature {
-  margin-top: 24px;
-  padding: 14px 16px;
+  margin-top: 20px; padding: 14px 16px;
   background: linear-gradient(135deg, #fff5f8, #ffe8f0);
   border: 1px solid #ffc9dc;
-  border-radius: 16px;
-  text-align: center;
-  position: relative;
-  overflow: hidden;
+  border-radius: 16px; text-align: center;
+  position: relative; overflow: hidden;
 }
 .signature::before {
-  content: '❤️';
-  position: absolute;
-  top: -8px; right: -8px;
-  font-size: 3rem;
-  opacity: 0.15;
-  transform: rotate(15deg);
+  content: '❤️'; position: absolute; top: -8px; right: -8px;
+  font-size: 3rem; opacity: 0.15; transform: rotate(15deg);
 }
-.signature .sig-line1 {
-  font-size: 0.82rem;
-  font-weight: 800;
-  color: #b8336a;
-  letter-spacing: 0.3px;
-}
-.signature .sig-line2 {
-  font-size: 1.05rem;
-  font-weight: 900;
-  color: #d61e5f;
-  margin: 4px 0;
-}
-.signature .sig-heart {
-  font-size: 1.4rem;
-  display: inline-block;
-  animation: heartbeat 1.4s ease-in-out infinite;
-}
-@keyframes heartbeat {
-  0%, 100% { transform: scale(1); }
-  15% { transform: scale(1.2); }
-  30% { transform: scale(1); }
-  45% { transform: scale(1.15); }
-  60% { transform: scale(1); }
-}
+.sig-line1 { font-size: 0.78rem; font-weight: 800; color: #b8336a; letter-spacing: 0.3px; }
+.sig-line2 { font-size: 1rem; font-weight: 900; color: #d61e5f; margin: 4px 0; }
+.sig-heart { font-size: 1.3rem; display: inline-block; animation: heartbeat 1.4s ease-in-out infinite; }
+@keyframes heartbeat { 0%, 100% { transform: scale(1); } 15% { transform: scale(1.2); } 30% { transform: scale(1); } 45% { transform: scale(1.15); } 60% { transform: scale(1); } }
 
-/* ============ BIENVENIDA INICIAL ============ */
+/* ============================================================
+   WELCOME OVERLAY
+   ============================================================ */
 .welcome-overlay {
   position: fixed; inset: 0; z-index: 1000;
   background: radial-gradient(circle at center, #2a1d5a 0%, #0a0b1e 70%);
-  display: none;
-  align-items: center; justify-content: center;
-  flex-direction: column;
-  padding: 30px 24px;
-  text-align: center;
-  overflow: hidden;
+  display: none; align-items: center; justify-content: center;
+  flex-direction: column; padding: 30px 24px; text-align: center; overflow: hidden;
 }
-.welcome-overlay.show { display: flex; animation: packIn 0.6s; }
-.welcome-overlay::before {
-  content: '';
-  position: absolute; inset: -50%;
-  background: conic-gradient(from 0deg, transparent, rgba(255,203,5,.12), transparent 30%, rgba(255,92,138,.12), transparent 60%);
-  animation: rotate 12s linear infinite;
-  pointer-events: none;
-}
+.welcome-overlay.show { display: flex; animation: fadeIn 0.6s; }
 .welcome-inner { position: relative; z-index: 2; max-width: 380px; }
-
 .welcome-pokeball {
-  width: 110px; height: 110px;
-  margin: 0 auto 18px;
+  width: 100px; height: 100px; margin: 0 auto 18px;
   filter: drop-shadow(0 10px 30px rgba(255,59,48,.5));
   animation: welcomeSpin 3s ease-in-out infinite;
 }
-@keyframes welcomeSpin {
-  0%, 100% { transform: rotate(-8deg) scale(1); }
-  50% { transform: rotate(8deg) scale(1.08); }
-}
-
+@keyframes welcomeSpin { 0%, 100% { transform: rotate(-8deg) scale(1); } 50% { transform: rotate(8deg) scale(1.08); } }
 .welcome-tag {
-  display: inline-block;
-  background: rgba(255,203,5,.15);
-  border: 1px solid rgba(255,203,5,.4);
-  color: var(--yellow);
-  padding: 5px 14px;
-  border-radius: 99px;
-  font-size: 0.7rem;
-  font-weight: 900;
-  letter-spacing: 2px;
-  text-transform: uppercase;
-  margin-bottom: 16px;
-  animation: fadeUp 0.6s 0.2s backwards;
+  display: inline-block; background: rgba(255,203,5,.15);
+  border: 1px solid rgba(255,203,5,.4); color: var(--yellow);
+  padding: 5px 14px; border-radius: 99px; font-size: 0.68rem;
+  font-weight: 900; letter-spacing: 2px; text-transform: uppercase;
+  margin-bottom: 14px;
 }
-
-.welcome-title {
-  font-size: 2.6rem;
-  font-weight: 900;
-  color: white;
-  line-height: 1;
-  letter-spacing: -1.5px;
-  margin-bottom: 10px;
-  text-shadow: 0 4px 30px rgba(255,203,5,.4);
-  animation: fadeUp 0.6s 0.35s backwards;
-}
+.welcome-title { font-size: 2.5rem; font-weight: 900; color: white; line-height: 1; letter-spacing: -1.5px; margin-bottom: 10px; }
 .welcome-title .highlight {
   background: linear-gradient(135deg, #ffd700, #ff6b35);
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  display: block;
-  margin-top: 4px;
+  -webkit-background-clip: text; background-clip: text;
+  -webkit-text-fill-color: transparent; display: block; margin-top: 4px;
 }
-
-.welcome-heart {
-  font-size: 2.5rem;
-  margin: 12px 0;
-  display: inline-block;
-  animation: heartbeat 1.4s ease-in-out infinite;
-  filter: drop-shadow(0 0 20px rgba(255,92,138,.8));
-}
-
-.welcome-msg {
-  color: #d8d8f0;
-  font-size: 1rem;
-  line-height: 1.6;
-  margin: 8px 0 28px;
-  font-weight: 500;
-  animation: fadeUp 0.6s 0.55s backwards;
-}
+.welcome-heart { font-size: 2.4rem; margin: 10px 0; display: inline-block; animation: heartbeat 1.4s ease-in-out infinite; }
+.welcome-msg { color: #d8d8f0; font-size: 0.95rem; line-height: 1.6; margin: 8px 0 26px; }
 .welcome-msg strong { color: white; font-weight: 900; }
-.welcome-msg em {
-  color: var(--yellow);
-  font-style: normal;
-  font-weight: 900;
-}
-
+.welcome-msg em { color: var(--yellow); font-style: normal; font-weight: 900; }
 .welcome-btn {
   background: linear-gradient(135deg, var(--red), var(--red-d));
-  color: white;
-  border: none;
-  padding: 16px 40px;
-  border-radius: 16px;
-  font-family: inherit;
-  font-weight: 900;
-  font-size: 1rem;
-  cursor: pointer;
+  color: white; border: none; padding: 16px 40px;
+  border-radius: 16px; font-family: inherit; font-weight: 900;
+  font-size: 1rem; cursor: pointer;
   box-shadow: 0 12px 30px rgba(238,21,21,.5);
-  transition: transform 0.15s;
-  letter-spacing: 0.3px;
-  animation: fadeUp 0.6s 0.75s backwards;
 }
 .welcome-btn:active { transform: scale(0.95); }
-
-.welcome-hearts-bg {
-  position: absolute; inset: 0;
-  pointer-events: none; overflow: hidden;
-}
+.welcome-hearts-bg { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
 .welcome-hearts-bg span {
-  position: absolute;
-  bottom: -40px;
-  font-size: 1.5rem;
-  opacity: 0.7;
+  position: absolute; bottom: -40px; font-size: 1.4rem; opacity: 0.7;
   animation: heartFloat linear infinite;
 }
 @keyframes heartFloat {
@@ -822,19 +554,21 @@ h2 .emo { font-size: 1.4rem; margin-right: 4px; }
   100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
 }
 
-/* ============ RESPONSIVE ============ */
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
 @media (max-width: 400px) {
   .grid-cards { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
-  .featured-card img { width: 120px; }
   .hud-brand { font-size: 0.95rem; }
-  .welcome-title { font-size: 2.1rem; }
-  .welcome-pokeball { width: 90px; height: 90px; }
+  .buddy-sprite-wrap { width: 150px; height: 150px; }
+  .buddy-sprite-wrap img { width: 130px; height: 130px; }
+  .welcome-title { font-size: 2rem; }
 }
 </style>
 </head>
 <body>
 
-<!-- ============ PANTALLA DE BIENVENIDA (solo primera vez) ============ -->
+<!-- WELCOME OVERLAY -->
 <div class="welcome-overlay" id="welcome-overlay">
   <div class="welcome-hearts-bg" id="welcome-hearts"></div>
   <div class="welcome-inner">
@@ -845,22 +579,10 @@ h2 .emo { font-size: 1.4rem; margin-right: 4px; }
       <circle cx="50" cy="50" r="16" fill="#fff" stroke="#1a1a2e" stroke-width="5"/>
       <circle cx="50" cy="50" r="6" fill="#1a1a2e"/>
     </svg>
-
     <div class="welcome-tag">✨ Un regalo especial ✨</div>
-
-    <h1 class="welcome-title">
-      Para Blas
-      <span class="highlight">de la tía</span>
-    </h1>
-
+    <h1 class="welcome-title">Para Blas<span class="highlight">de la tía</span></h1>
     <div class="welcome-heart">❤️</div>
-
-    <p class="welcome-msg">
-      Hecho con mucho <em>amor</em>,<br>
-      para que tu colección Pokémon<br>
-      sea <strong>tan especial como vos</strong>.
-    </p>
-
+    <p class="welcome-msg">Hecho con mucho <em>amor</em>,<br>para que tu aventura Pokémon<br>sea <strong>tan especial como vos</strong>.</p>
     <button class="welcome-btn" onclick="cerrarBienvenida()">⚡ ¡Empezar la aventura!</button>
   </div>
 </div>
@@ -869,7 +591,7 @@ h2 .emo { font-size: 1.4rem; margin-right: 4px; }
 <div class="hud">
   <div class="hud-top">
     <div class="hud-brand">
-      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
         <circle cx="50" cy="50" r="45" fill="#fff" stroke="#1a1a2e" stroke-width="5"/>
         <path d="M5 50 A45 45 0 0 1 95 50 Z" fill="#ee1515"/>
         <rect x="5" y="45" width="90" height="10" fill="#1a1a2e"/>
@@ -879,101 +601,30 @@ h2 .emo { font-size: 1.4rem; margin-right: 4px; }
       <span><span class="poke">Poke</span><span class="blas">Blas</span></span>
     </div>
     <div class="hud-stats">
-      <div class="stat-chip coins" id="chip-coins">💰 <span id="hud-coins">0</span></div>
-      <div class="stat-chip fire" id="chip-streak">🔥 <span id="hud-streak">0</span></div>
+      <div class="stat-chip coins">💰 <span id="hud-coins">0</span></div>
+      <div class="stat-chip fire">🔥 <span id="hud-streak">0</span></div>
+      <div class="stat-chip mute" id="mute-btn" onclick="toggleMute()">🔊</div>
     </div>
   </div>
   <div class="xp-row">
     <div class="level-badge" id="hud-level">1</div>
-    <div class="xp-bar-bg">
-      <div class="xp-bar-fill" id="hud-xp" style="width:0%"></div>
-    </div>
+    <div class="xp-bar-bg"><div class="xp-bar-fill" id="hud-xp" style="width:0%"></div></div>
     <div class="xp-text" id="hud-xp-text">0/100</div>
   </div>
 </div>
 
-<!-- VISTA HOME -->
-<section class="view active" id="view-home">
+<!-- VISTA BASE -->
+<section class="view active" id="view-base">
   <h2><span class="emo">🏠</span>Tu base</h2>
   <p class="sub" id="greeting">¡Bienvenido, Entrenador!</p>
 
-  <div class="section-title">
-    <h3>🎯 Misiones de hoy</h3>
-    <span class="badge" id="misiones-count">0/3</span>
-  </div>
-  <div id="misiones-container"></div>
+  <div id="buddy-container"></div>
 
-  <div class="section-title">
-    <h3>⭐ Carta destacada</h3>
+  <div class="card">
+    <h3>🎯 Misiones de hoy <span class="pill info" id="misiones-count">0/3</span></h3>
+    <div id="misiones-container"></div>
   </div>
-  <div class="featured-card" id="featured"></div>
 
-  <div class="section-title">
-    <h3>📚 Tu taller de historias</h3>
-  </div>
-  <div class="story-form">
-    <label>Protagonista 1</label>
-    <select id="story-p1"></select>
-    <label>Protagonista 2</label>
-    <select id="story-p2"></select>
-    <label>¿Dónde pasa?</label>
-<select id="story-esc">
-  <optgroup label="🌳 Bosques y naturaleza">
-    <option value="el Bosque Verde">🌲 Bosque Verde</option>
-    <option value="el Bosque Eterna">🍃 Bosque Eterna</option>
-    <option value="los Jardines de Floaroma">🌺 Jardines de Floaroma</option>
-    <option value="el Valle de Sinnoh">🏞️ Valle de Sinnoh</option>
-    <option value="la Selva de Alola">🌴 Selva de Alola</option>
-  </optgroup>
-  <optgroup label="🏙️ Ciudades y pueblos">
-    <option value="Pueblo Paleta">🏘️ Pueblo Paleta</option>
-    <option value="Ciudad Verde">🏙️ Ciudad Verde</option>
-    <option value="Ciudad Azulona">🏢 Ciudad Azulona</option>
-    <option value="Ciudad Trigal">🌃 Ciudad Trigal</option>
-    <option value="Ciudad Porcelana">🎡 Ciudad Porcelana</option>
-    <option value="Pueblo Lavanda">👻 Pueblo Lavanda</option>
-  </optgroup>
-  <optgroup label="⛰️ Montañas y cuevas">
-    <option value="el Monte Moon">⛰️ Monte Moon</option>
-    <option value="el Monte Cenizo">🌋 Monte Cenizo</option>
-    <option value="la Cueva Celeste">🕳️ Cueva Celeste</option>
-    <option value="el Monte Corona">❄️ Monte Corona</option>
-    <option value="la Cueva Ígnea">🔥 Cueva Ígnea</option>
-  </optgroup>
-  <optgroup label="🌊 Mares y playas">
-    <option value="las Islas Espuma">🌊 Islas Espuma</option>
-    <option value="la Playa Arena">🏖️ Playa Arena</option>
-    <option value="el Puerto Olivo">🐚 Puerto Olivo</option>
-    <option value="la Ruta 21">🌅 Ruta 21</option>
-    <option value="el Fondo del Mar">🐟 Fondo del Mar</option>
-  </optgroup>
-  <optgroup label="🏟️ Lugares especiales">
-    <option value="la Liga Pokémon">🏆 Liga Pokémon</option>
-    <option value="la Academia Pokémon">🎓 Academia Pokémon</option>
-    <option value="un Centro Pokémon">🏥 Centro Pokémon</option>
-    <option value="una Tienda Pokémon">🏪 Tienda Pokémon</option>
-    <option value="el escondite del Team Rocket">🚀 Escondite del Team Rocket</option>
-    <option value="la Torre Batalla">🏰 Torre Batalla</option>
-    <option value="el espacio exterior">🌌 El espacio exterior</option>
-    <option value="el mundo de los sueños">💭 El mundo de los sueños</option>
-    <option value="una dimensión misteriosa">🌀 Una dimensión misteriosa</option>
-  </optgroup>
-  <optgroup label="✏️ Personalizado">
-    <option value="otro">✏️ Otro lugar (escribilo vos)</option>
-  </optgroup>
-</select>
-<input type="text" id="story-esc-custom" placeholder="Escribí el lugar acá..." style="display:none;">
-    <label>¿Dónde pasa?</label>
-    <input type="text" id="story-esc" placeholder="Ej: Bosque Verde...">
-    <label>¿Cuál es el problema?</label>
-    <input type="text" id="story-con" placeholder="Ej: Un Team Rocket robó...">
-    <label>Escribí tu historia</label>
-    <textarea id="story-txt" placeholder="Había una vez..."></textarea>
-    <button class="btn btn-primary" onclick="guardarHistoria()">💾 Guardar historia (+20 XP, +8 💰)</button>
-  </div>
-  <div id="story-list"></div>
-
-  <!-- FIRMA PERMANENTE DE LA TÍA -->
   <div class="signature">
     <div class="sig-line1">Un regalito hecho a mano</div>
     <div class="sig-line2">Para Blas, con amor <span class="sig-heart">❤️</span></div>
@@ -989,7 +640,6 @@ h2 .emo { font-size: 1.4rem; margin-right: 4px; }
     <button class="tab active" id="tab-buscar" onclick="cambiarTab('buscar')">🔍 Buscar</button>
     <button class="tab" id="tab-coleccion" onclick="cambiarTab('coleccion')">⭐ Colección</button>
   </div>
-
   <div id="panel-buscar">
     <div class="search-wrap">
       <span class="search-ico">🔍</span>
@@ -997,122 +647,46 @@ h2 .emo { font-size: 1.4rem; margin-right: 4px; }
       <button class="search-x" id="search-x" onclick="limpiarBusqueda()">✕</button>
     </div>
     <div class="grid-cards" id="album-grid">
-      <div class="empty-state">
-        <div class="spinner"></div>
-        <p>Cargando cartas...</p>
-      </div>
+      <div class="empty-state"><div class="spinner"></div><p>Cargando cartas...</p></div>
     </div>
     <button class="btn btn-ghost" id="btn-mas" onclick="cargarMas()" style="display:none;margin-top:14px;">➕ Cargar más</button>
   </div>
-
   <div id="panel-coleccion" style="display:none;">
     <div class="grid-cards" id="coleccion-grid"></div>
   </div>
 </section>
 
-<!-- VISTA ARENA -->
-<section class="view" id="view-arena">
-  <h2><span class="emo">⚔️</span>Arena</h2>
-  <p class="sub">Elegí dos cartas tuyas. ¡El HP y la rareza definen al ganador!</p>
-
-  <div class="arena-slots">
-    <div class="arena-slot" id="slot-1" onclick="abrirSelector(1)">
-      <div class="slot-placeholder">Elegir<br>Carta 1</div>
-    </div>
-    <div class="arena-slot" id="slot-2" onclick="abrirSelector(2)">
-      <div class="slot-placeholder">Elegir<br>Carta 2</div>
-    </div>
-  </div>
-
-  <div class="battle-log" id="battle-log" style="display:none;"></div>
-
-  <button class="btn btn-red" id="btn-fight" onclick="pelear()">⚔️ ¡Pelear! (+15 XP, +5 💰)</button>
+<!-- VISTA JUEGOS -->
+<section class="view" id="view-juegos">
+  <h2><span class="emo">🎮</span>Minijuegos</h2>
+  <p class="sub">Jugá con tus mini Pokémon y ganá monedas, XP y cariño.</p>
+  <div id="juegos-container"></div>
 </section>
 
 <!-- VISTA TIENDA -->
 <section class="view" id="view-tienda">
   <h2><span class="emo">🎁</span>Tienda mágica</h2>
-  <p class="sub">Ganá monedas completando misiones y batallas. ¡Comprá sobres y descubrí cartas nuevas!</p>
-
-  <div class="shop-grid">
-    <div class="shop-item" onclick="comprarSobre('basico')">
-      <span class="shop-emoji">📦</span>
-      <h4>Sobre básico</h4>
-      <p>1 carta aleatoria</p>
-      <div class="price" id="price-basico">30 💰</div>
-    </div>
-    <div class="shop-item" onclick="comprarSobre('epico')" style="border-top-color: var(--purple);">
-      <span class="shop-emoji">🎁</span>
-      <h4>Sobre épico</h4>
-      <p>3 cartas, con más chances de raras</p>
-      <div class="price" id="price-epico">70 💰</div>
-    </div>
-    <div class="shop-item" onclick="comprarSobre('legendario')" style="border-top-color: var(--gold);">
-      <span class="shop-emoji">👑</span>
-      <h4>Legendario</h4>
-      <p>5 cartas, garantía de una Ultra Rara</p>
-      <div class="price" id="price-legendario">150 💰</div>
-    </div>
-    <div class="shop-item" onclick="recargarGratis()" style="border-top-color: var(--green);">
-      <span class="shop-emoji">💚</span>
-      <h4>Regalo diario</h4>
-      <p>Reclamá una vez por día</p>
-      <div class="price" id="price-diario">Gratis</div>
-    </div>
-  </div>
-
-  <div class="section-title" style="margin-top:24px;">
-    <h3>🏆 Logros</h3>
-  </div>
-  <div id="logros-list"></div>
+  <p class="sub">Ganá monedas completando misiones y minijuegos. ¡Comprá objetos para tu compañero!</p>
+  <div class="shop-grid" id="shop-grid"></div>
 </section>
 
 <!-- NAV -->
 <nav class="bottom-nav">
-  <button class="nav-btn active" onclick="irA('home')" id="nav-home">
+  <button class="nav-btn active" onclick="irA('base')" id="nav-base">
     <span class="nav-ico">🏠</span>Base
     <span class="nav-dot"></span>
   </button>
   <button class="nav-btn" onclick="irA('album')" id="nav-album">
     <span class="nav-ico">📖</span>Álbum
   </button>
-  <button class="nav-btn" onclick="irA('arena')" id="nav-arena">
-    <span class="nav-ico">⚔️</span>Arena
+  <button class="nav-btn" onclick="irA('juegos')" id="nav-juegos">
+    <span class="nav-ico">🎮</span>Juegos
   </button>
   <button class="nav-btn" onclick="irA('tienda')" id="nav-tienda">
     <span class="nav-ico">🎁</span>Tienda
     <span class="nav-dot"></span>
   </button>
 </nav>
-
-<!-- MODAL SELECTOR -->
-<div class="selector-modal" id="selector-modal" onclick="if(event.target===this)cerrarSelector()">
-  <div class="selector-content">
-    <h3>Elegí una carta de tu colección</h3>
-    <div class="grid-cards" id="selector-grid" style="grid-template-columns: repeat(auto-fill, minmax(100px,1fr));"></div>
-  </div>
-</div>
-
-<!-- OVERLAY SOBRE -->
-<div class="pack-overlay" id="pack-overlay">
-  <div class="pack-title" id="pack-title">Sobre mágico</div>
-  <div class="pack-sub" id="pack-sub">Tocá para abrir</div>
-  <div class="pack-envelope" id="pack-envelope" onclick="abrirSobre()"></div>
-  <div class="pack-reveal" id="pack-reveal">
-    <div class="reveal-card" id="reveal-card" onclick="this.classList.toggle('flipped')">
-      <div class="reveal-face reveal-front"></div>
-      <div class="reveal-face reveal-back">
-        <img id="reveal-img" alt="Carta revelada">
-      </div>
-    </div>
-    <div class="reveal-name" id="reveal-name"></div>
-    <div class="reveal-rarity" id="reveal-rarity"></div>
-    <div class="pack-actions" id="pack-actions" style="display:none;">
-      <button class="btn btn-ghost" onclick="cerrarSobre()">Siguiente</button>
-      <button class="btn btn-gold" onclick="guardarDelSobre()">⭐ Guardar</button>
-    </div>
-  </div>
-</div>
 
 <!-- MODAL NIVEL -->
 <div class="level-modal" id="level-modal">
@@ -1123,60 +697,41 @@ h2 .emo { font-size: 1.4rem; margin-right: 4px; }
 </div>
 
 <script>
-/* =====================================================================
-   ⚙️  CONFIGURACIÓN DE LA API
-   ===================================================================== */
-const API_KEY = ''; // ← PEGÁ TU API KEY ACÁ (https://dev.pokemontcg.io)
+/* ============================================================
+   CONFIGURACIÓN
+   ============================================================ */
+const API_KEY = ''; // ← PEGÁ TU API KEY DE https://dev.pokemontcg.io
 const API_URL = 'https://api.pokemontcg.io/v2/cards';
-const PAGE_SIZE = 30;
-
-/* =====================================================================
-   ESTADO GLOBAL
-   ===================================================================== */
-let BASE_DATOS = [];
-let paginaActual = 1;
-let hayMas = false;
-let cargando = false;
-let busquedaActual = '';
-let tabAlbum = 'buscar';
+const PAGE_SIZE = 24;
 
 const KEY = {
-  coleccion: 'pokeblas_v3_col',
-  historias: 'pokeblas_v3_his',
-  xp: 'pokeblas_v3_xp',
-  level: 'pokeblas_v3_lv',
-  coins: 'pokeblas_v3_coins',
-  streak: 'pokeblas_v3_streak',
-  misiones: 'pokeblas_v3_mis',
-  misionFecha: 'pokeblas_v3_mf',
-  ultimoRegalo: 'pokeblas_v3_reg',
-  logros: 'pokeblas_v3_log',
-  bienvenida: 'pokeblas_bienvenida_vista'
+  coleccion: 'pokeblas_v2_col',
+  historias: 'pokeblas_v2_his',
+  xp: 'pokeblas_v2_xp',
+  level: 'pokeblas_v2_lv',
+  coins: 'pokeblas_v2_coins',
+  streak: 'pokeblas_v2_streak',
+  misiones: 'pokeblas_v2_mis',
+  misionFecha: 'pokeblas_v2_mf',
+  inventory: 'pokeblas_v2_inv',
+  buddy: 'pokeblas_v2_buddy',
+  ultimoLogin: 'pokeblas_v2_ul',
+  bienvenida: 'pokeblas_bienvenida_vista',
+  mute: 'pokeblas_v2_mute'
 };
 
-let misCartas = JSON.parse(localStorage.getItem(KEY.coleccion) || '{}');
-let historias = JSON.parse(localStorage.getItem(KEY.historias) || '[]');
-let xp = parseInt(localStorage.getItem(KEY.xp) || '0', 10);
-let level = parseInt(localStorage.getItem(KEY.level) || '1', 10);
-let coins = parseInt(localStorage.getItem(KEY.coins) || '0', 10);
-let streak = parseInt(localStorage.getItem(KEY.streak) || '0', 10);
-let misiones = JSON.parse(localStorage.getItem(KEY.misiones) || 'null');
-let misionFecha = localStorage.getItem(KEY.misionFecha) || '';
-let ultimoRegalo = localStorage.getItem(KEY.ultimoRegalo) || '';
-let logros = JSON.parse(localStorage.getItem(KEY.logros) || '{}');
-
-let slot1 = null, slot2 = null, slotActivo = null;
-let sobreActual = null;
-
-/* =====================================================================
-   SONIDO
-   ===================================================================== */
+/* ============================================================
+   SONIDO (Web Audio synthesizer)
+   ============================================================ */
 let audioCtx = null;
+let muted = localStorage.getItem(KEY.mute) === 'true';
+
 function getCtx() {
   if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
   return audioCtx;
 }
 function tone(freq, dur, vol = 0.15, type = 'sine', delay = 0) {
+  if (muted) return;
   try {
     const ctx = getCtx();
     const osc = ctx.createOscillator();
@@ -1194,18 +749,91 @@ function tone(freq, dur, vol = 0.15, type = 'sine', delay = 0) {
 const SND = {
   click: () => tone(660, 0.08, 0.1, 'square'),
   success: () => { tone(523, 0.15, 0.15); tone(784, 0.2, 0.15, 'sine', 0.1); },
-  rare: () => { [523, 659, 784, 1047, 1319].forEach((f, i) => tone(f, 0.35, 0.16, 'triangle', i * 0.09)); },
   coin: () => { tone(1047, 0.1, 0.14); tone(1568, 0.2, 0.14, 'sine', 0.08); },
-  hit: () => { tone(180, 0.15, 0.2, 'sawtooth'); tone(90, 0.3, 0.15, 'sawtooth', 0.05); },
+  rare: () => { [523, 659, 784, 1047, 1319].forEach((f, i) => tone(f, 0.35, 0.16, 'triangle', i * 0.09)); },
   levelUp: () => { [523, 659, 784, 1047, 1319, 1568].forEach((f, i) => tone(f, 0.4, 0.16, 'triangle', i * 0.11)); },
-  pack: () => { for (let i = 0; i < 6; i++) tone(400 + i * 100, 0.1, 0.1, 'square', i * 0.05); },
-  open: () => { tone(200, 0.5, 0.2, 'sawtooth'); tone(400, 0.5, 0.15, 'sawtooth', 0.05); tone(800, 0.5, 0.1, 'sawtooth', 0.1); },
-  welcome: () => { [523, 659, 784, 1047].forEach((f, i) => tone(f, 0.5, 0.18, 'triangle', i * 0.15)); }
+  pet: () => { tone(523, 0.1, 0.12); tone(659, 0.15, 0.12, 'sine', 0.06); },
+  eat: () => { [440, 554, 659, 880].forEach((f, i) => tone(f, 0.12, 0.1, 'triangle', i * 0.06)); },
+  welcome: () => { [523, 659, 784, 1047].forEach((f, i) => tone(f, 0.5, 0.18, 'triangle', i * 0.15)); },
+  fail: () => { tone(200, 0.2, 0.15, 'sawtooth'); tone(150, 0.3, 0.12, 'sawtooth', 0.1); }
+};
+function toggleMute() {
+  muted = !muted;
+  localStorage.setItem(KEY.mute, String(muted));
+  document.getElementById('mute-btn').textContent = muted ? '🔇' : '🔊';
+  if (!muted) SND.click();
+}
+
+/* ============================================================
+   DATOS DE POKÉMON (starters y compañeros)
+   ============================================================ */
+const STARTERS = [
+  { id: 25, dex: 25, name: 'Pikachu', type: 'Eléctrico', sprite: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/25.gif' },
+  { id: 4, dex: 4, name: 'Charmander', type: 'Fuego', sprite: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/4.gif' },
+  { id: 133, dex: 133, name: 'Eevee', type: 'Normal', sprite: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/showdown/133.gif' }
+];
+
+/* ============================================================
+   ESTADO GLOBAL
+   ============================================================ */
+let BASE_DATOS = [];
+let paginaActual = 1;
+let hayMas = false;
+let cargando = false;
+let busquedaActual = '';
+let tabAlbum = 'buscar';
+
+let misCartas = JSON.parse(localStorage.getItem(KEY.coleccion) || '{}');
+let xp = parseInt(localStorage.getItem(KEY.xp) || '0', 10);
+let level = parseInt(localStorage.getItem(KEY.level) || '1', 10);
+let coins = parseInt(localStorage.getItem(KEY.coins) || '100', 10);
+let streak = parseInt(localStorage.getItem(KEY.streak) || '0', 10);
+let misiones = JSON.parse(localStorage.getItem(KEY.misiones) || 'null');
+let misionFecha = localStorage.getItem(KEY.misionFecha) || '';
+let inventory = JSON.parse(localStorage.getItem(KEY.inventory) || 'null') || {
+  berry_oran: 5,
+  potion_normal: 3
+};
+let buddy = JSON.parse(localStorage.getItem(KEY.buddy) || 'null') || {
+  speciesId: 25,
+  name: 'Pikachu',
+  type: 'Eléctrico',
+  sprite: STARTERS[0].sprite,
+  level: 1,
+  xp: 0,
+  maxXp: 100,
+  friendship: 50,
+  hunger: 70,
+  hp: 60,
+  maxHp: 60
 };
 
-/* =====================================================================
-   CONFETTI
-   ===================================================================== */
+/* ============================================================
+   UTILS
+   ============================================================ */
+const $ = (s, c = document) => c.querySelector(s);
+const $$ = (s, c = document) => [...c.querySelectorAll(s)];
+const hoyISO = () => new Date().toISOString().slice(0, 10);
+const escapeHTML = s => String(s ?? '').replace(/[&<>"']/g, c => ({
+  '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+}[c]));
+
+function toast(msg) {
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2400);
+}
+function floatPopup(x, y, text, color = 'gold') {
+  const el = document.createElement('div');
+  el.className = 'float-popup ' + color;
+  el.textContent = text;
+  el.style.left = x + 'px';
+  el.style.top = y + 'px';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1500);
+}
 const CONFETTI_COLORS = ['#ff3b30', '#ffcb05', '#3b4cca', '#22c55e', '#a855f7', '#ff6b35', '#ff5c8a'];
 function confetti(count = 40) {
   for (let i = 0; i < count; i++) {
@@ -1217,72 +845,16 @@ function confetti(count = 40) {
     p.style.animationDuration = (1.5 + Math.random() * 1.5) + 's';
     p.style.animationDelay = (Math.random() * 0.4) + 's';
     p.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
-    if (Math.random() > 0.7) p.style.width = p.style.height = '14px';
     document.body.appendChild(p);
     setTimeout(() => p.remove(), 3500);
   }
 }
 
-/* =====================================================================
-   POPUP / TOAST
-   ===================================================================== */
-function floatPopup(x, y, text, color = 'gold') {
-  const el = document.createElement('div');
-  el.className = 'float-popup ' + color;
-  el.textContent = text;
-  el.style.left = x + 'px';
-  el.style.top = y + 'px';
-  document.body.appendChild(el);
-  setTimeout(() => el.remove(), 1700);
-}
-function toast(msg) {
-  const t = document.createElement('div');
-  t.className = 'toast';
-  t.textContent = msg;
-  document.body.appendChild(t);
-  setTimeout(() => t.remove(), 2400);
-}
-
-/* =====================================================================
-   BIENVENIDA ESPECIAL
-   ===================================================================== */
-function chequearBienvenida() {
-  if (localStorage.getItem(KEY.bienvenida)) return;
-  const overlay = document.getElementById('welcome-overlay');
-  overlay.classList.add('show');
-
-  // Corazones flotantes
-  const heartsBg = document.getElementById('welcome-hearts');
-  const heartEmojis = ['❤️', '💕', '💖', '💗', '✨', '⭐', '💛', '🧡'];
-  for (let i = 0; i < 14; i++) {
-    const s = document.createElement('span');
-    s.textContent = heartEmojis[Math.floor(Math.random() * heartEmojis.length)];
-    s.style.left = Math.random() * 100 + '%';
-    s.style.fontSize = (1 + Math.random() * 1.2) + 'rem';
-    s.style.animationDuration = (6 + Math.random() * 6) + 's';
-    s.style.animationDelay = (Math.random() * 4) + 's';
-    heartsBg.appendChild(s);
-  }
-
-  // Fanfarria + confeti
-  setTimeout(() => SND.welcome(), 300);
-  setTimeout(() => confetti(60), 400);
-  setTimeout(() => confetti(40), 1200);
-}
-
-function cerrarBienvenida() {
-  localStorage.setItem(KEY.bienvenida, '1');
-  const overlay = document.getElementById('welcome-overlay');
-  overlay.classList.remove('show');
-  SND.success();
-  confetti(50);
-  setTimeout(() => SND.coin(), 300);
-}
-
-/* =====================================================================
+/* ============================================================
    XP / NIVEL / MONEDAS
-   ===================================================================== */
+   ============================================================ */
 function xpNeeded(lv) { return 100 + (lv - 1) * 50; }
+
 function gainXP(amount) {
   xp += amount;
   let leveled = false;
@@ -1302,54 +874,33 @@ function gainCoins(amount) {
   updateHUD();
 }
 function updateHUD() {
-  document.getElementById('hud-level').textContent = level;
-  document.getElementById('hud-coins').textContent = coins;
-  document.getElementById('hud-streak').textContent = streak;
+  $('#hud-level').textContent = level;
+  $('#hud-coins').textContent = coins;
+  $('#hud-streak').textContent = streak;
   const need = xpNeeded(level);
-  document.getElementById('hud-xp').style.width = Math.min(100, (xp / need) * 100) + '%';
-  document.getElementById('hud-xp-text').textContent = `${xp}/${need}`;
-  ['basico','epico','legendario'].forEach(p => {
-    const prices = { basico: 30, epico: 70, legendario: 150 };
-    const el = document.getElementById('price-' + p);
-    if (el) {
-      el.classList.toggle('insuf', coins < prices[p]);
-      el.textContent = prices[p] + ' 💰';
-    }
-  });
-  const hoy = new Date().toDateString();
-  const regaloEl = document.getElementById('price-diario');
-  if (regaloEl) {
-    if (ultimoRegalo === hoy) {
-      regaloEl.textContent = 'Ya reclamado';
-      regaloEl.classList.add('insuf');
-    } else {
-      regaloEl.textContent = 'Gratis';
-      regaloEl.classList.remove('insuf');
-    }
-  }
+  $('#hud-xp').style.width = Math.min(100, (xp / need) * 100) + '%';
+  $('#hud-xp-text').textContent = `${xp}/${need}`;
+  renderShop();
 }
 function mostrarLevelModal(lv) {
   SND.levelUp();
   confetti(80);
   const bonus = 50 + lv * 10;
   gainCoins(bonus);
-  document.getElementById('level-num').textContent = lv;
-  document.getElementById('level-bonus').textContent = `+${bonus} 💰 de recompensa`;
-  document.getElementById('level-modal').classList.add('show');
+  $('#level-num').textContent = lv;
+  $('#level-bonus').textContent = `+${bonus} 💰 de recompensa`;
+  $('#level-modal').classList.add('show');
 }
-function cerrarLevelModal() {
-  document.getElementById('level-modal').classList.remove('show');
-}
+function cerrarLevelModal() { $('#level-modal').classList.remove('show'); }
 
-/* =====================================================================
+/* ============================================================
    MISIONES
-   ===================================================================== */
-function hoyISO() { return new Date().toISOString().slice(0, 10); }
+   ============================================================ */
 function misionesDefecto() {
   return [
     { id: 'nuevas', ico: '⭐', txt: 'Agregá 3 cartas nuevas', need: 3, cur: 0, coin: 30 },
-    { id: 'batalla', ico: '⚔️', txt: 'Ganá 1 batalla', need: 1, cur: 0, coin: 20 },
-    { id: 'historia', ico: '✍️', txt: 'Escribí una historia', need: 1, cur: 0, coin: 25 }
+    { id: 'jugar', ico: '🎮', txt: 'Jugá un minijuego', need: 1, cur: 0, coin: 20 },
+    { id: 'cuidar', ico: '❤️', txt: 'Cuidá a tu compañero 3 veces', need: 3, cur: 0, coin: 25 }
   ];
 }
 function cargarMisiones() {
@@ -1361,100 +912,211 @@ function cargarMisiones() {
     localStorage.setItem(KEY.misionFecha, hoy);
   }
 }
-function progresoMision(id, incremento = 1) {
+function progresoMision(id, inc = 1) {
   const m = misiones.find(x => x.id === id);
   if (!m || m.cur >= m.need) return;
-  m.cur = Math.min(m.need, m.cur + incremento);
+  m.cur = Math.min(m.need, m.cur + inc);
   localStorage.setItem(KEY.misiones, JSON.stringify(misiones));
   if (m.cur >= m.need) {
     gainCoins(m.coin);
     SND.coin();
     toast(`¡Misión completada! +${m.coin} 💰`);
-    setTimeout(() => confetti(30), 200);
+    confetti(30);
   }
   renderMisiones();
   updateNavNotif();
 }
 function renderMisiones() {
-  const cont = document.getElementById('misiones-container');
+  const cont = $('#misiones-container');
   const completadas = misiones.filter(m => m.cur >= m.need).length;
-  document.getElementById('misiones-count').textContent = `${completadas}/${misiones.length}`;
+  $('#misiones-count').textContent = `${completadas}/${misiones.length}`;
   cont.innerHTML = misiones.map(m => {
     const done = m.cur >= m.need;
     const pct = Math.min(100, (m.cur / m.need) * 100);
-    return `
-      <div class="mission-card ${done ? 'done' : ''}">
-        <div class="mission-ico">${m.ico}</div>
-        <div class="mission-body">
-          <strong>${m.txt}</strong>
-          <div class="mission-progress"><div style="width:${pct}%"></div></div>
-          <small>${m.cur}/${m.need}</small>
-        </div>
-        <div class="mission-reward">${done ? '✓' : '+' + m.coin}</div>
-      </div>`;
+    return `<div class="mission-card ${done ? 'done' : ''}">
+      <div class="mission-ico">${m.ico}</div>
+      <div class="mission-body">
+        <strong>${m.txt}</strong>
+        <div class="mission-progress"><div style="width:${pct}%"></div></div>
+        <small>${m.cur}/${m.need}</small>
+      </div>
+      <div class="mission-reward">${done ? '✓' : '+' + m.coin}</div>
+    </div>`;
   }).join('');
   updateNavNotif();
 }
 function updateNavNotif() {
-  const hayNuevas = misiones.some(m => m.cur >= m.need);
-  document.getElementById('nav-home').classList.toggle('has-notif', hayNuevas);
-  const hoy = new Date().toDateString();
-  document.getElementById('nav-tienda').classList.toggle('has-notif', ultimoRegalo !== hoy);
+  const hay = misiones.some(m => m.cur >= m.need);
+  $('#nav-base').classList.toggle('has-notif', hay);
+  $('#nav-tienda').classList.toggle('has-notif', false);
 }
 
-/* =====================================================================
-   LOGROS
-   ===================================================================== */
-const LOGROS_DEF = [
-  { id: 'c10', ico: '📚', txt: '10 cartas en tu colección', check: () => Object.keys(misCartas).length >= 10 },
-  { id: 'c50', ico: '📖', txt: '50 cartas en tu colección', check: () => Object.keys(misCartas).length >= 50 },
-  { id: 'c100', ico: '🏆', txt: '100 cartas en tu colección', check: () => Object.keys(misCartas).length >= 100 },
-  { id: 'b1', ico: '⚔️', txt: 'Tu primera batalla', check: () => logros.b1 },
-  { id: 'b10', ico: '🥊', txt: '10 batallas jugadas', check: () => (logros.bCount || 0) >= 10 },
-  { id: 'h1', ico: '✍️', txt: 'Tu primera historia', check: () => historias.length >= 1 },
-  { id: 'h5', ico: '📝', txt: '5 historias escritas', check: () => historias.length >= 5 },
-  { id: 'lv5', ico: '🌟', txt: 'Alcanzá el nivel 5', check: () => level >= 5 },
-  { id: 'lv10', ico: '👑', txt: 'Alcanzá el nivel 10', check: () => level >= 10 },
-  { id: 'p1', ico: '🎁', txt: 'Abrí un sobre', check: () => (logros.packCount || 0) >= 1 },
-  { id: 'p10', ico: '🎊', txt: 'Abrí 10 sobres', check: () => (logros.packCount || 0) >= 10 },
-];
-function renderLogros() {
-  const cont = document.getElementById('logros-list');
-  cont.innerHTML = LOGROS_DEF.map(l => {
-    const ok = l.check();
-    return `
-      <div class="mission-card ${ok ? 'done' : ''}" style="border-left-color: ${ok ? 'var(--green)' : 'var(--yellow)'};">
-        <div class="mission-ico">${ok ? l.ico : '🔒'}</div>
-        <div class="mission-body">
-          <strong>${l.txt}</strong>
-          <small>${ok ? 'Desbloqueado' : 'Bloqueado'}</small>
+/* ============================================================
+   COMPAÑERO
+   ============================================================ */
+function saveBuddy() { localStorage.setItem(KEY.buddy, JSON.stringify(buddy)); }
+
+function renderBuddy() {
+  const buddySpecies = STARTERS.find(s => s.id === buddy.speciesId) || STARTERS[0];
+  const friendPct = buddy.friendship;
+  const hungerPct = buddy.hunger;
+  const hpPct = (buddy.hp / buddy.maxHp) * 100;
+  const xpPct = (buddy.xp / buddy.maxXp) * 100;
+
+  $('#buddy-container').innerHTML = `
+    <div class="buddy-stage">
+      <div class="buddy-inner">
+        <div class="buddy-sprite-wrap" id="buddy-sprite" onclick="petBuddy(event)">
+          <img src="${buddy.sprite}" alt="${buddy.name}">
         </div>
-      </div>`;
+        <div class="buddy-name">${buddy.name}</div>
+        <div class="buddy-info">Nivel ${buddy.level} · ${buddy.type}</div>
+
+        <div class="buddy-meters">
+          <div class="meter friend">
+            <div class="meter-head"><span>❤️ Cariño</span><span>${buddy.friendship}/100</span></div>
+            <div class="meter-bar"><div style="width:${friendPct}%"></div></div>
+          </div>
+          <div class="meter hunger">
+            <div class="meter-head"><span>🍖 Hambre</span><span>${buddy.hunger}/100</span></div>
+            <div class="meter-bar"><div style="width:${hungerPct}%"></div></div>
+          </div>
+          <div class="meter hp">
+            <div class="meter-head"><span>💚 HP</span><span>${buddy.hp}/${buddy.maxHp}</span></div>
+            <div class="meter-bar"><div style="width:${hpPct}%"></div></div>
+          </div>
+          <div class="meter xp">
+            <div class="meter-head"><span>✨ XP</span><span>${buddy.xp}/${buddy.maxXp}</span></div>
+            <div class="meter-bar"><div style="width:${xpPct}%"></div></div>
+          </div>
+        </div>
+
+        <div class="buddy-actions">
+          <button class="action-btn" onclick="petBuddy()">
+            <span class="ico">🤚</span> Acariciar
+          </button>
+          <button class="action-btn" onclick="abrirAlimentar()">
+            <span class="ico">🍓</span> Alimentar
+          </button>
+          <button class="action-btn" onclick="abrirCambiarBuddy()">
+            <span class="ico">🔄</span> Cambiar
+          </button>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function petBuddy(e) {
+  if (e) e.stopPropagation();
+  const wrap = $('#buddy-sprite');
+  if (!wrap) return;
+  wrap.classList.add('bounce');
+  setTimeout(() => wrap.classList.remove('bounce'), 400);
+
+  // Corazón flotante
+  const heart = document.createElement('div');
+  heart.className = 'heart-float';
+  heart.textContent = ['❤️', '💕', '💖', '✨'][Math.floor(Math.random() * 4)];
+  heart.style.left = (40 + Math.random() * 40) + '%';
+  heart.style.bottom = '60%';
+  wrap.appendChild(heart);
+  setTimeout(() => heart.remove(), 1300);
+
+  SND.pet();
+  buddy.friendship = Math.min(100, buddy.friendship + 2);
+  buddy.xp += 3;
+  if (buddy.xp >= buddy.maxXp) subirNivelBuddy();
+  saveBuddy();
+  renderBuddy();
+  progresoMision('cuidar');
+}
+
+function subirNivelBuddy() {
+  buddy.xp -= buddy.maxXp;
+  buddy.level++;
+  buddy.maxXp = xpNeeded(buddy.level);
+  buddy.maxHp += 8;
+  buddy.hp = buddy.maxHp;
+  SND.levelUp();
+  confetti(40);
+  toast(`¡${buddy.name} subió al nivel ${buddy.level}! 🎉`);
+}
+
+function abrirAlimentar() {
+  const opciones = [
+    { id: 'berry_oran', name: 'Baya Aranja', icon: '🫐', hunger: 30, friend: 5, hp: 10 },
+    { id: 'berry_sitrus', name: 'Baya Zreza', icon: '🍒', hunger: 50, friend: 10, hp: 25 },
+    { id: 'berry_golden', name: 'Baya Dorada', icon: '🍓', hunger: 80, friend: 20, hp: 50 }
+  ];
+  const html = opciones.map(o => {
+    const tiene = inventory[o.id] || 0;
+    return `<div class="shop-item" style="opacity:${tiene > 0 ? 1 : 0.4}" onclick="${tiene > 0 ? `alimentar('${o.id}')` : ''}">
+      <span class="shop-emoji">${o.icon}</span>
+      <h4>${o.name}</h4>
+      <p>+${o.hunger} hambre · +${o.friend} cariño</p>
+      <div class="price ${tiene > 0 ? '' : 'insuf'}">Tenes: ${tiene}</div>
+    </div>`;
   }).join('');
+  mostrarModal('Alimentar a ' + buddy.name, `<div class="shop-grid">${html}</div>`);
 }
 
-/* =====================================================================
-   NAVEGACIÓN
-   ===================================================================== */
-function irA(vista) {
-  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-  document.getElementById('view-' + vista).classList.add('active');
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('nav-' + vista).classList.add('active');
-  window.scrollTo(0, 0);
+function alimentar(itemId) {
+  if (!inventory[itemId] || inventory[itemId] <= 0) return;
+  const o = {
+    berry_oran: { hunger: 30, friend: 5, hp: 10 },
+    berry_sitrus: { hunger: 50, friend: 10, hp: 25 },
+    berry_golden: { hunger: 80, friend: 20, hp: 50 }
+  }[itemId];
+  inventory[itemId]--;
+  localStorage.setItem(KEY.inventory, JSON.stringify(inventory));
+  buddy.hunger = Math.min(100, buddy.hunger + o.hunger);
+  buddy.friendship = Math.min(100, buddy.friendship + o.friend);
+  buddy.hp = Math.min(buddy.maxHp, buddy.hp + o.hp);
+  buddy.xp += 10;
+  if (buddy.xp >= buddy.maxXp) subirNivelBuddy();
+  saveBuddy();
+  SND.eat();
+  toast('¡Ñam ñam! Delicioso 🍽️');
+  cerrarModal();
+  renderBuddy();
+  progresoMision('cuidar');
+}
+
+function abrirCambiarBuddy() {
+  const html = STARTERS.map(s => {
+    const activo = s.id === buddy.speciesId;
+    return `<div class="shop-item" onclick="cambiarBuddy(${s.id})" style="border-top-color:${activo ? 'var(--green)' : 'var(--gold)'}">
+      <img src="${s.sprite}" style="width:60px;height:60px;margin:0 auto;display:block;">
+      <h4>${s.name}</h4>
+      <p>${s.type}</p>
+      ${activo ? '<div class="price" style="background:var(--green);color:white;">✓ Activo</div>' : ''}
+    </div>`;
+  }).join('');
+  mostrarModal('Elegir compañero', `<div class="shop-grid">${html}</div>`);
+}
+
+function cambiarBuddy(id) {
+  const s = STARTERS.find(x => x.id === id);
+  if (!s) return;
+  buddy.speciesId = s.id;
+  buddy.name = s.name;
+  buddy.type = s.type;
+  buddy.sprite = s.sprite;
+  saveBuddy();
   SND.click();
-  if (vista === 'home') renderHome();
-  if (vista === 'album') renderAlbum();
-  if (vista === 'tienda') renderLogros();
+  cerrarModal();
+  renderBuddy();
+  toast(`¡${s.name} ahora es tu compañero!`);
 }
 
-/* =====================================================================
-   API
-   ===================================================================== */
+/* ============================================================
+   ÁLBUM (API Pokémon TCG)
+   ============================================================ */
 async function cargarCartas(query = '', page = 1, append = false) {
   if (cargando) return;
   cargando = true;
-  const grid = document.getElementById('album-grid');
+  const grid = $('#album-grid');
   if (!append) {
     grid.innerHTML = `<div class="empty-state"><div class="spinner"></div><p>Buscando cartas...</p></div>`;
   }
@@ -1472,10 +1134,7 @@ async function cargarCartas(query = '', page = 1, append = false) {
       tipo: c.types ? c.types.join(' / ') : 'Normal',
       hp: c.hp ? parseInt(c.hp, 10) : 0,
       rareza: c.rarity || 'Common',
-      img: c.images?.small || '',
-      imgGrande: c.images?.large || '',
-      set: c.set?.name || '',
-      numero: c.number || ''
+      img: c.images?.small || ''
     }));
     BASE_DATOS = append ? BASE_DATOS.concat(cartas) : cartas;
     hayMas = cartas.length === PAGE_SIZE;
@@ -1483,7 +1142,7 @@ async function cargarCartas(query = '', page = 1, append = false) {
   } catch (e) {
     console.error(e);
     if (!append) {
-      grid.innerHTML = `<div class="empty-state"><span class="big">😵</span><p>No se pudieron cargar las cartas.<br><small style="color:#999;">Revisá tu conexión o la API Key.</small></p></div>`;
+      grid.innerHTML = `<div class="empty-state"><span class="big">😵</span><p>No se pudieron cargar las cartas.<br><small style="color:#999;">Revisá tu conexión.</small></p></div>`;
     } else {
       toast('No se pudieron cargar más');
     }
@@ -1493,27 +1152,17 @@ async function cargarCartas(query = '', page = 1, append = false) {
   }
 }
 function actualizarBotonMas() {
-  const btn = document.getElementById('btn-mas');
+  const btn = $('#btn-mas');
   btn.style.display = (hayMas && tabAlbum === 'buscar') ? 'inline-flex' : 'none';
   btn.disabled = cargando;
   btn.textContent = cargando ? '⏳ Cargando...' : '➕ Cargar más';
 }
-function cargarMas() {
-  if (cargando || !hayMas) return;
-  paginaActual++;
-  cargarCartas(busquedaActual, paginaActual, true);
-}
+function cargarMas() { if (!cargando && hayMas) { paginaActual++; cargarCartas(busquedaActual, paginaActual, true); } }
 
-/* =====================================================================
-   BUSCADOR + INIT
-   ===================================================================== */
 let debTimer = null;
-document.addEventListener('DOMContentLoaded', () => {
-  // Bienvenida primero
-  chequearBienvenida();
-
-  const buscador = document.getElementById('buscador');
-  const clearBtn = document.getElementById('search-x');
+function initBuscador() {
+  const buscador = $('#buscador');
+  const clearBtn = $('#search-x');
   buscador.addEventListener('input', () => {
     const v = buscador.value.trim();
     clearBtn.classList.toggle('show', v.length > 0);
@@ -1524,81 +1173,58 @@ document.addEventListener('DOMContentLoaded', () => {
       cargarCartas(v, 1, false);
     }, 500);
   });
-  cargarCartas('', 1, false);
-  cargarMisiones();
-  renderMisiones();
-  renderHome();
-  updateHUD();
-  renderHistorias();
-  // Mostrar/ocultar input custom cuando elige "Otro lugar"
-  const selEsc = document.getElementById('story-esc');
-  const inputEscCustom = document.getElementById('story-esc-custom');
-  selEsc.addEventListener('change', () => {
-    if (selEsc.value === 'otro') {
-      inputEscCustom.style.display = 'block';
-      inputEscCustom.focus();
-    } else {
-      inputEscCustom.style.display = 'none';
-      inputEscCustom.value = '';
-    }
-  });
-
+}
 function limpiarBusqueda() {
-  document.getElementById('buscador').value = '';
-  document.getElementById('search-x').classList.remove('show');
+  $('#buscador').value = '';
+  $('#search-x').classList.remove('show');
   busquedaActual = '';
   paginaActual = 1;
   cargarCartas('', 1, false);
 }
-
-/* =====================================================================
-   ÁLBUM
-   ===================================================================== */
 function cambiarTab(tab) {
   tabAlbum = tab;
-  document.getElementById('tab-buscar').classList.toggle('active', tab === 'buscar');
-  document.getElementById('tab-coleccion').classList.toggle('active', tab === 'coleccion');
-  document.getElementById('panel-buscar').style.display = tab === 'buscar' ? 'block' : 'none';
-  document.getElementById('panel-coleccion').style.display = tab === 'coleccion' ? 'block' : 'none';
+  $('#tab-buscar').classList.toggle('active', tab === 'buscar');
+  $('#tab-coleccion').classList.toggle('active', tab === 'coleccion');
+  $('#panel-buscar').style.display = tab === 'buscar' ? 'block' : 'none';
+  $('#panel-coleccion').style.display = tab === 'coleccion' ? 'block' : 'none';
   renderAlbum();
 }
 function renderAlbum() {
   if (tabAlbum === 'coleccion') { renderColeccion(); return; }
-  const grid = document.getElementById('album-grid');
+  const grid = $('#album-grid');
   if (!BASE_DATOS.length) {
     grid.innerHTML = `<div class="empty-state"><span class="big">🔍</span><p>No se encontraron cartas.</p></div>`;
     actualizarBotonMas();
     return;
   }
-  grid.innerHTML = BASE_DATOS.map((c, i) => cardTileHTML(c, i)).join('');
+  grid.innerHTML = BASE_DATOS.map(c => cardTileHTML(c)).join('');
   grid.querySelectorAll('[data-id]').forEach(el => {
     el.onclick = (e) => toggleCarta(el.dataset.id, e);
   });
   actualizarBotonMas();
 }
 function renderColeccion() {
-  const grid = document.getElementById('coleccion-grid');
+  const grid = $('#coleccion-grid');
   const arr = Object.values(misCartas);
   if (!arr.length) {
     grid.innerHTML = `<div class="empty-state"><span class="big">📭</span><p>Todavía no tenés cartas.<br>¡Andá a <b>Buscar</b> y marcá las que tengas!</p></div>`;
     return;
   }
   arr.sort((a, b) => a.nombre.localeCompare(b.nombre));
-  grid.innerHTML = arr.map((c, i) => cardTileHTML(c, i)).join('');
+  grid.innerHTML = arr.map(c => cardTileHTML(c)).join('');
   grid.querySelectorAll('[data-id]').forEach(el => {
     el.onclick = (e) => toggleCarta(el.dataset.id, e);
   });
 }
-function cardTileHTML(c, i) {
+function cardTileHTML(c) {
   const owned = !!misCartas[c.id];
-  return `
-    <div class="card-tile ${owned ? 'owned' : ''}" data-id="${c.id}" style="--i:${i % 12};">
-      <img src="${c.img}" alt="${escapeHTML(c.nombre)}" loading="lazy">
-      <div class="tile-info">
-        <h4>${escapeHTML(c.nombre)}</h4>
-        <small>${escapeHTML(c.tipo)} · ${c.hp} HP</small>
-      </div>
-    </div>`;
+  return `<div class="card-tile ${owned ? 'owned' : ''}" data-id="${c.id}">
+    <img src="${c.img}" alt="${escapeHTML(c.nombre)}" loading="lazy">
+    <div class="tile-info">
+      <h4>${escapeHTML(c.nombre)}</h4>
+      <small>${escapeHTML(c.tipo)} · ${c.hp} HP</small>
+    </div>
+  </div>`;
 }
 function toggleCarta(id, ev) {
   if (misCartas[id]) {
@@ -1606,7 +1232,7 @@ function toggleCarta(id, ev) {
     SND.click();
     toast('Carta quitada');
   } else {
-    const carta = BASE_DATOS.find(c => c.id === id) || buscarEnCache(id);
+    const carta = BASE_DATOS.find(c => c.id === id);
     if (!carta) return;
     misCartas[id] = carta;
     SND.success();
@@ -1617,9 +1243,8 @@ function toggleCarta(id, ev) {
     gainXP(10);
     gainCoins(2);
     progresoMision('nuevas');
-    if (esRara(carta.rareza)) {
-      confetti(60);
-      SND.rare();
+    if (carta.rareza && (carta.rareza.includes('Rare') || carta.rareza.includes('Ultra'))) {
+      confetti(60); SND.rare();
       toast('¡Carta rara conseguida! ✨');
     } else {
       toast('¡Carta agregada! ⭐');
@@ -1627,398 +1252,344 @@ function toggleCarta(id, ev) {
   }
   localStorage.setItem(KEY.coleccion, JSON.stringify(misCartas));
   if (tabAlbum === 'buscar') renderAlbum(); else renderColeccion();
-  renderHome();
-  renderHistorias();
-  renderLogros();
-}
-function buscarEnCache(id) {
-  return Object.values(misCartas).find(c => c.id === id);
-}
-function esRara(rareza) {
-  if (!rareza) return false;
-  const r = rareza.toLowerCase();
-  return r.includes('rare') && !r.includes('common') || r.includes('ultra') || r.includes('secret') || (r.includes('holo') && r.includes('rare'));
 }
 
-/* =====================================================================
-   HOME
-   ===================================================================== */
-function renderHome() {
-  const h = new Date().getHours();
-  const saludo = h < 12 ? '¡Buenos días' : h < 20 ? '¡Buenas tardes' : '¡Buenas noches';
-  document.getElementById('greeting').textContent = `${saludo}, Entrenador!`;
+/* ============================================================
+   MINIJUEGO: BAYA DASH
+   ============================================================ */
+let bayaDashState = null;
 
-  const arr = Object.values(misCartas);
-  const feat = document.getElementById('featured');
-  if (!arr.length) {
-    feat.innerHTML = `
-      <div class="featured-inner">
-        <div style="font-size:3.5rem; margin-bottom:10px;">🎴</div>
-        <h3>Tu colección está vacía</h3>
-        <p>Andá al Álbum y marcá tus cartas reales. ¡Cada una suma XP!</p>
-      </div>`;
-  } else {
-    const c = arr[Math.floor(Math.random() * arr.length)];
-    feat.innerHTML = `
-      <div class="featured-inner">
-        <img src="${c.img}" alt="${escapeHTML(c.nombre)}">
-        <h3>${escapeHTML(c.nombre)}</h3>
-        <p>${escapeHTML(c.tipo)} · ${c.hp} HP</p>
-        <div class="star-label">⭐ CARTA ALEATORIA DEL DÍA</div>
-      </div>`;
-  }
+function renderJuegos() {
+  $('#juegos-container').innerHTML = `
+    <div class="shop-item" style="border-top-color:var(--orange);text-align:center;padding:20px;" onclick="iniciarBayaDash()">
+      <span class="shop-emoji" style="font-size:3rem;">🫐</span>
+      <h4 style="font-size:1rem;">Baya Dash</h4>
+      <p style="font-size:0.8rem;">Movete para atrapar bayas y esquivá las rocas. ¡Ganá hasta 100 monedas!</p>
+      <div class="price" style="margin-top:12px;">▶ Jugar</div>
+    </div>
+  `;
 }
 
-/* =====================================================================
-   HISTORIAS
-   ===================================================================== */
-function renderHistorias() {
-  const opciones = Object.values(misCartas).sort((a, b) => a.nombre.localeCompare(b.nombre));
-  const html = opciones.map(c => `<option value="${c.id}">${escapeHTML(c.nombre)}</option>`).join('');
-  document.getElementById('story-p1').innerHTML = html || '<option value="">(Sin cartas)</option>';
-  document.getElementById('story-p2').innerHTML = html || '<option value="">(Sin cartas)</option>';
-
-  const lista = document.getElementById('story-list');
-  if (!historias.length) { lista.innerHTML = ''; return; }
-  lista.innerHTML = historias.slice().reverse().map(h => `
-    <div class="story-card">
-      <button class="del" onclick="borrarHistoria(${h.id})">🗑️</button>
-      <h4>📖 ${escapeHTML(h.titulo)}</h4>
-      <p>${escapeHTML(h.texto)}</p>
-      <small>${escapeHTML(h.p1)} y ${escapeHTML(h.p2)} · ${h.fecha}</small>
-    </div>`).join('');
-}
-function guardarHistoria() {
-  const p1 = document.getElementById('story-p1').value;
-  const p2 = document.getElementById('story-p2').value;
-  
-  // Leer el lugar (con soporte para "Otro")
-  let esc = document.getElementById('story-esc').value;
-  if (esc === 'otro') {
-    esc = document.getElementById('story-esc-custom').value.trim();
-    if (!esc) { toast('Escribí el lugar que inventaste'); return; }
-  }
-  
-  const con = document.getElementById('story-con').value.trim();
-  const txt = document.getElementById('story-txt').value.trim();
-
-  if (!p1 || !p2) { toast('Elegí dos Pokémon'); return; }
-  if (p1 === p2) { toast('Elegí dos distintos'); return; }
-  if (!txt) { toast('Escribí tu historia'); return; }
-
-  const c1 = misCartas[p1]?.nombre || '?';
-  const c2 = misCartas[p2]?.nombre || '?';
-
-  historias.push({
-    id: Date.now(),
-    titulo: `${c1} y ${c2} en ${esc || 'una aventura'}`,
-    p1: c1, p2: c2, esc, con, txt,
-    fecha: new Date().toLocaleDateString('es-AR')
-  });
-  localStorage.setItem(KEY.historias, JSON.stringify(historias));
-
-  // Limpiar formulario
-  document.getElementById('story-con').value = '';
-  document.getElementById('story-txt').value = '';
-  document.getElementById('story-esc-custom').value = '';
-  document.getElementById('story-esc-custom').style.display = 'none';
-  document.getElementById('story-esc').value = 'el Bosque Verde'; // volver al primero
-
-  SND.success();
-  gainXP(20);
-  gainCoins(8);
-  progresoMision('historia');
-  confetti(30);
-  toast('¡Historia guardada! +20 XP, +8 💰');
-  renderHistorias();
-  renderLogros();
-  renderHome();
-}  
-function borrarHistoria(id) {
-  if (!confirm('¿Borrar historia?')) return;
-  historias = historias.filter(h => h.id !== id);
-  localStorage.setItem(KEY.historias, JSON.stringify(historias));
-  renderHistorias();
-}
-
-/* =====================================================================
-   ARENA
-   ===================================================================== */
-function abrirSelector(n) {
-  slotActivo = n;
-  const modal = document.getElementById('selector-modal');
-  const grid = document.getElementById('selector-grid');
-  const arr = Object.values(misCartas).sort((a, b) => a.nombre.localeCompare(b.nombre));
-  if (!arr.length) {
-    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><span class="big">📭</span><p>No tenés cartas todavía.</p></div>`;
-  } else {
-    grid.innerHTML = arr.map((c, i) => `
-      <div class="card-tile" data-pick="${c.id}" style="--i:${i % 8};">
-        <img src="${c.img}" alt="${escapeHTML(c.nombre)}" loading="lazy">
-        <div class="tile-info">
-          <h4>${escapeHTML(c.nombre)}</h4>
-          <small>${c.hp} HP</small>
+function iniciarBayaDash() {
+  cerrarModal();
+  const modal = document.createElement('div');
+  modal.className = 'modal-overlay show';
+  modal.id = 'game-modal';
+  modal.innerHTML = `
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>🫐 Baya Dash</h3>
+        <button class="close-modal" onclick="cerrarBayaDash()">✕</button>
+      </div>
+      <div class="game-area" id="baya-dash-area">
+        <div class="game-hud">
+          <span class="score">Puntos: <span id="bd-score">0</span></span>
+          <span class="lives">❤️ <span id="bd-lives">3</span></span>
+          <span class="time">⏱ <span id="bd-time">25</span>s</span>
         </div>
-      </div>`).join('');
-    grid.querySelectorAll('[data-pick]').forEach(el => {
-      el.onclick = () => elegirParaArena(el.dataset.pick);
-    });
-  }
-  modal.classList.add('show');
-}
-function cerrarSelector() {
-  document.getElementById('selector-modal').classList.remove('show');
-}
-function elegirParaArena(id) {
-  const c = misCartas[id];
-  if (!c) return;
-  if (slotActivo === 1) slot1 = c; else slot2 = c;
-  pintarSlot(slotActivo, c);
-  SND.click();
-  cerrarSelector();
-}
-function pintarSlot(n, c) {
-  const slot = document.getElementById('slot-' + n);
-  slot.innerHTML = `
-    <img src="${c.img}" alt="${escapeHTML(c.nombre)}">
-    <div class="slot-name">${escapeHTML(c.nombre)}</div>
-    <div class="slot-hp"><div style="width:100%"></div></div>`;
-  slot.classList.add('selected');
-}
-async function pelear() {
-  if (!slot1 || !slot2) { toast('¡Elegí dos cartas!'); return; }
-  const btn = document.getElementById('btn-fight');
-  btn.disabled = true;
-  btn.textContent = '⚔️ Peleando...';
+      </div>
+      <p style="text-align:center;color:var(--muted);font-size:0.78rem;margin-top:10px;">
+        Movés el dedo o el mouse de izquierda a derecha para mover a ${buddy.name}
+      </p>
+    </div>
+  `;
+  document.body.appendChild(modal);
 
-  const log = document.getElementById('battle-log');
-  log.style.display = 'block';
-  log.innerHTML = '';
-
-  const hp1max = slot1.hp || 50;
-  const hp2max = slot2.hp || 50;
-  let hp1 = hp1max, hp2 = hp2max;
-
-  const bonus = r => {
-    const x = (r || '').toLowerCase();
-    if (x.includes('secret')) return 60;
-    if (x.includes('rainbow')) return 55;
-    if (x.includes('ultra') || x.includes('holo')) return 40;
-    if (x.includes('rare')) return 20;
-    return 0;
+  bayaDashState = {
+    score: 0, lives: 3, timeLeft: 25,
+    buddyX: 50, items: [],
+    running: true,
+    spawnInterval: null, timeInterval: null, raf: null,
+    lastSpawn: 0
   };
-  const dmgBase = (c) => Math.round((c.hp || 50) / 4 + bonus(c.rareza) / 4 + Math.random() * 8);
 
-  const turnos = [];
-  let turno = 1;
-  let atacante = Math.random() > 0.5 ? 1 : 2;
-  while ((hp1 > 0 && hp2 > 0) && turno <= 8) {
-    if (atacante === 1) {
-      const dmg = dmgBase(slot1);
-      const crit = Math.random() > 0.85;
-      hp2 = Math.max(0, hp2 - dmg);
-      turnos.push(`T${turno} · <b>${escapeHTML(slot1.nombre)}</b> ataca · ${crit ? '<span class="crit">¡CRÍTICO!</span> ' : ''}<span class="hit">-${dmg} HP</span>`);
-      animarHit(2);
-    } else {
-      const dmg = dmgBase(slot2);
-      const crit = Math.random() > 0.85;
-      hp1 = Math.max(0, hp1 - dmg);
-      turnos.push(`T${turno} · <b>${escapeHTML(slot2.nombre)}</b> ataca · ${crit ? '<span class="crit">¡CRÍTICO!</span> ' : ''}<span class="hit">-${dmg} HP</span>`);
-      animarHit(1);
+  const area = $('#baya-dash-area');
+
+  const moveHandler = (e) => {
+    if (!bayaDashState || !bayaDashState.running) return;
+    const rect = area.getBoundingClientRect();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const relX = ((clientX - rect.left) / rect.width) * 100;
+    bayaDashState.buddyX = Math.max(8, Math.min(92, relX));
+    const player = $('#bd-player');
+    if (player) player.style.left = bayaDashState.buddyX + '%';
+  };
+  area.addEventListener('mousemove', moveHandler);
+  area.addEventListener('touchmove', moveHandler, { passive: true });
+
+  // Jugador
+  const player = document.createElement('div');
+  player.className = 'game-player';
+  player.id = 'bd-player';
+  player.style.left = '50%';
+  player.innerHTML = `<img src="${buddy.sprite}" alt="${buddy.name}"><div class="shadow"></div>`;
+  area.appendChild(player);
+
+  // Timer
+  bayaDashState.timeInterval = setInterval(() => {
+    if (!bayaDashState || !bayaDashState.running) return;
+    bayaDashState.timeLeft--;
+    $('#bd-time').textContent = bayaDashState.timeLeft;
+    if (bayaDashState.timeLeft <= 0) terminarBayaDash();
+  }, 1000);
+
+  // Spawn de items
+  bayaDashState.spawnInterval = setInterval(() => {
+    if (!bayaDashState || !bayaDashState.running) return;
+    const isRock = Math.random() < 0.28;
+    const isStar = !isRock && Math.random() < 0.12;
+    const type = isRock ? 'rock' : isStar ? 'star' : 'berry';
+    const emoji = type === 'rock' ? '🪨' : type === 'star' ? '⭐' : ['🫐', '🍒', '🍓'][Math.floor(Math.random() * 3)];
+    const itemEl = document.createElement('div');
+    itemEl.className = 'falling-item';
+    itemEl.textContent = emoji;
+    itemEl.style.left = (10 + Math.random() * 80) + '%';
+    itemEl.style.top = '-30px';
+    area.appendChild(itemEl);
+    bayaDashState.items.push({
+      el: itemEl,
+      x: parseFloat(itemEl.style.left),
+      y: -30,
+      type,
+      speed: 2.5 + Math.random() * 2
+    });
+  }, 700);
+
+  // Loop de física
+  function loop() {
+    if (!bayaDashState || !bayaDashState.running) return;
+    for (let i = bayaDashState.items.length - 1; i >= 0; i--) {
+      const it = bayaDashState.items[i];
+      it.y += it.speed;
+      it.el.style.top = it.y + 'px';
+      // Colisión con jugador (parte baja del área)
+      if (it.y > 240 && it.y < 300) {
+        const dx = Math.abs(it.x - bayaDashState.buddyX);
+        if (dx < 12) {
+          if (it.type === 'rock') {
+            bayaDashState.lives--;
+            $('#bd-lives').textContent = bayaDashState.lives;
+            SND.fail();
+            if (bayaDashState.lives <= 0) { terminarBayaDash(); return; }
+          } else if (it.type === 'star') {
+            bayaDashState.score += 25;
+            $('#bd-score').textContent = bayaDashState.score;
+            SND.coin();
+          } else {
+            bayaDashState.score += 10;
+            $('#bd-score').textContent = bayaDashState.score;
+            SND.eat();
+          }
+          it.el.remove();
+          bayaDashState.items.splice(i, 1);
+          continue;
+        }
+      }
+      if (it.y > 340) {
+        it.el.remove();
+        bayaDashState.items.splice(i, 1);
+      }
     }
-    setTimeout(() => {
-      actualizarHP(1, hp1, hp1max);
-      actualizarHP(2, hp2, hp2max);
-    }, turno * 350);
-    atacante = atacante === 1 ? 2 : 1;
-    turno++;
-    await sleep(350);
+    bayaDashState.raf = requestAnimationFrame(loop);
+  }
+  bayaDashState.raf = requestAnimationFrame(loop);
+}
+
+function terminarBayaDash() {
+  if (!bayaDashState || !bayaDashState.running) return;
+  bayaDashState.running = false;
+  clearInterval(bayaDashState.spawnInterval);
+  clearInterval(bayaDashState.timeInterval);
+  cancelAnimationFrame(bayaDashState.raf);
+
+  const score = bayaDashState.score;
+  const earnedCoins = Math.max(5, Math.round(score * 1.2));
+  const earnedXP = Math.max(10, Math.round(score * 1.5));
+
+  const area = $('#baya-dash-area');
+  if (area) {
+    const over = document.createElement('div');
+    over.className = 'game-over';
+    over.innerHTML = `
+      <h3>¡Fin del juego!</h3>
+      <p>Puntos: <strong style="color:var(--yellow);">${score}</strong></p>
+      <p style="font-size:0.8rem;opacity:0.7;">+${earnedCoins} 💰 · +${earnedXP} XP</p>
+      <button class="btn btn-gold" style="max-width:200px;" onclick="cerrarBayaDash()">Reclamar recompensas ✨</button>
+    `;
+    area.appendChild(over);
   }
 
-  let ganador;
-  if (hp1 > 0 && hp2 <= 0) ganador = 1;
-  else if (hp2 > 0 && hp1 <= 0) ganador = 2;
-  else if (hp1 > hp2) ganador = 1;
-  else if (hp2 > hp1) ganador = 2;
-  else ganador = 0;
+  gainCoins(earnedCoins);
+  gainXP(earnedXP);
+  buddy.xp += earnedXP;
+  if (buddy.xp >= buddy.maxXp) subirNivelBuddy();
+  saveBuddy();
+  progresoMision('jugar');
 
-  const ganadorCarta = ganador === 1 ? slot1 : ganador === 2 ? slot2 : null;
-  turnos.push(ganadorCarta
-    ? `<span class="win">🏆 ¡Ganó ${escapeHTML(ganadorCarta.nombre)}!</span>`
-    : `<span class="win">🤝 ¡Empate!</span>`);
+  if (score > 30) confetti(60);
+}
 
-  log.innerHTML = turnos.map(t => `<div class="line">${t}</div>`).join('');
+function cerrarBayaDash() {
+  const modal = $('#game-modal');
+  if (modal) modal.remove();
+  if (bayaDashState) {
+    bayaDashState.running = false;
+    clearInterval(bayaDashState.spawnInterval);
+    clearInterval(bayaDashState.timeInterval);
+    cancelAnimationFrame(bayaDashState.raf);
+    bayaDashState = null;
+  }
+  renderBuddy();
+}
 
-  if (ganadorCarta) {
-    SND.success();
-    confetti(50);
-    gainXP(15);
-    gainCoins(5);
-    progresoMision('batalla');
-    logros.b1 = true;
-    logros.bCount = (logros.bCount || 0) + 1;
-    localStorage.setItem(KEY.logros, JSON.stringify(logros));
-    toast('¡Victoria! +15 XP, +5 💰');
+/* ============================================================
+   TIENDA
+   ============================================================ */
+const SHOP_ITEMS = [
+  { id: 'berry_oran', name: 'Baya Aranja', icon: '🫐', price: 15, desc: 'Llena 30 de hambre a tu compañero.', cat: 'Baya' },
+  { id: 'berry_sitrus', name: 'Baya Zreza', icon: '🍒', price: 25, desc: 'Llena 50 de hambre y da cariño.', cat: 'Baya' },
+  { id: 'berry_golden', name: 'Baya Dorada', icon: '🍓', price: 60, desc: '¡Llena 80 de hambre y mucho cariño!', cat: 'Baya' },
+  { id: 'potion_normal', name: 'Poción', icon: '🧪', price: 30, desc: 'Restaura 40 de HP a tu Pokémon.', cat: 'Curación' },
+  { id: 'pack_bronze', name: 'Huevo Sorpresa', icon: '🥚', price: 80, desc: 'Un huevo misterioso con un Pokémon al azar.', cat: 'Especial' },
+  { id: 'pack_silver', name: 'Cápsula Rara', icon: '🔮', price: 160, desc: 'Invoca al instante un Pokémon raro con 12% de shiny.', cat: 'Especial' }
+];
+
+function renderShop() {
+  const cont = $('#shop-grid');
+  if (!cont) return;
+  cont.innerHTML = SHOP_ITEMS.map(it => {
+    const puede = coins >= it.price;
+    return `<div class="shop-item" onclick="${puede ? `comprar('${it.id}')` : ''}" style="opacity:${puede ? 1 : 0.5}">
+      <span class="shop-emoji">${it.icon}</span>
+      <h4>${it.name}</h4>
+      <p>${it.desc}</p>
+      <div class="price ${puede ? '' : 'insuf'}">${it.price} 💰</div>
+    </div>`;
+  }).join('');
+}
+
+function comprar(id) {
+  const it = SHOP_ITEMS.find(x => x.id === id);
+  if (!it || coins < it.price) { SND.fail(); toast('No te alcanzan las monedas'); return; }
+  gainCoins(-it.price);
+  if (id === 'pack_bronze') {
+    toast('¡Huevo comprado! (Función en desarrollo)');
+  } else if (id === 'pack_silver') {
+    toast('¡Cápsula comprada! (Función en desarrollo)');
   } else {
-    SND.hit();
-    gainXP(5);
-    toast('Empate. +5 XP');
+    inventory[id] = (inventory[id] || 0) + 1;
+    localStorage.setItem(KEY.inventory, JSON.stringify(inventory));
+    toast(`¡Compraste ${it.name}!`);
   }
-
-  btn.disabled = false;
-  btn.textContent = '⚔️ ¡Pelear de nuevo! (+15 XP, +5 💰)';
-  renderLogros();
-}
-function actualizarHP(n, hp, max) {
-  const slot = document.getElementById('slot-' + n);
-  const bar = slot.querySelector('.slot-hp > div');
-  if (bar) {
-    const pct = Math.max(0, (hp / max) * 100);
-    bar.style.width = pct + '%';
-    if (pct < 30) bar.style.background = 'linear-gradient(90deg, #ff3b30, #d61e1e)';
-    else if (pct < 60) bar.style.background = 'linear-gradient(90deg, #ffb800, #ff6b35)';
-  }
-}
-function animarHit(n) {
-  const slot = document.getElementById('slot-' + n);
-  slot.classList.add('shake', 'hit-flash');
-  SND.hit();
-  setTimeout(() => slot.classList.remove('shake', 'hit-flash'), 500);
-}
-function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
-
-/* =====================================================================
-   SOBRES
-   ===================================================================== */
-async function comprarSobre(tipo) {
-  const precios = { basico: 30, epico: 70, legendario: 150 };
-  const cantidades = { basico: 1, epico: 3, legendario: 5 };
-  if (coins < precios[tipo]) {
-    toast('No te alcanzan las monedas 💰');
-    SND.hit();
-    return;
-  }
-  gainCoins(-precios[tipo]);
-  SND.pack();
-  toast('Abriendo sobre...');
-  try {
-    const url = `${API_URL}?pageSize=${cantidades[tipo]}&orderBy=-set.releaseDate&page=${Math.floor(Math.random() * 20) + 1}`;
-    const headers = { 'Content-Type': 'application/json' };
-    if (API_KEY) headers['X-Api-Key'] = API_KEY;
-    const r = await fetch(url, { headers });
-    const json = await r.json();
-    const cartas = (json.data || []).map(c => ({
-      id: c.id, nombre: c.name,
-      tipo: c.types ? c.types.join(' / ') : 'Normal',
-      hp: c.hp ? parseInt(c.hp, 10) : 0,
-      rareza: c.rarity || 'Common',
-      img: c.images?.small || ''
-    }));
-    if (!cartas.length) { toast('No se pudo abrir'); return; }
-    sobreActual = { cartas, index: 0, tipo };
-    mostrarPack();
-  } catch (e) {
-    console.error(e);
-    toast('Error al abrir el sobre');
-  }
-}
-function mostrarPack() {
-  document.getElementById('pack-overlay').classList.add('show');
-  document.getElementById('pack-envelope').style.display = 'grid';
-  document.getElementById('pack-envelope').classList.remove('opening');
-  document.getElementById('pack-reveal').classList.remove('show');
-  document.getElementById('pack-title').textContent = `Sobre ${sobreActual.tipo}`;
-  document.getElementById('pack-sub').textContent = 'Tocá el sobre para abrirlo';
-}
-function abrirSobre() {
-  const env = document.getElementById('pack-envelope');
-  env.classList.add('opening');
-  SND.open();
-  setTimeout(() => {
-    env.style.display = 'none';
-    mostrarSiguienteCarta();
-  }, 500);
-}
-function mostrarSiguienteCarta() {
-  const { cartas, index } = sobreActual;
-  if (index >= cartas.length) { cerrarSobre(); return; }
-  const carta = cartas[index];
-  const rev = document.getElementById('pack-reveal');
-  rev.classList.add('show');
-  document.getElementById('reveal-card').classList.remove('flipped');
-  document.getElementById('reveal-img').src = carta.img;
-  document.getElementById('reveal-name').textContent = carta.nombre;
-  const rar = document.getElementById('reveal-rarity');
-  const rarClass = esUltra(carta.rareza) ? 'ultra' : esRara(carta.rareza) ? 'rara' : 'comun';
-  rar.className = 'reveal-rarity ' + rarClass;
-  rar.textContent = carta.rareza;
-  document.getElementById('pack-actions').style.display = 'none';
-
-  setTimeout(() => {
-    document.getElementById('reveal-card').classList.add('flipped');
-    if (rarClass === 'ultra') { SND.rare(); confetti(80); }
-    else if (rarClass === 'rara') { SND.success(); confetti(30); }
-    else SND.click();
-    setTimeout(() => {
-      document.getElementById('pack-actions').style.display = 'flex';
-    }, 600);
-  }, 300);
-}
-function esUltra(rareza) {
-  if (!rareza) return false;
-  const x = rareza.toLowerCase();
-  return x.includes('ultra') || x.includes('secret') || x.includes('rainbow') || x.includes('special');
-}
-function guardarDelSobre() {
-  const carta = sobreActual.cartas[sobreActual.index];
-  if (carta && !misCartas[carta.id]) {
-    misCartas[carta.id] = carta;
-    localStorage.setItem(KEY.coleccion, JSON.stringify(misCartas));
-    gainXP(5);
-    gainCoins(1);
-    toast(`¡${carta.nombre} guardado!`);
-  }
-  sobreActual.index++;
-  if (sobreActual.index >= sobreActual.cartas.length) cerrarSobre();
-  else mostrarSiguienteCarta();
-}
-function cerrarSobre() {
-  document.getElementById('pack-overlay').classList.remove('show');
-  logros.packCount = (logros.packCount || 0) + 1;
-  localStorage.setItem(KEY.logros, JSON.stringify(logros));
-  sobreActual = null;
-  renderAlbum();
-  renderColeccion();
-  renderHome();
-  renderLogros();
-}
-function recargarGratis() {
-  const hoy = new Date().toDateString();
-  if (ultimoRegalo === hoy) { toast('Ya reclamaste hoy'); return; }
-  ultimoRegalo = hoy;
-  localStorage.setItem(KEY.ultimoRegalo, hoy);
-  gainCoins(20);
   SND.coin();
-  confetti(30);
-  toast('¡+20 monedas de regalo! 💰');
+  confetti(20);
   updateHUD();
-  updateNavNotif();
 }
 
-/* =====================================================================
-   UTILIDADES
-   ===================================================================== */
-function escapeHTML(s) {
-  return String(s ?? '').replace(/[&<>"']/g, c => ({
-    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-  }[c]));
+/* ============================================================
+   NAVEGACIÓN
+   ============================================================ */
+function irA(vista) {
+  $$('.view').forEach(v => v.classList.remove('active'));
+  $('#view-' + vista).classList.add('active');
+  $$('.nav-btn').forEach(b => b.classList.remove('active'));
+  $('#nav-' + vista).classList.add('active');
+  window.scrollTo(0, 0);
+  SND.click();
+  if (vista === 'base') { renderBuddy(); renderMisiones(); }
+  if (vista === 'album') renderAlbum();
+  if (vista === 'juegos') renderJuegos();
+  if (vista === 'tienda') renderShop();
 }
 
-document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') {
-    cerrarSelector();
-    if (sobreActual) cerrarSobre();
+/* ============================================================
+   MODAL GENÉRICO
+   ============================================================ */
+function mostrarModal(titulo, contenidoHTML) {
+  cerrarModal();
+  const modal = document.createElement('div');
+  modal.className = 'modal-overlay show';
+  modal.id = 'generic-modal';
+  modal.innerHTML = `
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>${titulo}</h3>
+        <button class="close-modal" onclick="cerrarModal()">✕</button>
+      </div>
+      ${contenidoHTML}
+    </div>
+  `;
+  modal.addEventListener('click', e => { if (e.target === modal) cerrarModal(); });
+  document.body.appendChild(modal);
+}
+function cerrarModal() {
+  const m = $('#generic-modal');
+  if (m) m.remove();
+}
+
+/* ============================================================
+   BIENVENIDA ESPECIAL
+   ============================================================ */
+function chequearBienvenida() {
+  if (localStorage.getItem(KEY.bienvenida)) return;
+  const overlay = $('#welcome-overlay');
+  overlay.classList.add('show');
+  const heartsBg = $('#welcome-hearts');
+  const emojis = ['❤️', '💕', '💖', '💗', '✨', '⭐', '💛', '🧡'];
+  for (let i = 0; i < 14; i++) {
+    const s = document.createElement('span');
+    s.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    s.style.left = Math.random() * 100 + '%';
+    s.style.fontSize = (1 + Math.random() * 1.2) + 'rem';
+    s.style.animationDuration = (6 + Math.random() * 6) + 's';
+    s.style.animationDelay = (Math.random() * 4) + 's';
+    heartsBg.appendChild(s);
   }
+  setTimeout(() => SND.welcome(), 300);
+  setTimeout(() => confetti(60), 400);
+  setTimeout(() => confetti(40), 1200);
+}
+function cerrarBienvenida() {
+  localStorage.setItem(KEY.bienvenida, '1');
+  $('#welcome-overlay').classList.remove('show');
+  SND.success();
+  confetti(50);
+  setTimeout(() => SND.coin(), 300);
+}
+
+/* ============================================================
+   LOGIN STREAK
+   ============================================================ */
+function chequearStreak() {
+  const hoy = hoyISO();
+  const ultimo = localStorage.getItem(KEY.ultimoLogin);
+  if (ultimo !== hoy) {
+    const ayer = new Date(Date.now() - 86400000).toISOString().slice(0, 10);
+    streak = ultimo === ayer ? streak + 1 : 1;
+    localStorage.setItem(KEY.streak, streak);
+    localStorage.setItem(KEY.ultimoLogin, hoy);
+    if (streak > 1) {
+      setTimeout(() => toast(`¡Racha de ${streak} días! 🔥`), 1500);
+    }
+    gainCoins(20);
+  }
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('mute-btn').textContent = muted ? '🔇' : '🔊';
+  chequearBienvenida();
+  chequearStreak();
+  cargarMisiones();
+  renderMisiones();
+  renderBuddy();
+  updateHUD();
+  initBuscador();
+  cargarCartas('', 1, false);
+  renderShop();
+  renderJuegos();
 });
 </script>
 </body>

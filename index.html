@@ -97,7 +97,11 @@ body::before {
 /* ============================================================
    VISTAS
    ============================================================ */
-.view { display: none; padding: 16px 14px; animation: viewIn 0.3s ease; }
+.view { 
+  display: none; 
+  padding: 16px 14px calc(110px + env(safe-area-inset-bottom)); 
+  animation: viewIn 0.3s ease; 
+}
 .view.active { display: block; }
 @keyframes viewIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 h2 { font-size: 1.3rem; margin-bottom: 4px; letter-spacing: -0.5px; }
@@ -435,6 +439,8 @@ h2 .emo { font-size: 1.4rem; margin-right: 4px; }
   padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
   box-shadow: 0 -4px 20px rgba(10,11,30,.1);
   z-index: 100; border-top: 1px solid #f0f0f0;
+  backdrop-filter: blur(12px);
+  background: rgba(255,255,255,0.92); 
 }
 .nav-btn {
   background: none; border: none;
@@ -485,7 +491,7 @@ h2 .emo { font-size: 1.4rem; margin-right: 4px; }
    FIRMA / DEDICATORIA
    ============================================================ */
 .signature {
-  margin-top: 20px; padding: 14px 16px;
+  margin: 20px 0 10px; padding: 16px 18px;
   background: linear-gradient(135deg, #fff5f8, #ffe8f0);
   border: 1px solid #ffc9dc;
   border-radius: 16px; text-align: center;
@@ -628,8 +634,9 @@ h2 .emo { font-size: 1.4rem; margin-right: 4px; }
   <div class="signature">
     <div class="sig-line1">Un regalito hecho a mano</div>
     <div class="sig-line2">Para Blas, con amor <span class="sig-heart">❤️</span></div>
-    <div class="sig-line1">— De la tía</div>
+    <div class="sig-line1"> De la tía</div>
   </div>
+  <div style="height:20px;"></div> 
 </section>
 
 <!-- VISTA ÁLBUM -->

@@ -1,1114 +1,1789 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>PokeBlas - Mi Colección</title>
-    <style>
-        :root {
-            --pk-red: #ee1515;
-            --pk-red-dark: #c41212;
-            --pk-blue: #3b4cca;
-            --pk-yellow: #ffcb05;
-            --pk-dark: #1a1a2e;
-            --pk-light: #f8f9fa;
-            --pk-gray: #e9ecef;
-            --shadow: 0 4px 15px rgba(0,0,0,0.1);
-            --radius: 16px;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#ee1515">
+<title>PokeBlas ⚡ Tu aventura Pokémon</title>
+<style>
+:root {
+  --red: #ff3b30; --red-d: #d61e1e;
+  --orange: #ff6b35;
+  --blue: #3b4cca; --blue-l: #5a6ee8;
+  --yellow: #ffcb05; --gold: #ffb800;
+  --green: #22c55e;
+  --purple: #a855f7;
+  --pink: #ff5c8a;
+  --dark: #0a0b1e; --dark-2: #1a1d3a; --dark-3: #242850;
+  --light: #f0f3ff; --white: #fff;
+  --shadow: 0 10px 30px rgba(10,11,30,.15);
+  --shadow-lg: 0 20px 60px rgba(10,11,30,.3);
+  --r: 18px; --r-sm: 12px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { overscroll-behavior: none; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  background: var(--light);
+  color: var(--dark);
+  padding-bottom: 95px;
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+body::before {
+  content: '';
+  position: fixed; inset: 0;
+  background:
+    radial-gradient(circle at 10% 10%, rgba(255,59,48,.08), transparent 40%),
+    radial-gradient(circle at 90% 20%, rgba(59,76,202,.08), transparent 40%),
+    radial-gradient(circle at 50% 90%, rgba(255,203,5,.08), transparent 40%);
+  z-index: -1; pointer-events: none;
+}
 
-        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+/* ============ HUD SUPERIOR ============ */
+.hud {
+  position: sticky; top: 0; z-index: 90;
+  background: linear-gradient(135deg, var(--red), var(--red-d));
+  padding: 10px 14px;
+  color: white;
+  box-shadow: 0 4px 20px rgba(238,21,21,.4);
+}
+.hud-top {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 10px; margin-bottom: 6px;
+}
+.hud-brand {
+  display: flex; align-items: center; gap: 8px;
+  font-weight: 900; font-size: 1.05rem; letter-spacing: -0.3px;
+}
+.hud-brand svg { width: 26px; height: 26px; filter: drop-shadow(0 2px 4px rgba(0,0,0,.35)); }
+.hud-brand .poke { color: var(--yellow); text-shadow: 1px 1px 0 rgba(0,0,0,.4); }
+.hud-brand .blas { color: white; text-shadow: 1px 1px 0 rgba(0,0,0,.4); }
+.hud-stats { display: flex; gap: 6px; }
+.stat-chip {
+  background: rgba(255,255,255,.22);
+  backdrop-filter: blur(8px);
+  padding: 4px 10px; border-radius: 99px;
+  font-size: 0.78rem; font-weight: 800;
+  display: flex; align-items: center; gap: 4px;
+  border: 1px solid rgba(255,255,255,.15);
+}
+.stat-chip.coins { background: linear-gradient(135deg, #ffd700, #ffb800); color: #4a3600; }
+.stat-chip.fire { background: linear-gradient(135deg, #ff6b35, #d61e1e); }
 
-        body {
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--pk-light);
-            color: var(--pk-dark);
-            padding-bottom: 80px;
-            overflow-x: hidden;
-        }
+.xp-row { display: flex; align-items: center; gap: 8px; }
+.level-badge {
+  background: white; color: var(--red);
+  width: 34px; height: 34px; border-radius: 12px;
+  display: grid; place-items: center;
+  font-weight: 900; font-size: 0.9rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,.25);
+  flex: none;
+}
+.xp-bar-bg {
+  flex: 1; height: 10px; background: rgba(0,0,0,.25);
+  border-radius: 99px; overflow: hidden;
+  box-shadow: inset 0 2px 4px rgba(0,0,0,.2);
+}
+.xp-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ffd700, #ffb800, #ff6b35);
+  border-radius: 99px;
+  transition: width 0.6s cubic-bezier(.4,0,.2,1);
+  box-shadow: 0 0 12px rgba(255,203,5,.8);
+  position: relative; overflow: hidden;
+}
+.xp-bar-fill::after {
+  content: ''; position: absolute; inset: 0;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.5), transparent);
+  animation: shine 2s infinite;
+}
+@keyframes shine { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+.xp-text { font-size: 0.7rem; font-weight: 800; opacity: .9; min-width: 55px; text-align: right; }
 
-        /* --- HEADER --- */
-        header {
-            background: linear-gradient(135deg, var(--pk-red), var(--pk-red-dark));
-            color: white;
-            padding: 12px 18px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 2px 12px rgba(0,0,0,0.25);
-        }
-        header .brand {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 1.35rem;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-        }
-        header .brand svg { width: 32px; height: 32px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3)); }
-        header .brand .pk-word {
-            color: var(--pk-yellow);
-            -webkit-text-stroke: 1.5px #2a2a5a;
-            text-shadow: 2px 2px 0 #2a2a5a;
-        }
-        header .brand .blas-word {
-            color: #fff;
-            -webkit-text-stroke: 1.5px #2a2a5a;
-            text-shadow: 2px 2px 0 #2a2a5a;
-        }
-        header .top-btn {
-            background: rgba(255,255,255,0.18);
-            border: none;
-            color: white;
-            font-size: 1.1rem;
-            cursor: pointer;
-            width: 38px; height: 38px;
-            border-radius: 12px;
-            display: grid; place-items: center;
-            transition: 0.15s;
-        }
-        header .top-btn:active { transform: scale(0.92); }
+/* ============ VISTAS ============ */
+.view { display: none; padding: 16px 14px; animation: viewIn 0.35s ease; }
+.view.active { display: block; }
+@keyframes viewIn { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
 
-        /* --- NAVEGACIÓN INFERIOR --- */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0; left: 0; right: 0;
-            background: white;
-            display: flex;
-            justify-content: space-around;
-            padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
-            box-shadow: 0 -2px 15px rgba(0,0,0,0.08);
-            z-index: 100;
-            border-top: 1px solid #eee;
-        }
-        .nav-btn {
-            background: none; border: none;
-            display: flex; flex-direction: column; align-items: center;
-            font-size: 0.68rem; color: #888; font-weight: 700;
-            cursor: pointer; width: 100%; padding: 4px 0;
-            transition: 0.2s;
-            font-family: inherit;
-        }
-        .nav-btn span { font-size: 1.4rem; margin-bottom: 1px; transition: transform 0.2s; }
-        .nav-btn.active { color: var(--pk-red); }
-        .nav-btn.active span { transform: scale(1.15) translateY(-1px); }
+h2 { font-size: 1.3rem; margin-bottom: 4px; letter-spacing: -0.5px; }
+h2 .emo { font-size: 1.4rem; margin-right: 4px; }
+.sub { font-size: 0.85rem; color: #666; margin-bottom: 16px; line-height: 1.4; }
 
-        /* --- VISTAS --- */
-        .view { display: none; padding: 18px; animation: fadeIn 0.25s ease; }
-        .view.active { display: block; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+/* ============ BOTONES ============ */
+.btn {
+  border: none; border-radius: 14px; padding: 14px 18px;
+  font-family: inherit; font-weight: 800; font-size: 0.95rem;
+  cursor: pointer; transition: transform 0.1s, box-shadow 0.2s;
+  display: inline-flex; align-items: center; justify-content: center;
+  gap: 8px;
+}
+.btn:active { transform: scale(0.96); }
+.btn-primary {
+  background: linear-gradient(135deg, var(--blue), var(--blue-l));
+  color: white; width: 100%;
+  box-shadow: 0 8px 20px rgba(59,76,202,.35);
+}
+.btn-red {
+  background: linear-gradient(135deg, var(--red), var(--red-d));
+  color: white; width: 100%;
+  box-shadow: 0 8px 20px rgba(238,21,21,.4);
+}
+.btn-gold {
+  background: linear-gradient(135deg, #ffd700, #ffb800);
+  color: #4a3600; width: 100%;
+  box-shadow: 0 8px 20px rgba(255,184,0,.4);
+}
+.btn-ghost {
+  background: white; color: var(--blue);
+  border: 2px solid #d8dffd; width: 100%;
+}
 
-        h2 { font-size: 1.25rem; margin-bottom: 6px; color: var(--pk-blue); letter-spacing: -0.3px; }
-        p.sub { font-size: 0.85rem; color: #666; margin-bottom: 16px; line-height: 1.4; }
+/* ============ TARJETAS DE MISIÓN ============ */
+.mission-card {
+  background: white; border-radius: var(--r); padding: 14px;
+  box-shadow: var(--shadow); margin-bottom: 10px;
+  display: flex; align-items: center; gap: 12px;
+  border-left: 5px solid var(--blue);
+  transition: all 0.3s;
+  position: relative; overflow: hidden;
+}
+.mission-card.done { border-left-color: var(--green); background: linear-gradient(135deg, #f0fff5, #fff); }
+.mission-card.done::before {
+  content: '✓'; position: absolute; top: 8px; right: 12px;
+  color: var(--green); font-weight: 900; font-size: 1.4rem;
+}
+.mission-ico { font-size: 1.8rem; flex: none; }
+.mission-body { flex: 1; min-width: 0; }
+.mission-body strong { font-size: 0.92rem; display: block; margin-bottom: 4px; }
+.mission-progress {
+  background: #eee; height: 6px; border-radius: 99px; overflow: hidden; margin-bottom: 4px;
+}
+.mission-progress > div {
+  height: 100%; background: linear-gradient(90deg, var(--blue), var(--blue-l));
+  border-radius: 99px; transition: width 0.4s;
+}
+.mission-body small { font-size: 0.72rem; color: #888; font-weight: 700; }
+.mission-reward {
+  background: linear-gradient(135deg, #ffd700, #ffb800);
+  color: #4a3600; padding: 4px 8px; border-radius: 8px;
+  font-size: 0.72rem; font-weight: 900; flex: none;
+}
 
-        /* --- BOTONES --- */
-        .btn-primary {
-            background: var(--pk-blue); color: white; border: none;
-            padding: 14px; border-radius: 12px; font-weight: 700;
-            font-size: 0.95rem; width: 100%; cursor: pointer;
-            transition: 0.15s; box-shadow: 0 4px 12px rgba(59,76,202,0.3);
-            font-family: inherit;
-        }
-        .btn-primary:active { transform: scale(0.98); }
-        .btn-primary.red { background: var(--pk-red); box-shadow: 0 4px 12px rgba(238,21,21,0.3); }
-        .btn-secondary {
-            background: var(--pk-yellow); color: var(--pk-dark); border: none;
-            padding: 12px; border-radius: 12px; font-weight: 700;
-            font-size: 0.9rem; width: 100%; cursor: pointer;
-            margin-top: 10px; font-family: inherit;
-            transition: 0.15s;
-        }
-        .btn-secondary:active { transform: scale(0.98); }
-        .btn-load-more {
-            background: white; color: var(--pk-blue); border: 2px solid var(--pk-blue);
-            padding: 12px; border-radius: 12px; font-weight: 700;
-            font-size: 0.9rem; width: 100%; cursor: pointer;
-            margin-top: 14px; font-family: inherit;
-            transition: 0.15s;
-        }
-        .btn-load-more:active { transform: scale(0.98); }
-        .btn-load-more:disabled { opacity: 0.5; cursor: not-allowed; }
+/* ============ CARTA DESTACADA ============ */
+.featured-card {
+  background: linear-gradient(160deg, #1a1d3a, #242850);
+  border-radius: var(--r); padding: 22px 18px;
+  text-align: center; color: white;
+  box-shadow: var(--shadow-lg);
+  position: relative; overflow: hidden;
+  perspective: 1000px;
+}
+.featured-card::before {
+  content: ''; position: absolute; inset: -50%;
+  background: conic-gradient(from 0deg, transparent 0%, rgba(255,203,5,.15) 20%, transparent 40%);
+  animation: rotate 8s linear infinite; pointer-events: none;
+}
+@keyframes rotate { to { transform: rotate(360deg); } }
+.featured-inner { position: relative; z-index: 2; }
+.featured-card img {
+  width: 150px; border-radius: 10px;
+  box-shadow: 0 15px 40px rgba(0,0,0,.5), 0 0 30px rgba(255,203,5,.3);
+  margin-bottom: 12px;
+  animation: float 3s ease-in-out infinite;
+}
+@keyframes float { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+.featured-card h3 { font-size: 1.15rem; margin-bottom: 4px; }
+.featured-card p { font-size: 0.82rem; opacity: .8; }
+.featured-card .star-label {
+  display: inline-block; margin-top: 10px;
+  background: linear-gradient(135deg, #ffd700, #ffb800);
+  color: #4a3600; padding: 5px 12px; border-radius: 99px;
+  font-size: 0.72rem; font-weight: 900; letter-spacing: 0.5px;
+}
 
-        /* --- TABS --- */
-        .tabs { display: flex; gap: 8px; margin-bottom: 14px; }
-        .tab {
-            flex: 1;
-            background: white; border: 2px solid var(--pk-gray);
-            padding: 10px 8px; border-radius: 12px; font-weight: 700;
-            font-size: 0.82rem; cursor: pointer; white-space: nowrap;
-            transition: 0.2s; color: #666; font-family: inherit;
-        }
-        .tab.active { background: var(--pk-blue); color: white; border-color: var(--pk-blue); }
+/* ============ SECCIÓN TÍTULO ============ */
+.section-title {
+  display: flex; align-items: center; justify-content: space-between;
+  margin: 20px 0 10px;
+}
+.section-title h3 { font-size: 1rem; letter-spacing: -0.3px; }
+.section-title .badge {
+  background: var(--blue); color: white;
+  padding: 3px 9px; border-radius: 99px;
+  font-size: 0.7rem; font-weight: 800;
+}
 
-        /* --- BUSCADOR --- */
-        .search-wrap { position: relative; margin-bottom: 14px; }
-        .search-box {
-            width: 100%; padding: 13px 42px 13px 42px; border-radius: 12px;
-            border: 2px solid var(--pk-gray); font-size: 0.95rem;
-            outline: none; transition: 0.2s; font-family: inherit;
-            background: white;
-        }
-        .search-box:focus { border-color: var(--pk-yellow); box-shadow: 0 0 0 3px rgba(255,203,5,0.2); }
-        .search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 1.1rem; opacity: 0.5; }
-        .search-clear {
-            position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
-            background: #eee; border: none; width: 24px; height: 24px;
-            border-radius: 50%; cursor: pointer; font-size: 0.8rem; color: #666;
-            display: none;
-        }
-        .search-clear.show { display: block; }
+/* ============ GRID DE CARTAS ============ */
+.grid-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+}
+.card-tile {
+  background: white; border-radius: 14px; padding: 8px;
+  box-shadow: 0 4px 12px rgba(10,11,30,.08);
+  cursor: pointer;
+  transition: transform 0.15s, box-shadow 0.3s, border-color 0.3s;
+  border: 3px solid transparent;
+  position: relative; overflow: hidden;
+  animation: tileIn 0.4s cubic-bezier(.34,1.56,.64,1) backwards;
+}
+.card-tile:nth-child(n) { animation-delay: calc(var(--i, 0) * 30ms); }
+@keyframes tileIn { from { opacity: 0; transform: scale(0.7) translateY(20px); } to { opacity: 1; transform: none; } }
+.card-tile:active { transform: scale(0.95); }
+.card-tile img {
+  width: 100%; border-radius: 8px; display: block;
+  aspect-ratio: 245/342; object-fit: cover; background: #f0f0f0;
+}
+.card-tile.owned {
+  border-color: var(--gold);
+  box-shadow: 0 8px 24px rgba(255,184,0,.4), 0 0 0 1px rgba(255,184,0,.3);
+}
+.card-tile.owned::after {
+  content: '⭐'; position: absolute; top: 6px; right: 6px;
+  width: 26px; height: 26px; background: white; border-radius: 50%;
+  display: grid; place-items: center;
+  font-size: 0.85rem; box-shadow: 0 3px 8px rgba(0,0,0,.25);
+  animation: popIn 0.3s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes popIn { from { transform: scale(0); } to { transform: scale(1); } }
+.card-tile .tile-info { padding: 4px 2px 0; }
+.card-tile h4 { font-size: 0.78rem; margin: 0 0 1px; line-height: 1.15; }
+.card-tile small { font-size: 0.66rem; color: #888; font-weight: 600; }
 
-        /* --- GRID DE CARTAS --- */
-        .grid-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-            gap: 12px;
-        }
+/* ============ BUSCADOR ============ */
+.search-wrap { position: relative; margin-bottom: 14px; }
+.search-input {
+  width: 100%; padding: 14px 42px;
+  border: 2px solid #d8dffd; border-radius: 14px;
+  font-size: 0.95rem; font-family: inherit; outline: none;
+  background: white; transition: 0.2s; font-weight: 600;
+}
+.search-input:focus { border-color: var(--blue); box-shadow: 0 0 0 4px rgba(59,76,202,.15); }
+.search-ico { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); font-size: 1.1rem; }
+.search-x {
+  position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+  background: #eee; border: none; width: 26px; height: 26px; border-radius: 50%;
+  cursor: pointer; display: none;
+}
+.search-x.show { display: grid; place-items: center; }
 
-        .card-item {
-            background: white; border-radius: 14px;
-            padding: 8px; box-shadow: var(--shadow);
-            text-align: center; cursor: pointer;
-            transition: transform 0.15s, box-shadow 0.2s, border-color 0.2s;
-            border: 3px solid transparent;
-            position: relative;
-            overflow: hidden;
-            animation: cardIn 0.3s ease;
-        }
-        @keyframes cardIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: none; } }
-        .card-item:active { transform: scale(0.97); }
-        .card-item img { width: 100%; border-radius: 8px; display: block; aspect-ratio: 245/342; object-fit: cover; background: #f0f0f0; }
+/* ============ TABS ============ */
+.tabs { display: flex; gap: 6px; margin-bottom: 14px; }
+.tab {
+  flex: 1; background: white; border: 2px solid #e6ecff;
+  padding: 10px; border-radius: 12px; font-weight: 800;
+  font-size: 0.82rem; cursor: pointer; transition: 0.2s;
+  font-family: inherit; color: #666;
+}
+.tab.active {
+  background: linear-gradient(135deg, var(--blue), var(--blue-l));
+  color: white; border-color: var(--blue);
+  box-shadow: 0 4px 12px rgba(59,76,202,.35);
+}
 
-        .card-item.owned { border-color: var(--pk-yellow); box-shadow: 0 6px 18px rgba(255,203,5,0.35); }
-        .card-item.owned::after {
-            content: '⭐'; position: absolute; top: 8px; right: 8px;
-            font-size: 1.1rem; background: white; border-radius: 50%;
-            width: 26px; height: 26px; display: grid; place-items: center;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-        }
+/* ============ ESTADOS ============ */
+.empty-state {
+  grid-column: 1/-1;
+  text-align: center; padding: 50px 20px; color: #888;
+}
+.empty-state .big { font-size: 3.5rem; margin-bottom: 12px; display: block; animation: float 2.5s ease-in-out infinite; }
+.empty-state p { font-size: 0.9rem; line-height: 1.5; }
+.spinner {
+  width: 44px; height: 44px; margin: 0 auto 14px;
+  border: 4px solid rgba(255,59,48,.15);
+  border-top-color: var(--red);
+  border-radius: 50%; animation: spin 0.8s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
 
-        .card-info h3 { font-size: 0.82rem; margin: 6px 0 1px; line-height: 1.2; }
-        .card-info p { font-size: 0.7rem; color: #777; margin: 0; }
-        .card-info .rarity {
-            display: inline-block; margin-top: 4px;
-            font-size: 0.62rem; padding: 2px 6px; border-radius: 6px;
-            background: #eef2ff; color: #3b4cca; font-weight: 700;
-            text-transform: uppercase; letter-spacing: 0.3px;
-        }
+/* ============ ARENA ============ */
+.arena-slots { display: flex; gap: 12px; margin-bottom: 18px; perspective: 1200px; }
+.arena-slot {
+  flex: 1; background: white; border-radius: var(--r);
+  padding: 12px; min-height: 210px;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  border: 3px dashed #d8dffd; cursor: pointer;
+  transition: all 0.3s; box-shadow: var(--shadow);
+  position: relative; overflow: hidden;
+}
+.arena-slot.selected {
+  border-style: solid; border-color: var(--red);
+  box-shadow: 0 8px 24px rgba(238,21,21,.3);
+  background: linear-gradient(160deg, #fff5f5, #fff);
+}
+.arena-slot img { max-width: 100%; border-radius: 8px; margin-bottom: 6px; }
+.arena-slot .slot-name { font-size: 0.78rem; font-weight: 800; }
+.arena-slot .slot-placeholder { color: #aaa; font-size: 0.82rem; font-weight: 700; text-align: center; }
+.arena-slot .slot-hp {
+  position: absolute; bottom: 8px; left: 8px; right: 8px;
+  background: rgba(0,0,0,.7); border-radius: 99px; height: 8px; overflow: hidden;
+  display: none;
+}
+.arena-slot.selected .slot-hp { display: block; }
+.arena-slot .slot-hp > div {
+  height: 100%; background: linear-gradient(90deg, var(--green), #4ade80);
+  border-radius: 99px; transition: width 0.6s;
+}
+.arena-slot.shake { animation: shake 0.5s; }
+@keyframes shake {
+  0%,100% { transform: translateX(0); }
+  20% { transform: translateX(-8px) rotate(-2deg); }
+  40% { transform: translateX(8px) rotate(2deg); }
+  60% { transform: translateX(-6px); }
+  80% { transform: translateX(6px); }
+}
+.arena-slot.hit-flash::before {
+  content: ''; position: absolute; inset: 0;
+  background: rgba(255,59,48,.7); z-index: 10;
+  animation: flash 0.4s;
+}
+@keyframes flash { from { opacity: 1; } to { opacity: 0; } }
 
-        /* --- ESTADOS VACÍOS / CARGANDO --- */
-        .empty-state {
-            grid-column: 1 / -1;
-            text-align: center; padding: 40px 20px; color: #888;
-        }
-        .empty-state .big { font-size: 2.5rem; margin-bottom: 10px; display: block; }
-        .empty-state p { font-size: 0.9rem; line-height: 1.5; }
-        .spinner {
-            width: 40px; height: 40px; margin: 0 auto 12px;
-            border: 4px solid var(--pk-gray); border-top-color: var(--pk-red);
-            border-radius: 50%; animation: spin 0.8s linear infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
+.battle-log {
+  background: linear-gradient(160deg, #1a1d3a, #242850);
+  border-radius: var(--r); padding: 16px;
+  color: white; font-size: 0.88rem; line-height: 1.6;
+  margin-bottom: 14px; min-height: 80px;
+  font-family: ui-monospace, monospace;
+  box-shadow: var(--shadow-lg);
+}
+.battle-log .line { opacity: 0; animation: logIn 0.4s forwards; }
+.battle-log .line:nth-child(1) { animation-delay: 0s; }
+.battle-log .line:nth-child(2) { animation-delay: 0.5s; }
+.battle-log .line:nth-child(3) { animation-delay: 1s; }
+.battle-log .line:nth-child(4) { animation-delay: 1.5s; }
+.battle-log .line:nth-child(5) { animation-delay: 2s; }
+@keyframes logIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: none; } }
+.battle-log .crit { color: var(--yellow); font-weight: 900; }
+.battle-log .hit { color: var(--red); font-weight: 900; }
+.battle-log .win { color: var(--green); font-weight: 900; font-size: 1rem; }
 
-        /* --- VISTA INICIO --- */
-        .progress-card {
-            background: white; padding: 20px; border-radius: var(--radius);
-            box-shadow: var(--shadow); margin-bottom: 18px;
-            text-align: center;
-            border-top: 5px solid var(--pk-yellow);
-        }
-        .progress-pct {
-            font-size: 2.8rem; font-weight: 900; color: var(--pk-red);
-            line-height: 1; letter-spacing: -2px;
-        }
-        .progress-card .label { color: #666; font-size: 0.9rem; margin-top: 4px; }
-        .progress-bar-bg {
-            background: var(--pk-gray); height: 12px; border-radius: 6px;
-            margin-top: 14px; overflow: hidden;
-        }
-        .progress-bar-fill {
-            background: linear-gradient(90deg, var(--pk-yellow), var(--pk-red));
-            height: 100%; transition: width 0.6s ease;
-            border-radius: 6px;
-        }
-        .stat-row {
-            display: flex; justify-content: space-around;
-            margin-top: 16px; padding-top: 14px; border-top: 1px solid #eee;
-        }
-        .stat-row div { text-align: center; }
-        .stat-row b { display: block; font-size: 1.3rem; color: var(--pk-blue); }
-        .stat-row small { font-size: 0.7rem; color: #888; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 700; }
+/* ============ SOBRES / TIENDA ============ */
+.shop-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.shop-item {
+  background: white; border-radius: var(--r); padding: 14px;
+  box-shadow: var(--shadow); text-align: center;
+  cursor: pointer; transition: transform 0.2s;
+  border-top: 5px solid var(--gold);
+  position: relative; overflow: hidden;
+}
+.shop-item:active { transform: scale(0.96); }
+.shop-item .shop-emoji { font-size: 2.5rem; margin-bottom: 6px; display: block; }
+.shop-item h4 { font-size: 0.9rem; margin-bottom: 4px; }
+.shop-item p { font-size: 0.72rem; color: #888; line-height: 1.3; min-height: 30px; }
+.shop-item .price {
+  display: inline-block; margin-top: 8px;
+  background: linear-gradient(135deg, #ffd700, #ffb800);
+  color: #4a3600; padding: 5px 12px; border-radius: 99px;
+  font-size: 0.78rem; font-weight: 900;
+}
+.shop-item .price.insuf { background: #eee; color: #999; }
 
-        .featured-card {
-            background: white; padding: 18px; border-radius: var(--radius);
-            box-shadow: var(--shadow); text-align: center;
-            border-top: 5px solid var(--pk-red);
-        }
-        .featured-card img {
-            width: 140px; border-radius: 10px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.18);
-            margin-bottom: 10px;
-        }
-        .featured-card h3 { font-size: 1.1rem; margin-bottom: 4px; }
-        .featured-card p { color: #666; font-size: 0.85rem; }
+/* ============ OVERLAY DE SOBRE ============ */
+.pack-overlay {
+  position: fixed; inset: 0; z-index: 300;
+  background: radial-gradient(circle at center, #2a1d5a, #0a0b1e 70%);
+  display: none; align-items: center; justify-content: center;
+  flex-direction: column; padding: 20px;
+  text-align: center;
+}
+.pack-overlay.show { display: flex; animation: packIn 0.4s; }
+@keyframes packIn { from { opacity: 0; } to { opacity: 1; } }
 
-        /* --- TALLER DE HISTORIAS --- */
-        .form-group { margin-bottom: 14px; }
-        .form-group label {
-            display: block; font-weight: 700; font-size: 0.82rem;
-            margin-bottom: 6px; color: #444;
-        }
-        .form-group select, .form-group textarea, .form-group input {
-            width: 100%; padding: 12px; border-radius: 12px;
-            border: 2px solid var(--pk-gray); font-family: inherit;
-            font-size: 0.92rem; background: white; outline: none;
-            transition: border-color 0.2s;
-        }
-        .form-group select:focus, .form-group textarea:focus, .form-group input:focus {
-            border-color: var(--pk-blue);
-        }
-        .form-group textarea { resize: vertical; min-height: 100px; line-height: 1.5; }
+.pack-envelope {
+  width: 220px; height: 320px;
+  border-radius: 20px;
+  background: linear-gradient(160deg, #ff6b35, #d61e1e 60%, #8a1010);
+  box-shadow: 0 30px 80px rgba(0,0,0,.6), 0 0 60px rgba(255,107,53,.5);
+  display: grid; place-items: center;
+  cursor: pointer; position: relative;
+  animation: packShake 0.6s infinite;
+  transition: transform 0.2s;
+}
+@keyframes packShake {
+  0%,100% { transform: rotate(-3deg) scale(1); }
+  50% { transform: rotate(3deg) scale(1.03); }
+}
+.pack-envelope::before {
+  content: '⚡'; font-size: 5rem; filter: drop-shadow(0 0 20px #ffcb05);
+}
+.pack-envelope::after {
+  content: ''; position: absolute; inset: 8px;
+  border: 2px solid rgba(255,255,255,.3); border-radius: 14px;
+  pointer-events: none;
+}
+.pack-envelope.opening { animation: packBurst 0.5s forwards; }
+@keyframes packBurst {
+  0% { transform: scale(1) rotate(0); }
+  50% { transform: scale(1.2) rotate(10deg); }
+  100% { transform: scale(0) rotate(30deg); opacity: 0; }
+}
 
-        .story-list { margin-top: 24px; }
-        .story-card {
-            background: white; padding: 16px; border-radius: var(--radius);
-            box-shadow: var(--shadow); margin-bottom: 12px;
-            border-left: 5px solid var(--pk-red);
-            position: relative;
-        }
-        .story-card h4 { margin: 0 0 6px 0; font-size: 1rem; color: var(--pk-blue); padding-right: 30px; }
-        .story-card p { font-size: 0.88rem; color: #444; line-height: 1.5; margin: 0; white-space: pre-wrap; }
-        .story-card .meta { font-size: 0.72rem; color: #999; margin-top: 10px; display: block; }
-        .story-card .del-story {
-            position: absolute; top: 12px; right: 12px;
-            background: #fdecec; border: none; color: #e5484d;
-            width: 26px; height: 26px; border-radius: 8px;
-            cursor: pointer; font-size: 0.85rem;
-        }
+.pack-reveal {
+  perspective: 1000px;
+  display: none;
+  flex-direction: column; align-items: center;
+}
+.pack-reveal.show { display: flex; animation: fadeIn 0.5s; }
+.reveal-card {
+  width: 200px; height: 280px;
+  transform-style: preserve-3d;
+  transition: transform 0.8s cubic-bezier(.4,0,.2,1);
+  position: relative;
+}
+.reveal-card.flipped { transform: rotateY(180deg); }
+.reveal-face {
+  position: absolute; inset: 0;
+  backface-visibility: hidden;
+  border-radius: 14px;
+  display: grid; place-items: center;
+  overflow: hidden;
+}
+.reveal-front {
+  background: linear-gradient(160deg, var(--blue), var(--blue-l));
+  color: white; font-size: 3rem;
+  box-shadow: 0 20px 50px rgba(0,0,0,.5);
+}
+.reveal-front::before {
+  content: '?'; font-size: 5rem; font-weight: 900; opacity: .8;
+}
+.reveal-back {
+  background: white; transform: rotateY(180deg);
+  padding: 8px;
+  box-shadow: 0 20px 50px rgba(0,0,0,.5);
+}
+.reveal-back img { width: 100%; height: 100%; object-fit: contain; border-radius: 8px; }
 
-        /* --- ARENA --- */
-        .arena-slots { display: flex; gap: 12px; justify-content: center; margin-bottom: 18px; }
-        .arena-slot {
-            width: 48%; background: white; border-radius: var(--radius);
-            padding: 10px; box-shadow: var(--shadow); text-align: center;
-            min-height: 200px; display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            border: 3px dashed var(--pk-gray);
-            cursor: pointer; position: relative;
-            transition: border-color 0.2s;
-        }
-        .arena-slot img { max-width: 100%; border-radius: 8px; }
-        .arena-slot .placeholder { color: #aaa; font-size: 0.8rem; font-weight: 600; }
-        .arena-slot.selected { border-style: solid; border-color: var(--pk-red); border-width: 3px; }
-        .arena-slot .slot-name {
-            font-size: 0.78rem; font-weight: 700; margin-top: 6px; color: var(--pk-dark);
-        }
+.rarity-burst {
+  position: absolute; inset: -20px;
+  border-radius: 50%;
+  pointer-events: none;
+  display: none;
+}
+.rarity-burst.show { display: block; animation: burst 1s; }
+@keyframes burst {
+  0% { box-shadow: 0 0 0 0 rgba(255,203,5,.8); transform: scale(0.5); }
+  100% { box-shadow: 0 0 0 80px rgba(255,203,5,0); transform: scale(1.5); }
+}
 
-        .battle-result {
-            background: white; padding: 22px; border-radius: var(--radius);
-            box-shadow: var(--shadow); text-align: center; margin-top: 18px;
-            display: none;
-            border-top: 5px solid var(--pk-yellow);
-        }
-        .battle-result.show { display: block; animation: fadeIn 0.4s; }
-        .battle-result h3 { color: var(--pk-red); margin-bottom: 10px; font-size: 1.2rem; }
-        .battle-result p { font-size: 0.95rem; line-height: 1.5; }
-        .battle-result .score {
-            font-family: ui-monospace, monospace;
-            background: #f5f5f5; padding: 10px; border-radius: 8px;
-            margin: 12px 0; font-size: 0.85rem;
-        }
+.pack-actions {
+  display: flex; gap: 10px; margin-top: 24px;
+  width: 100%; max-width: 320px;
+}
+.pack-actions button { flex: 1; padding: 14px; font-size: 0.9rem; }
 
-        /* --- MODAL --- */
-        .modal-overlay {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(0,0,0,0.65); z-index: 200;
-            display: none; justify-content: center; align-items: flex-end;
-        }
-        .modal-overlay.show { display: flex; animation: fadeIn 0.2s; }
-        .modal-content {
-            background: white; width: 100%; max-width: 520px;
-            border-radius: 24px 24px 0 0; padding: 20px;
-            max-height: 85vh; overflow-y: auto;
-            animation: slideUp 0.3s ease;
-            padding-bottom: calc(20px + env(safe-area-inset-bottom));
-        }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        .modal-header {
-            display: flex; justify-content: space-between; align-items: center;
-            margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid #eee;
-        }
-        .modal-header h3 { margin: 0; font-size: 1.1rem; }
-        .close-modal {
-            background: #f0f0f0; border: none; font-size: 1rem;
-            cursor: pointer; color: #666; width: 32px; height: 32px;
-            border-radius: 10px; display: grid; place-items: center;
-            transition: 0.15s;
-        }
-        .close-modal:active { transform: scale(0.92); }
-        .modal-grid {
-            display: grid; grid-template-columns: repeat(auto-fill, minmax(95px, 1fr));
-            gap: 8px;
-        }
-        .modal-grid .card-item { padding: 5px; border-width: 2px; }
-        .modal-grid .card-info { display: none; }
+.pack-title {
+  font-size: 1.5rem; color: white; margin-bottom: 4px; font-weight: 900;
+  text-shadow: 0 4px 20px rgba(0,0,0,.5);
+}
+.pack-sub {
+  color: #b8b8d8; font-size: 0.85rem; margin-bottom: 24px; font-weight: 600;
+}
+.reveal-name {
+  color: white; font-size: 1.2rem; font-weight: 900; margin-top: 16px;
+  text-shadow: 0 4px 20px rgba(0,0,0,.5);
+}
+.reveal-rarity {
+  display: inline-block; margin-top: 6px;
+  padding: 4px 12px; border-radius: 99px;
+  font-size: 0.75rem; font-weight: 900; letter-spacing: 0.5px;
+}
+.reveal-rarity.comun { background: #d4d4d4; color: #333; }
+.reveal-rarity.rara { background: linear-gradient(135deg, #5a6ee8, #3b4cca); color: white; }
+.reveal-rarity.ultra {
+  background: linear-gradient(135deg, #ffd700, #ff6b35);
+  color: #4a3600; box-shadow: 0 0 20px rgba(255,215,0,.8);
+}
 
-        /* --- TOAST --- */
-        .toast {
-            position: fixed;
-            top: 70px;
-            left: 50%; transform: translateX(-50%);
-            background: var(--pk-dark); color: white;
-            padding: 12px 20px; border-radius: 12px;
-            font-size: 0.88rem; font-weight: 600;
-            z-index: 500; max-width: 90vw;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-            animation: toastIn 0.3s ease;
-            text-align: center;
-        }
-        .toast.ok { background: linear-gradient(135deg, #22b573, #149a5a); }
-        .toast.warn { background: linear-gradient(135deg, #f0a020, #c07a00); }
-        .toast.error { background: linear-gradient(135deg, #e5484d, #b52a2f); }
-        @keyframes toastIn { from { opacity: 0; transform: translate(-50%, -10px); } to { opacity: 1; transform: translate(-50%, 0); } }
+/* ============ CONFETTI ============ */
+.confetti-piece {
+  position: fixed; width: 10px; height: 10px;
+  z-index: 500; pointer-events: none;
+  animation: confettiFall linear forwards;
+}
+@keyframes confettiFall {
+  to { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+}
 
-        /* --- INFO BANNER --- */
-        .info-banner {
-            background: #fff8e1; border: 1px solid #ffe082;
-            border-left: 4px solid #ffa726;
-            padding: 12px 14px; border-radius: 10px;
-            font-size: 0.8rem; color: #6b4f00;
-            line-height: 1.45; margin-bottom: 14px;
-        }
-        .info-banner strong { color: #4a3600; }
+/* ============ POPUP FLOTANTE ============ */
+.float-popup {
+  position: fixed; z-index: 600;
+  background: white; padding: 10px 16px;
+  border-radius: 14px; font-weight: 900; font-size: 0.9rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,.3);
+  pointer-events: none;
+  animation: floatUp 1.6s cubic-bezier(.4,0,.2,1) forwards;
+}
+.float-popup.gold { background: linear-gradient(135deg, #ffd700, #ffb800); color: #4a3600; }
+.float-popup.green { background: linear-gradient(135deg, #4ade80, #22c55e); color: white; }
+.float-popup.red { background: linear-gradient(135deg, #ff6b35, #d61e1e); color: white; }
+@keyframes floatUp {
+  0% { opacity: 0; transform: translate(-50%, 0) scale(0.5); }
+  20% { opacity: 1; transform: translate(-50%, -20px) scale(1.1); }
+  80% { opacity: 1; transform: translate(-50%, -60px) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -90px) scale(0.9); }
+}
 
-        .api-key-warn {
-            background: #fdecec; border: 1px solid #f5b5b7;
-            border-left: 4px solid #e5484d;
-            padding: 12px 14px; border-radius: 10px;
-            font-size: 0.82rem; color: #7a1c1f;
-            line-height: 1.5; margin-bottom: 14px;
-        }
-        .api-key-warn code {
-            background: #fff; padding: 2px 6px; border-radius: 4px;
-            font-family: ui-monospace, monospace; font-size: 0.78rem;
-        }
-    </style>
+/* ============ MODAL NIVEL ============ */
+.level-modal {
+  position: fixed; inset: 0; z-index: 800;
+  background: radial-gradient(circle at center, rgba(59,76,202,.95), rgba(10,11,30,.98));
+  display: none; align-items: center; justify-content: center;
+  flex-direction: column; text-align: center; padding: 30px;
+}
+.level-modal.show { display: flex; animation: packIn 0.5s; }
+.level-modal .level-num {
+  font-size: 8rem; font-weight: 900; color: var(--gold);
+  line-height: 1; text-shadow: 0 0 60px rgba(255,203,5,.9);
+  animation: popNum 0.8s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes popNum {
+  0% { transform: scale(0) rotate(-180deg); }
+  60% { transform: scale(1.2) rotate(10deg); }
+  100% { transform: scale(1) rotate(0); }
+}
+.level-modal .level-label {
+  color: white; font-size: 1.4rem; font-weight: 900;
+  letter-spacing: 4px; margin-top: 8px; opacity: 0;
+  animation: fadeUp 0.6s 0.4s forwards;
+}
+@keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: none; } }
+.level-modal .level-bonus {
+  color: var(--yellow); margin-top: 20px; font-weight: 800;
+  opacity: 0; animation: fadeUp 0.6s 0.8s forwards;
+}
+.level-modal button {
+  margin-top: 30px; padding: 14px 40px;
+  border-radius: 14px; border: none;
+  background: white; color: var(--blue);
+  font-weight: 900; font-size: 1rem; cursor: pointer;
+  font-family: inherit;
+  opacity: 0; animation: fadeUp 0.6s 1s forwards;
+}
+
+/* ============ TOAST ============ */
+.toast {
+  position: fixed;
+  bottom: 110px; left: 50%; transform: translateX(-50%);
+  background: rgba(10,11,30,.95); color: white;
+  padding: 12px 20px; border-radius: 14px;
+  font-size: 0.88rem; font-weight: 700;
+  z-index: 700; max-width: 90vw;
+  box-shadow: 0 10px 30px rgba(0,0,0,.4);
+  animation: toastIn 0.3s cubic-bezier(.34,1.56,.64,1);
+  text-align: center; backdrop-filter: blur(10px);
+  border: 1px solid rgba(255,255,255,.15);
+}
+@keyframes toastIn {
+  from { opacity: 0; transform: translate(-50%, 20px) scale(0.9); }
+  to { opacity: 1; transform: translate(-50%, 0) scale(1); }
+}
+
+/* ============ NAV INFERIOR ============ */
+.bottom-nav {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  background: white;
+  display: flex; justify-content: space-around;
+  padding: 8px 0 calc(8px + env(safe-area-inset-bottom));
+  box-shadow: 0 -4px 20px rgba(10,11,30,.1);
+  z-index: 100;
+  border-top: 1px solid #f0f0f0;
+}
+.nav-btn {
+  background: none; border: none;
+  display: flex; flex-direction: column; align-items: center;
+  font-size: 0.65rem; color: #999; font-weight: 800;
+  cursor: pointer; padding: 4px 8px;
+  font-family: inherit;
+  transition: 0.2s;
+  position: relative;
+}
+.nav-btn .nav-ico {
+  font-size: 1.5rem;
+  margin-bottom: 1px;
+  transition: transform 0.25s cubic-bezier(.34,1.56,.64,1);
+  display: block;
+}
+.nav-btn.active { color: var(--red); }
+.nav-btn.active .nav-ico { transform: scale(1.2) translateY(-2px); }
+.nav-btn .nav-dot {
+  position: absolute; top: 0; right: 12px;
+  width: 8px; height: 8px; background: var(--red);
+  border-radius: 50%; box-shadow: 0 0 8px var(--red);
+  animation: pulse 1.5s infinite;
+  display: none;
+}
+.nav-btn.has-notif .nav-dot { display: block; }
+@keyframes pulse { 0%,100% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.4); opacity: 0.6; } }
+
+/* ============ MODAL SELECTOR ============ */
+.selector-modal {
+  position: fixed; inset: 0; z-index: 400;
+  background: rgba(10,11,30,.7); backdrop-filter: blur(6px);
+  display: none; align-items: flex-end; justify-content: center;
+}
+.selector-modal.show { display: flex; animation: fadeIn 0.25s; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.selector-content {
+  background: white; width: 100%; max-width: 540px;
+  border-radius: 24px 24px 0 0;
+  padding: 20px 16px calc(20px + env(safe-area-inset-bottom));
+  max-height: 80vh; overflow-y: auto;
+  animation: slideUp 0.35s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.selector-content h3 { margin-bottom: 14px; font-size: 1.05rem; }
+
+/* ============ HISTORIAS ============ */
+.story-form { background: white; border-radius: var(--r); padding: 16px; box-shadow: var(--shadow); margin-bottom: 16px; }
+.story-form label { display: block; font-size: 0.8rem; font-weight: 800; color: #666; margin-bottom: 6px; }
+.story-form select, .story-form input, .story-form textarea {
+  width: 100%; padding: 12px; border-radius: 12px;
+  border: 2px solid #e6ecff; font-family: inherit;
+  font-size: 0.9rem; margin-bottom: 12px; outline: none;
+  font-weight: 600;
+}
+.story-form select:focus, .story-form input:focus, .story-form textarea:focus {
+  border-color: var(--blue); box-shadow: 0 0 0 4px rgba(59,76,202,.1);
+}
+.story-form textarea { min-height: 100px; resize: vertical; line-height: 1.5; }
+.story-card {
+  background: white; border-radius: var(--r); padding: 16px;
+  box-shadow: var(--shadow); margin-bottom: 12px;
+  border-left: 5px solid var(--purple);
+  position: relative;
+}
+.story-card h4 { color: var(--blue); font-size: 0.98rem; margin-bottom: 6px; padding-right: 30px; }
+.story-card p { font-size: 0.85rem; line-height: 1.55; color: #444; white-space: pre-wrap; }
+.story-card small { display: block; margin-top: 8px; color: #999; font-size: 0.72rem; font-weight: 700; }
+.story-card .del {
+  position: absolute; top: 12px; right: 12px;
+  background: #fdecec; border: none; color: var(--red);
+  width: 26px; height: 26px; border-radius: 8px; cursor: pointer;
+}
+
+/* ============ RESPONSIVE ============ */
+@media (max-width: 400px) {
+  .grid-cards { grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 10px; }
+  .featured-card img { width: 120px; }
+  .hud-brand { font-size: 0.95rem; }
+}
+</style>
 </head>
 <body>
 
-    <!-- HEADER -->
-    <header>
-        <div class="brand">
-            <!-- Pokébola SVG -->
-            <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <circle cx="50" cy="50" r="45" fill="#fff" stroke="#1a1a2e" stroke-width="5"/>
-                <path d="M5 50 A45 45 0 0 1 95 50 Z" fill="#ee1515"/>
-                <rect x="5" y="45" width="90" height="10" fill="#1a1a2e"/>
-                <circle cx="50" cy="50" r="16" fill="#fff" stroke="#1a1a2e" stroke-width="5"/>
-                <circle cx="50" cy="50" r="6" fill="#1a1a2e"/>
-            </svg>
-            <span><span class="pk-word">Poke</span><span class="blas-word">Blas</span></span>
-        </div>
-        <button class="top-btn" onclick="borrarTodo()" title="Borrar todo">🗑️</button>
-    </header>
-
-    <!-- VISTA INICIO -->
-    <section class="view active" id="view-inicio">
-        <h2>¡Hola, Entrenador! 👋</h2>
-        <p class="sub">Este es tu centro de comando Pokémon. Gestioná tu colección, escribí historias y batallá con tus cartas.</p>
-
-        <div class="progress-card" id="resumen-coleccion">
-            <div class="progress-pct">0%</div>
-            <div class="label">Cargando...</div>
-        </div>
-
-        <h3 style="margin-bottom: 10px; font-size: 1rem; color: var(--pk-dark);">🌟 Carta Destacada</h3>
-        <div class="featured-card" id="carta-destacada">
-            <p style="color:#888; padding: 20px;">Cargando...</p>
-        </div>
-    </section>
-
-    <!-- VISTA ÁLBUM -->
-    <section class="view" id="view-album">
-        <h2>Mi Álbum 📖</h2>
-        <p class="sub">Buscá cualquier carta de Pokémon y marcala como tuya con un toque.</p>
-
-        <div class="tabs">
-            <button class="tab active" id="tab-buscar" onclick="cambiarTab('buscar')">🔍 Buscar</button>
-            <button class="tab" id="tab-coleccion" onclick="cambiarTab('coleccion')">⭐ Mi Colección</button>
-        </div>
-
-        <div id="panel-buscar">
-            <div class="search-wrap">
-                <span class="search-icon">🔍</span>
-                <input type="text" class="search-box" id="buscador"
-                       placeholder="Ej: Charizard, Pikachu, Mewtwo..."
-                       autocomplete="off">
-                <button class="search-clear" id="search-clear" onclick="limpiarBusqueda()">✕</button>
-            </div>
-            <div class="grid-container" id="album-grid">
-                <div class="empty-state">
-                    <div class="spinner"></div>
-                    <p>Buscando cartas...</p>
-                </div>
-            </div>
-            <button class="btn-load-more" id="btn-mas" onclick="cargarMas()" style="display:none;">➕ Cargar más cartas</button>
-        </div>
-
-        <div id="panel-coleccion" style="display:none;">
-            <div class="grid-container" id="coleccion-grid">
-                <div class="empty-state">
-                    <span class="big">📭</span>
-                    <p>Todavía no marcaste ninguna carta como tuya.<br>¡Andá a la pestaña Buscar y empezá!</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- VISTA HISTORIAS -->
-    <section class="view" id="view-historias">
-        <h2>Taller de Historias ✍️</h2>
-        <p class="sub">Elegí tus Pokémon y creá una aventura épica. Solo se puede elegir entre las cartas que ya tenés.</p>
-
-        <div class="form-group">
-            <label>1. Protagonista 1</label>
-            <select id="story-pokemon-1"></select>
-        </div>
-
-        <div class="form-group">
-            <label>2. Protagonista 2</label>
-            <select id="story-pokemon-2"></select>
-        </div>
-
-        <div class="form-group">
-            <label>3. ¿Dónde ocurre la historia?</label>
-            <input type="text" id="story-escenario" placeholder="Ej: El Bosque Verde, una cueva oscura...">
-        </div>
-
-        <div class="form-group">
-            <label>4. ¿Cuál es el problema o conflicto?</label>
-            <input type="text" id="story-conflicto" placeholder="Ej: Un Team Rocket robó una Pokébola...">
-        </div>
-
-        <div class="form-group">
-            <label>5. Escribí tu historia</label>
-            <textarea id="story-texto" placeholder="Había una vez..."></textarea>
-        </div>
-
-        <button class="btn-primary" onclick="guardarHistoria()">💾 Guardar Historia</button>
-
-        <div class="story-list" id="story-list"></div>
-    </section>
-
-    <!-- VISTA ARENA -->
-    <section class="view" id="view-arena">
-        <h2>Arena de Batalla ⚔️</h2>
-        <p class="sub">Seleccioná dos cartas de tu colección. El ganador se define por HP + bono de rareza.</p>
-
-        <div class="arena-slots">
-            <div class="arena-slot" id="slot-1" onclick="abrirSelector(1)">
-                <div class="placeholder">Elegir<br>Carta 1</div>
-            </div>
-            <div class="arena-slot" id="slot-2" onclick="abrirSelector(2)">
-                <div class="placeholder">Elegir<br>Carta 2</div>
-            </div>
-        </div>
-
-        <button class="btn-primary red" onclick="simularBatalla()">⚔️ ¡Iniciar Batalla!</button>
-
-        <div class="battle-result" id="battle-result"></div>
-    </section>
-
-    <!-- MODAL PARA SELECCIONAR CARTA EN ARENA -->
-    <div class="modal-overlay" id="modal-selector" onclick="if(event.target===this)cerrarSelector()">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Elegí una carta</h3>
-                <button class="close-modal" onclick="cerrarSelector()">✕</button>
-            </div>
-            <div class="modal-grid" id="modal-grid"></div>
-        </div>
+<!-- HUD -->
+<div class="hud">
+  <div class="hud-top">
+    <div class="hud-brand">
+      <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <circle cx="50" cy="50" r="45" fill="#fff" stroke="#1a1a2e" stroke-width="5"/>
+        <path d="M5 50 A45 45 0 0 1 95 50 Z" fill="#ee1515"/>
+        <rect x="5" y="45" width="90" height="10" fill="#1a1a2e"/>
+        <circle cx="50" cy="50" r="16" fill="#fff" stroke="#1a1a2e" stroke-width="5"/>
+        <circle cx="50" cy="50" r="6" fill="#1a1a2e"/>
+      </svg>
+      <span><span class="poke">Poke</span><span class="blas">Blas</span></span>
     </div>
-
-    <!-- NAVEGACIÓN INFERIOR -->
-    <nav class="bottom-nav">
-        <button class="nav-btn active" onclick="irA('inicio')" id="nav-inicio">
-            <span>🏠</span> Inicio
-        </button>
-        <button class="nav-btn" onclick="irA('album')" id="nav-album">
-            <span>📖</span> Álbum
-        </button>
-        <button class="nav-btn" onclick="irA('historias')" id="nav-historias">
-            <span>✍️</span> Historias
-        </button>
-        <button class="nav-btn" onclick="irA('arena')" id="nav-arena">
-            <span>⚔️</span> Arena
-        </button>
-    </nav>
-
-    <script>
-        // ============================================================
-        //  ⚙️  CONFIGURACIÓN DE LA API DE POKÉMON TCG
-        // ============================================================
-        //  1. Andá a https://dev.pokemontcg.io
-        //  2. Creá una cuenta gratis y generá tu API Key
-        //  3. Pegala abajo entre las comillas
-        //
-        //  ⚠️ IMPORTANTE: No subas tu API Key a GitHub público.
-        // ============================================================
-        const API_KEY = ''; // ← PEGÁ TU API KEY ACÁ
-        const API_URL = 'https://api.pokemontcg.io/v2/cards';
-        const PAGE_SIZE = 30;
-
-        // ============================================================
-        //  ESTADO GLOBAL
-        // ============================================================
-        let BASE_DATOS = [];           // Cartas actualmente cargadas desde la API
-        let paginaActual = 1;
-        let hayMasCartas = false;
-        let cargando = false;
-        let busquedaActual = '';
-        let tabActual = 'buscar';
-
-        // Mis cartas: objeto { id: {datos de la carta} } guardado en localStorage
-        let misCartas = JSON.parse(localStorage.getItem('pokeblasColeccion')) || {};
-
-        // Historias guardadas
-        let historias = JSON.parse(localStorage.getItem('pokeblasHistorias')) || [];
-
-        // Arena
-        let slot1Seleccionado = null;
-        let slot2Seleccionado = null;
-        let slotActivo = null;
-
-        // ============================================================
-        //  NAVEGACIÓN
-        // ============================================================
-        function irA(vista) {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.getElementById('view-' + vista).classList.add('active');
-            document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-            document.getElementById('nav-' + vista).classList.add('active');
-            window.scrollTo(0, 0);
-
-            if (vista === 'inicio') renderInicio();
-            if (vista === 'album') renderAlbum();
-            if (vista === 'historias') renderHistorias();
-            if (vista === 'arena') renderArenaSlots();
-        }
-
-        // ============================================================
-        //  TOAST
-        // ============================================================
-        function toast(msg, tipo = '') {
-            const t = document.createElement('div');
-            t.className = 'toast ' + tipo;
-            t.textContent = msg;
-            document.body.appendChild(t);
-            setTimeout(() => t.remove(), 2800);
-        }
-
-        // ============================================================
-        //  CARGA DE CARTAS DESDE LA API
-        // ============================================================
-        async function cargarCartasDesdeAPI(query = '', page = 1, append = false) {
-            if (cargando) return;
-            cargando = true;
-
-            const grid = document.getElementById('album-grid');
-            if (!append) {
-                grid.innerHTML = `
-                    <div class="empty-state">
-                        <div class="spinner"></div>
-                        <p>Buscando cartas...</p>
-                    </div>`;
-            }
-
-            try {
-                // Construir la URL
-                let url = `${API_URL}?page=${page}&pageSize=${PAGE_SIZE}&orderBy=-set.releaseDate`;
-                if (query) {
-                    // Búsqueda por nombre con comodines
-                    url += `&q=name:*${encodeURIComponent(query)}*`;
-                }
-
-                // Headers (con API Key si está configurada)
-                const headers = { 'Content-Type': 'application/json' };
-                if (API_KEY) headers['X-Api-Key'] = API_KEY;
-
-                const response = await fetch(url, { headers });
-
-                if (!response.ok) {
-                    throw new Error(`Error ${response.status}: ${response.statusText}`);
-                }
-
-                const json = await response.json();
-
-                // Mapear respuesta al formato interno
-                const cartasMapeadas = (json.data || []).map(carta => ({
-                    id: carta.id,
-                    nombre: carta.name,
-                    tipo: carta.types ? carta.types.join(' / ') : 'Normal',
-                    hp: carta.hp ? parseInt(carta.hp, 10) : 0,
-                    rareza: carta.rarity || 'Común',
-                    img: carta.images?.small || '',
-                    imgGrande: carta.images?.large || '',
-                    set: carta.set?.name || '',
-                    numero: carta.number || ''
-                }));
-
-                if (append) {
-                    BASE_DATOS = BASE_DATOS.concat(cartasMapeadas);
-                } else {
-                    BASE_DATOS = cartasMapeadas;
-                }
-
-                hayMasCartas = cartasMapeadas.length === PAGE_SIZE;
-
-                renderAlbum();
-
-            } catch (error) {
-                console.error('Error al cargar cartas:', error);
-                if (!append) {
-                    grid.innerHTML = `
-                        <div class="empty-state">
-                            <span class="big">😵</span>
-                            <p><strong>No se pudieron cargar las cartas.</strong></p>
-                            <p style="font-size:0.78rem; color:#999; margin-top:8px;">${error.message}</p>
-                            <p style="font-size:0.78rem; color:#999; margin-top:8px;">Verificá tu conexión o la API Key.</p>
-                        </div>`;
-                } else {
-                    toast('No se pudieron cargar más cartas', 'error');
-                }
-            } finally {
-                cargando = false;
-                actualizarBotonMas();
-            }
-        }
-
-        function actualizarBotonMas() {
-            const btn = document.getElementById('btn-mas');
-            if (!btn) return;
-            btn.style.display = (hayMasCartas && tabActual === 'buscar') ? 'block' : 'none';
-            btn.disabled = cargando;
-            btn.textContent = cargando ? '⏳ Cargando...' : '➕ Cargar más cartas';
-        }
-
-        function cargarMas() {
-            if (cargando || !hayMasCartas) return;
-            paginaActual++;
-            cargarCartasDesdeAPI(busquedaActual, paginaActual, true);
-        }
-
-        // ============================================================
-        //  BUSCADOR CON DEBOUNCE
-        // ============================================================
-        let debounceTimer = null;
-        document.addEventListener('DOMContentLoaded', () => {
-            const buscador = document.getElementById('buscador');
-            const clearBtn = document.getElementById('search-clear');
-
-            buscador.addEventListener('input', () => {
-                const val = buscador.value.trim();
-                clearBtn.classList.toggle('show', val.length > 0);
-
-                clearTimeout(debounceTimer);
-                debounceTimer = setTimeout(() => {
-                    busquedaActual = val;
-                    paginaActual = 1;
-                    cargarCartasDesdeAPI(val, 1, false);
-                }, 500); // 500ms de espera tras dejar de escribir
-            });
-
-            // Carga inicial: cartas recientes
-            cargarCartasDesdeAPI('', 1, false);
-
-            // Inicializar resto de vistas
-            renderInicio();
-            renderHistorias();
-        });
-
-        function limpiarBusqueda() {
-            document.getElementById('buscador').value = '';
-            document.getElementById('search-clear').classList.remove('show');
-            busquedaActual = '';
-            paginaActual = 1;
-            cargarCartasDesdeAPI('', 1, false);
-        }
-
-        // ============================================================
-        //  TABS DEL ÁLBUM
-        // ============================================================
-        function cambiarTab(tab) {
-            tabActual = tab;
-            document.getElementById('tab-buscar').classList.toggle('active', tab === 'buscar');
-            document.getElementById('tab-coleccion').classList.toggle('active', tab === 'coleccion');
-            document.getElementById('panel-buscar').style.display = tab === 'buscar' ? 'block' : 'none';
-            document.getElementById('panel-coleccion').style.display = tab === 'coleccion' ? 'block' : 'none';
-            renderAlbum();
-        }
-
-        // ============================================================
-        //  RENDER: ÁLBUM
-        // ============================================================
-        function renderAlbum() {
-            if (tabActual === 'coleccion') {
-                renderColeccion();
-                return;
-            }
-
-            const grid = document.getElementById('album-grid');
-            const cartas = BASE_DATOS;
-
-            if (!cartas.length) {
-                grid.innerHTML = `
-                    <div class="empty-state">
-                        <span class="big">🔍</span>
-                        <p>No se encontraron cartas para esa búsqueda.</p>
-                    </div>`;
-                actualizarBotonMas();
-                return;
-            }
-
-            grid.innerHTML = cartas.map(carta => renderCardHTML(carta)).join('');
-            grid.querySelectorAll('[data-toggle-id]').forEach(el => {
-                el.onclick = () => toggleCarta(el.dataset.toggleId);
-            });
-            actualizarBotonMas();
-        }
-
-        function renderColeccion() {
-            const grid = document.getElementById('coleccion-grid');
-            const cartas = Object.values(misCartas);
-
-            if (!cartas.length) {
-                grid.innerHTML = `
-                    <div class="empty-state">
-                        <span class="big">📭</span>
-                        <p>Todavía no marcaste ninguna carta como tuya.<br>¡Andá a la pestaña <b>Buscar</b> y empezá!</p>
-                    </div>`;
-                return;
-            }
-
-            // Ordenar alfabéticamente
-            cartas.sort((a, b) => a.nombre.localeCompare(b.nombre));
-            grid.innerHTML = cartas.map(carta => renderCardHTML(carta, true)).join('');
-            grid.querySelectorAll('[data-toggle-id]').forEach(el => {
-                el.onclick = () => toggleCarta(el.dataset.toggleId);
-            });
-        }
-
-        function renderCardHTML(carta, forzarOwned = false) {
-            const owned = forzarOwned || !!misCartas[carta.id];
-            const rarezaCorta = (carta.rareza || '').replace(/^(Rare |Rare )/i, '').slice(0, 18);
-            return `
-                <div class="card-item ${owned ? 'owned' : ''}" data-toggle-id="${carta.id}">
-                    <img src="${carta.img}" alt="${escapeHTML(carta.nombre)}" loading="lazy"
-                         onerror="this.src='data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 245 342%22><rect fill=%22%23f0f0f0%22 width=%22245%22 height=%22342%22/><text x=%22122%22 y=%22180%22 font-size=%2240%22 text-anchor=%22middle%22>❓</text></svg>'">
-                    <div class="card-info">
-                        <h3>${escapeHTML(carta.nombre)}</h3>
-                        <p>${escapeHTML(carta.tipo)} · ${carta.hp} HP</p>
-                        ${rarezaCorta ? `<span class="rarity">${escapeHTML(rarezaCorta)}</span>` : ''}
-                    </div>
-                </div>`;
-        }
-
-        // ============================================================
-        //  MARCAR / DESMARCAR CARTA
-        // ============================================================
-        function toggleCarta(id) {
-            if (misCartas[id]) {
-                delete misCartas[id];
-                toast('Carta quitada de tu colección');
-            } else {
-                const carta = BASE_DATOS.find(c => c.id === id);
-                if (!carta) return;
-                misCartas[id] = carta;
-                toast('¡Carta agregada! ⭐', 'ok');
-            }
-            localStorage.setItem('pokeblasColeccion', JSON.stringify(misCartas));
-
-            if (tabActual === 'buscar') renderAlbum();
-            else renderColeccion();
-
-            renderInicio();
-            renderHistorias();
-        }
-
-        // ============================================================
-        //  RENDER: INICIO
-        // ============================================================
-        function renderInicio() {
-            const total = Object.keys(misCartas).length;
-
-            // Estimamos un total "conocido" para el porcentaje
-            // (la API tiene miles de cartas, así que usamos un número simbólico)
-            const TOTAL_MUNDO = 20000;
-            const porcentaje = Math.min(100, Math.round((total / TOTAL_MUNDO) * 100 * 10) / 10);
-
-            document.getElementById('resumen-coleccion').innerHTML = `
-                <div class="progress-pct">${porcentaje}%</div>
-                <div class="label">del mundo Pokémon conocido</div>
-                <div class="progress-bar-bg">
-                    <div class="progress-bar-fill" style="width:${Math.min(100, porcentaje * 20)}%"></div>
-                </div>
-                <div class="stat-row">
-                    <div>
-                        <b>${total}</b>
-                        <small>Cartas tuyas</small>
-                    </div>
-                    <div>
-                        <b>${historias.length}</b>
-                        <small>Historias</small>
-                    </div>
-                    <div>
-                        <b>${porcentaje}%</b>
-                        <small>Del total</small>
-                    </div>
-                </div>
-            `;
-
-            const cartasObtenidas = Object.values(misCartas);
-            const contenedor = document.getElementById('carta-destacada');
-
-            if (!cartasObtenidas.length) {
-                contenedor.innerHTML = `<p style="color:#888; padding: 20px;">Cuando agregues cartas a tu colección, van a aparecer acá.</p>`;
-                return;
-            }
-
-            const random = cartasObtenidas[Math.floor(Math.random() * cartasObtenidas.length)];
-            contenedor.innerHTML = `
-                <img src="${random.img}" alt="${escapeHTML(random.nombre)}" loading="lazy">
-                <h3>${escapeHTML(random.nombre)}</h3>
-                <p>${escapeHTML(random.tipo)} · ${random.hp} HP · ${escapeHTML(random.rareza)}</p>
-                ${random.set ? `<p style="font-size:0.75rem; color:#aaa; margin-top:4px;">${escapeHTML(random.set)} #${random.numero}</p>` : ''}
-            `;
-        }
-
-        // ============================================================
-        //  RENDER: HISTORIAS
-        // ============================================================
-        function renderHistorias() {
-            const opciones = Object.values(misCartas).sort((a, b) => a.nombre.localeCompare(b.nombre));
-            const htmlOpciones = opciones.map(c => `<option value="${c.id}">${escapeHTML(c.nombre)}</option>`).join('');
-
-            const s1 = document.getElementById('story-pokemon-1');
-            const s2 = document.getElementById('story-pokemon-2');
-            const val1 = s1.value, val2 = s2.value;
-
-            s1.innerHTML = htmlOpciones || '<option value="">(No tenés cartas todavía)</option>';
-            s2.innerHTML = htmlOpciones || '<option value="">(No tenés cartas todavía)</option>';
-
-            if (val1 && misCartas[val1]) s1.value = val1;
-            if (val2 && misCartas[val2]) s2.value = val2;
-
-            const lista = document.getElementById('story-list');
-            if (!historias.length) {
-                lista.innerHTML = `
-                    <div class="empty-state" style="padding:30px 10px;">
-                        <span class="big">📚</span>
-                        <p>Todavía no escribiste ninguna historia.</p>
-                    </div>`;
-            } else {
-                lista.innerHTML = historias.slice().reverse().map(h => `
-                    <div class="story-card">
-                        <button class="del-story" onclick="borrarHistoria(${h.id})">🗑️</button>
-                        <h4>📖 ${escapeHTML(h.titulo)}</h4>
-                        <p>${escapeHTML(h.texto)}</p>
-                        <span class="meta">Protagonistas: ${escapeHTML(h.pokemon1)} y ${escapeHTML(h.pokemon2)} · ${h.fecha}</span>
-                    </div>
-                `).join('');
-            }
-        }
-
-        function guardarHistoria() {
-            const p1 = document.getElementById('story-pokemon-1').value;
-            const p2 = document.getElementById('story-pokemon-2').value;
-            const escenario = document.getElementById('story-escenario').value.trim();
-            const conflicto = document.getElementById('story-conflicto').value.trim();
-            const texto = document.getElementById('story-texto').value.trim();
-
-            if (!p1 || !p2) {
-                toast('¡Elegí dos Pokémon!', 'warn');
-                return;
-            }
-            if (!texto) {
-                toast('¡Escribí tu historia!', 'warn');
-                return;
-            }
-            if (p1 === p2) {
-                toast('Elegí dos Pokémon distintos', 'warn');
-                return;
-            }
-
-            const carta1 = misCartas[p1].nombre;
-            const carta2 = misCartas[p2].nombre;
-
-            historias.push({
-                id: Date.now(),
-                titulo: `${carta1} y ${carta2} en ${escenario || 'una aventura'}`,
-                pokemon1: carta1,
-                pokemon2: carta2,
-                escenario,
-                conflicto,
-                texto,
-                fecha: new Date().toLocaleDateString('es-AR')
-            });
-
-            localStorage.setItem('pokeblasHistorias', JSON.stringify(historias));
-
-            document.getElementById('story-escenario').value = '';
-            document.getElementById('story-conflicto').value = '';
-            document.getElementById('story-texto').value = '';
-
-            renderHistorias();
-            renderInicio();
-            toast('¡Historia guardada! 🌟', 'ok');
-        }
-
-        function borrarHistoria(id) {
-            if (!confirm('¿Borrar esta historia?')) return;
-            historias = historias.filter(h => h.id !== id);
-            localStorage.setItem('pokeblasHistorias', JSON.stringify(historias));
-            renderHistorias();
-            renderInicio();
-        }
-
-        // ============================================================
-        //  RENDER: ARENA
-        // ============================================================
-        function renderArenaSlots() {
-            if (slot1Seleccionado) pintarSlot(1, slot1Seleccionado);
-            if (slot2Seleccionado) pintarSlot(2, slot2Seleccionado);
-        }
-
-        function pintarSlot(n, carta) {
-            const slot = document.getElementById('slot-' + n);
-            slot.innerHTML = `
-                <img src="${carta.img}" alt="${escapeHTML(carta.nombre)}">
-                <div class="slot-name">${escapeHTML(carta.nombre)}</div>
-            `;
-            slot.classList.add('selected');
-        }
-
-        function abrirSelector(slot) {
-            slotActivo = slot;
-            const modal = document.getElementById('modal-selector');
-            const grid = document.getElementById('modal-grid');
-            grid.innerHTML = '';
-
-            const cartas = Object.values(misCartas).sort((a, b) => a.nombre.localeCompare(b.nombre));
-
-            if (!cartas.length) {
-                grid.innerHTML = `
-                    <div class="empty-state" style="grid-column:1/-1;">
-                        <span class="big">📭</span>
-                        <p>No tenés cartas en tu colección.<br>¡Andá al Álbum y marcá algunas!</p>
-                    </div>`;
-            } else {
-                cartas.forEach(carta => {
-                    const div = document.createElement('div');
-                    div.className = 'card-item owned';
-                    div.innerHTML = `<img src="${carta.img}" alt="${escapeHTML(carta.nombre)}" loading="lazy">`;
-                    div.onclick = () => seleccionarParaArena(carta);
-                    grid.appendChild(div);
-                });
-            }
-            modal.classList.add('show');
-        }
-
-        function cerrarSelector() {
-            document.getElementById('modal-selector').classList.remove('show');
-        }
-
-        function seleccionarParaArena(carta) {
-            if (slotActivo === 1) slot1Seleccionado = carta;
-            else slot2Seleccionado = carta;
-            pintarSlot(slotActivo, carta);
-            cerrarSelector();
-        }
-
-        function simularBatalla() {
-            const resultDiv = document.getElementById('battle-result');
-
-            if (!slot1Seleccionado || !slot2Seleccionado) {
-                toast('¡Elegí dos cartas para batallar!', 'warn');
-                return;
-            }
-
-            const bonus = { 'Común': 0, 'Uncommon': 10, 'Rara': 20, 'Rare': 20, 'Rare Holo': 30, 'Ultra Rara': 50, 'Rare Ultra': 50, 'Rare Secret': 60, 'Rare Rainbow': 70 };
-            const bono1 = bonus[slot1Seleccionado.rareza] ?? 15;
-            const bono2 = bonus[slot2Seleccionado.rareza] ?? 15;
-            const puntaje1 = (slot1Seleccionado.hp || 0) + bono1;
-            const puntaje2 = (slot2Seleccionado.hp || 0) + bono2;
-
-            let mensaje, ganador;
-            if (puntaje1 > puntaje2) {
-                ganador = slot1Seleccionado;
-                mensaje = `¡<b>${escapeHTML(ganador.nombre)}</b> venció a ${escapeHTML(slot2Seleccionado.nombre)}!`;
-            } else if (puntaje2 > puntaje1) {
-                ganador = slot2Seleccionado;
-                mensaje = `¡<b>${escapeHTML(ganador.nombre)}</b> venció a ${escapeHTML(slot1Seleccionado.nombre)}!`;
-            } else {
-                mensaje = `¡Empate! Ambos tienen <b>${puntaje1} puntos</b> de poder.`;
-            }
-
-            resultDiv.innerHTML = `
-                <h3>🏆 Resultado</h3>
-                <p>${mensaje}</p>
-                <div class="score">
-                    ${escapeHTML(slot1Seleccionado.nombre)}: ${slot1Seleccionado.hp} HP + ${bono1} bono = <b>${puntaje1}</b><br>
-                    ${escapeHTML(slot2Seleccionado.nombre)}: ${slot2Seleccionado.hp} HP + ${bono2} bono = <b>${puntaje2}</b>
-                </div>
-                <button class="btn-secondary" onclick="resetArena()">🔄 Nueva Batalla</button>
-            `;
-            resultDiv.classList.add('show');
-        }
-
-        function resetArena() {
-            slot1Seleccionado = null;
-            slot2Seleccionado = null;
-            document.getElementById('slot-1').innerHTML = '<div class="placeholder">Elegir<br>Carta 1</div>';
-            document.getElementById('slot-2').innerHTML = '<div class="placeholder">Elegir<br>Carta 2</div>';
-            document.getElementById('slot-1').classList.remove('selected');
-            document.getElementById('slot-2').classList.remove('selected');
-            document.getElementById('battle-result').classList.remove('show');
-        }
-
-        // ============================================================
-        //  BORRAR TODO
-        // ============================================================
-        function borrarTodo() {
-            if (!confirm('¿Borrar TODA tu colección e historias? Esta acción no se puede deshacer.')) return;
-            localStorage.removeItem('pokeblasColeccion');
-            localStorage.removeItem('pokeblasHistorias');
-            misCartas = {};
-            historias = [];
-            slot1Seleccionado = null;
-            slot2Seleccionado = null;
-            renderInicio();
-            renderAlbum();
-            renderHistorias();
-            resetArena();
-            toast('Datos borrados. ¡Empezás de cero!', 'ok');
-        }
-
-        // ============================================================
-        //  UTILIDADES
-        // ============================================================
-        function escapeHTML(s) {
-            return String(s ?? '').replace(/[&<>"']/g, c => ({
-                '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
-            }[c]));
-        }
-
-        // Cerrar modal con tecla ESC
-        document.addEventListener('keydown', e => {
-            if (e.key === 'Escape') cerrarSelector();
-        });
-    </script>
+    <div class="hud-stats">
+      <div class="stat-chip coins" id="chip-coins">💰 <span id="hud-coins">0</span></div>
+      <div class="stat-chip fire" id="chip-streak">🔥 <span id="hud-streak">0</span></div>
+    </div>
+  </div>
+  <div class="xp-row">
+    <div class="level-badge" id="hud-level">1</div>
+    <div class="xp-bar-bg">
+      <div class="xp-bar-fill" id="hud-xp" style="width:0%"></div>
+    </div>
+    <div class="xp-text" id="hud-xp-text">0/100</div>
+  </div>
+</div>
+
+<!-- VISTA HOME -->
+<section class="view active" id="view-home">
+  <h2><span class="emo">🏠</span>Tu base</h2>
+  <p class="sub" id="greeting">¡Bienvenido, Entrenador!</p>
+
+  <div class="section-title">
+    <h3>🎯 Misiones de hoy</h3>
+    <span class="badge" id="misiones-count">0/3</span>
+  </div>
+  <div id="misiones-container"></div>
+
+  <div class="section-title">
+    <h3>⭐ Carta destacada</h3>
+  </div>
+  <div class="featured-card" id="featured"></div>
+
+  <div class="section-title">
+    <h3>📚 Tu taller de historias</h3>
+  </div>
+  <div class="story-form">
+    <label>Protagonista 1</label>
+    <select id="story-p1"></select>
+    <label>Protagonista 2</label>
+    <select id="story-p2"></select>
+    <label>¿Dónde pasa?</label>
+    <input type="text" id="story-esc" placeholder="Ej: Bosque Verde...">
+    <label>¿Cuál es el problema?</label>
+    <input type="text" id="story-con" placeholder="Ej: Un Team Rocket robó...">
+    <label>Escribí tu historia</label>
+    <textarea id="story-txt" placeholder="Había una vez..."></textarea>
+    <button class="btn btn-primary" onclick="guardarHistoria()">💾 Guardar historia (+20 XP, +8 💰)</button>
+  </div>
+  <div id="story-list"></div>
+</section>
+
+<!-- VISTA ÁLBUM -->
+<section class="view" id="view-album">
+  <h2><span class="emo">📖</span>Mi álbum</h2>
+  <p class="sub">Buscá cualquier carta y marcala como tuya. ¡Cada carta nueva suma XP!</p>
+  <div class="tabs">
+    <button class="tab active" id="tab-buscar" onclick="cambiarTab('buscar')">🔍 Buscar</button>
+    <button class="tab" id="tab-coleccion" onclick="cambiarTab('coleccion')">⭐ Colección</button>
+  </div>
+
+  <div id="panel-buscar">
+    <div class="search-wrap">
+      <span class="search-ico">🔍</span>
+      <input type="text" class="search-input" id="buscador" placeholder="Charizard, Pikachu...">
+      <button class="search-x" id="search-x" onclick="limpiarBusqueda()">✕</button>
+    </div>
+    <div class="grid-cards" id="album-grid">
+      <div class="empty-state">
+        <div class="spinner"></div>
+        <p>Cargando cartas...</p>
+      </div>
+    </div>
+    <button class="btn btn-ghost" id="btn-mas" onclick="cargarMas()" style="display:none;margin-top:14px;">➕ Cargar más</button>
+  </div>
+
+  <div id="panel-coleccion" style="display:none;">
+    <div class="grid-cards" id="coleccion-grid"></div>
+  </div>
+</section>
+
+<!-- VISTA ARENA -->
+<section class="view" id="view-arena">
+  <h2><span class="emo">⚔️</span>Arena</h2>
+  <p class="sub">Elegí dos cartas tuyas. ¡El HP y la rareza definen al ganador!</p>
+
+  <div class="arena-slots">
+    <div class="arena-slot" id="slot-1" onclick="abrirSelector(1)">
+      <div class="slot-placeholder">Elegir<br>Carta 1</div>
+    </div>
+    <div class="arena-slot" id="slot-2" onclick="abrirSelector(2)">
+      <div class="slot-placeholder">Elegir<br>Carta 2</div>
+    </div>
+  </div>
+
+  <div class="battle-log" id="battle-log" style="display:none;"></div>
+
+  <button class="btn btn-red" id="btn-fight" onclick="pelear()">⚔️ ¡Pelear! (+15 XP, +5 💰)</button>
+</section>
+
+<!-- VISTA TIENDA -->
+<section class="view" id="view-tienda">
+  <h2><span class="emo">🎁</span>Tienda mágica</h2>
+  <p class="sub">Ganá monedas completando misiones y batallas. ¡Comprá sobres y descubrí cartas nuevas!</p>
+
+  <div class="shop-grid">
+    <div class="shop-item" onclick="comprarSobre('basico')">
+      <span class="shop-emoji">📦</span>
+      <h4>Sobre básico</h4>
+      <p>1 carta aleatoria</p>
+      <div class="price" id="price-basico">30 💰</div>
+    </div>
+    <div class="shop-item" onclick="comprarSobre('epico')" style="border-top-color: var(--purple);">
+      <span class="shop-emoji">🎁</span>
+      <h4>Sobre épico</h4>
+      <p>3 cartas, con más chances de raras</p>
+      <div class="price" id="price-epico">70 💰</div>
+    </div>
+    <div class="shop-item" onclick="comprarSobre('legendario')" style="border-top-color: var(--gold);">
+      <span class="shop-emoji">👑</span>
+      <h4>Legendario</h4>
+      <p>5 cartas, garantía de una Ultra Rara</p>
+      <div class="price" id="price-legendario">150 💰</div>
+    </div>
+    <div class="shop-item" onclick="recargarGratis()" style="border-top-color: var(--green);">
+      <span class="shop-emoji">💚</span>
+      <h4>Regalo diario</h4>
+      <p>Reclamá una vez por día</p>
+      <div class="price" id="price-diario">Gratis</div>
+    </div>
+  </div>
+
+  <div class="section-title" style="margin-top:24px;">
+    <h3>🏆 Logros</h3>
+  </div>
+  <div id="logros-list"></div>
+</section>
+
+<!-- NAV -->
+<nav class="bottom-nav">
+  <button class="nav-btn active" onclick="irA('home')" id="nav-home">
+    <span class="nav-ico">🏠</span>Base
+    <span class="nav-dot"></span>
+  </button>
+  <button class="nav-btn" onclick="irA('album')" id="nav-album">
+    <span class="nav-ico">📖</span>Álbum
+  </button>
+  <button class="nav-btn" onclick="irA('arena')" id="nav-arena">
+    <span class="nav-ico">⚔️</span>Arena
+  </button>
+  <button class="nav-btn" onclick="irA('tienda')" id="nav-tienda">
+    <span class="nav-ico">🎁</span>Tienda
+    <span class="nav-dot"></span>
+  </button>
+</nav>
+
+<!-- MODAL SELECTOR -->
+<div class="selector-modal" id="selector-modal" onclick="if(event.target===this)cerrarSelector()">
+  <div class="selector-content">
+    <h3>Elegí una carta de tu colección</h3>
+    <div class="grid-cards" id="selector-grid" style="grid-template-columns: repeat(auto-fill, minmax(100px,1fr));"></div>
+  </div>
+</div>
+
+<!-- OVERLAY SOBRE -->
+<div class="pack-overlay" id="pack-overlay">
+  <div class="pack-title" id="pack-title">Sobre mágico</div>
+  <div class="pack-sub" id="pack-sub">Tocá para abrir</div>
+  <div class="pack-envelope" id="pack-envelope" onclick="abrirSobre()"></div>
+  <div class="pack-reveal" id="pack-reveal">
+    <div class="reveal-card" id="reveal-card" onclick="this.classList.toggle('flipped')">
+      <div class="reveal-face reveal-front"></div>
+      <div class="reveal-face reveal-back">
+        <img id="reveal-img" alt="Carta revelada">
+      </div>
+    </div>
+    <div class="reveal-name" id="reveal-name"></div>
+    <div class="reveal-rarity" id="reveal-rarity"></div>
+    <div class="pack-actions" id="pack-actions" style="display:none;">
+      <button class="btn btn-ghost" onclick="cerrarSobre()">Siguiente</button>
+      <button class="btn btn-gold" onclick="guardarDelSobre()">⭐ Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL NIVEL -->
+<div class="level-modal" id="level-modal">
+  <div class="level-num" id="level-num">2</div>
+  <div class="level-label">NIVEL ALCANZADO</div>
+  <div class="level-bonus" id="level-bonus">+50 💰 de recompensa</div>
+  <button onclick="cerrarLevelModal()">¡Seguir!</button>
+</div>
+
+<script>
+/* =====================================================================
+   ⚙️  CONFIGURACIÓN DE LA API
+   Andá a https://dev.pokemontcg.io, creá una cuenta gratis y pegá tu key.
+   (Sin API Key también funciona, pero con menos cartas por request).
+   ===================================================================== */
+const API_KEY = ''; // ← PEGÁ TU API KEY ACÁ
+const API_URL = 'https://api.pokemontcg.io/v2/cards';
+const PAGE_SIZE = 30;
+
+/* =====================================================================
+   ESTADO GLOBAL
+   ===================================================================== */
+let BASE_DATOS = [];
+let paginaActual = 1;
+let hayMas = false;
+let cargando = false;
+let busquedaActual = '';
+let tabAlbum = 'buscar';
+
+// Progreso del jugador
+const KEY = {
+  coleccion: 'pokeblas_v3_col',
+  historias: 'pokeblas_v3_his',
+  xp: 'pokeblas_v3_xp',
+  level: 'pokeblas_v3_lv',
+  coins: 'pokeblas_v3_coins',
+  streak: 'pokeblas_v3_streak',
+  misiones: 'pokeblas_v3_mis',
+  misionFecha: 'pokeblas_v3_mf',
+  ultimoRegalo: 'pokeblas_v3_reg',
+  logros: 'pokeblas_v3_log'
+};
+
+let misCartas = JSON.parse(localStorage.getItem(KEY.coleccion) || '{}');
+let historias = JSON.parse(localStorage.getItem(KEY.historias) || '[]');
+let xp = parseInt(localStorage.getItem(KEY.xp) || '0', 10);
+let level = parseInt(localStorage.getItem(KEY.level) || '1', 10);
+let coins = parseInt(localStorage.getItem(KEY.coins) || '0', 10);
+let streak = parseInt(localStorage.getItem(KEY.streak) || '0', 10);
+let misiones = JSON.parse(localStorage.getItem(KEY.misiones) || 'null');
+let misionFecha = localStorage.getItem(KEY.misionFecha) || '';
+let ultimoRegalo = localStorage.getItem(KEY.ultimoRegalo) || '';
+let logros = JSON.parse(localStorage.getItem(KEY.logros) || '{}');
+
+// Arena
+let slot1 = null, slot2 = null, slotActivo = null;
+
+// Sobre actual
+let sobreActual = null;
+
+/* =====================================================================
+   SONIDO (Web Audio API)
+   ===================================================================== */
+let audioCtx = null;
+function getCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+function tone(freq, dur, vol = 0.15, type = 'sine', delay = 0) {
+  try {
+    const ctx = getCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = type;
+    osc.frequency.value = freq;
+    osc.connect(gain); gain.connect(ctx.destination);
+    const t = ctx.currentTime + delay;
+    gain.gain.setValueAtTime(0.0001, t);
+    gain.gain.exponentialRampToValueAtTime(vol, t + 0.02);
+    gain.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+    osc.start(t); osc.stop(t + dur + 0.05);
+  } catch (e) {}
+}
+const SND = {
+  click: () => tone(660, 0.08, 0.1, 'square'),
+  success: () => { tone(523, 0.15, 0.15); tone(784, 0.2, 0.15, 'sine', 0.1); },
+  rare: () => { [523, 659, 784, 1047, 1319].forEach((f, i) => tone(f, 0.35, 0.16, 'triangle', i * 0.09)); },
+  coin: () => { tone(1047, 0.1, 0.14); tone(1568, 0.2, 0.14, 'sine', 0.08); },
+  hit: () => { tone(180, 0.15, 0.2, 'sawtooth'); tone(90, 0.3, 0.15, 'sawtooth', 0.05); },
+  levelUp: () => { [523, 659, 784, 1047, 1319, 1568].forEach((f, i) => tone(f, 0.4, 0.16, 'triangle', i * 0.11)); },
+  pack: () => { for (let i = 0; i < 6; i++) tone(400 + i * 100, 0.1, 0.1, 'square', i * 0.05); },
+  open: () => { tone(200, 0.5, 0.2, 'sawtooth'); tone(400, 0.5, 0.15, 'sawtooth', 0.05); tone(800, 0.5, 0.1, 'sawtooth', 0.1); }
+};
+
+/* =====================================================================
+   CONFETTI
+   ===================================================================== */
+const CONFETTI_COLORS = ['#ff3b30', '#ffcb05', '#3b4cca', '#22c55e', '#a855f7', '#ff6b35', '#ff5c8a'];
+function confetti(count = 40) {
+  for (let i = 0; i < count; i++) {
+    const p = document.createElement('div');
+    p.className = 'confetti-piece';
+    p.style.left = Math.random() * 100 + 'vw';
+    p.style.top = '-20px';
+    p.style.background = CONFETTI_COLORS[Math.floor(Math.random() * CONFETTI_COLORS.length)];
+    p.style.animationDuration = (1.5 + Math.random() * 1.5) + 's';
+    p.style.animationDelay = (Math.random() * 0.4) + 's';
+    p.style.borderRadius = Math.random() > 0.5 ? '50%' : '2px';
+    if (Math.random() > 0.7) p.style.width = p.style.height = '14px';
+    document.body.appendChild(p);
+    setTimeout(() => p.remove(), 3500);
+  }
+}
+
+/* =====================================================================
+   POPUP FLOTANTE
+   ===================================================================== */
+function floatPopup(x, y, text, color = 'gold') {
+  const el = document.createElement('div');
+  el.className = 'float-popup ' + color;
+  el.textContent = text;
+  el.style.left = x + 'px';
+  el.style.top = y + 'px';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 1700);
+}
+
+/* =====================================================================
+   TOAST
+   ===================================================================== */
+function toast(msg) {
+  const t = document.createElement('div');
+  t.className = 'toast';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(() => t.remove(), 2400);
+}
+
+/* =====================================================================
+   XP / NIVEL / MONEDAS
+   ===================================================================== */
+function xpNeeded(lv) { return 100 + (lv - 1) * 50; }
+
+function gainXP(amount) {
+  xp += amount;
+  let leveled = false;
+  while (xp >= xpNeeded(level)) {
+    xp -= xpNeeded(level);
+    level++;
+    leveled = true;
+  }
+  localStorage.setItem(KEY.xp, xp);
+  localStorage.setItem(KEY.level, level);
+  updateHUD();
+  if (leveled) {
+    setTimeout(() => mostrarLevelModal(level), 400);
+  }
+}
+
+function gainCoins(amount) {
+  coins += amount;
+  localStorage.setItem(KEY.coins, coins);
+  updateHUD();
+}
+
+function updateHUD() {
+  document.getElementById('hud-level').textContent = level;
+  document.getElementById('hud-coins').textContent = coins;
+  document.getElementById('hud-streak').textContent = streak;
+  const need = xpNeeded(level);
+  document.getElementById('hud-xp').style.width = Math.min(100, (xp / need) * 100) + '%';
+  document.getElementById('hud-xp-text').textContent = `${xp}/${need}`;
+  // Precios de tienda
+  ['basico','epico','legendario'].forEach(p => {
+    const prices = { basico: 30, epico: 70, legendario: 150 };
+    const el = document.getElementById('price-' + p);
+    if (el) {
+      el.classList.toggle('insuf', coins < prices[p]);
+      el.textContent = prices[p] + ' 💰';
+    }
+  });
+  // Regalo diario
+  const hoy = new Date().toDateString();
+  const regaloEl = document.getElementById('price-diario');
+  if (regaloEl) {
+    if (ultimoRegalo === hoy) {
+      regaloEl.textContent = 'Ya reclamado';
+      regaloEl.classList.add('insuf');
+    } else {
+      regaloEl.textContent = 'Gratis';
+      regaloEl.classList.remove('insuf');
+    }
+  }
+}
+
+function mostrarLevelModal(lv) {
+  SND.levelUp();
+  confetti(80);
+  const bonus = 50 + lv * 10;
+  gainCoins(bonus);
+  document.getElementById('level-num').textContent = lv;
+  document.getElementById('level-bonus').textContent = `+${bonus} 💰 de recompensa`;
+  document.getElementById('level-modal').classList.add('show');
+}
+function cerrarLevelModal() {
+  document.getElementById('level-modal').classList.remove('show');
+}
+
+/* =====================================================================
+   MISIONES DIARIAS
+   ===================================================================== */
+function hoyISO() { return new Date().toISOString().slice(0, 10); }
+
+function misionesDefecto() {
+  return [
+    { id: 'nuevas', ico: '⭐', txt: 'Agregá 3 cartas nuevas', need: 3, cur: 0, coin: 30 },
+    { id: 'batalla', ico: '⚔️', txt: 'Ganá 1 batalla', need: 1, cur: 0, coin: 20 },
+    { id: 'historia', ico: '✍️', txt: 'Escribí una historia', need: 1, cur: 0, coin: 25 }
+  ];
+}
+
+function cargarMisiones() {
+  const hoy = hoyISO();
+  if (misionFecha !== hoy || !misiones) {
+    misiones = misionesDefecto();
+    misionFecha = hoy;
+    localStorage.setItem(KEY.misiones, JSON.stringify(misiones));
+    localStorage.setItem(KEY.misionFecha, hoy);
+  }
+}
+
+function progresoMision(id, incremento = 1) {
+  const m = misiones.find(x => x.id === id);
+  if (!m) return;
+  if (m.cur >= m.need) return;
+  m.cur = Math.min(m.need, m.cur + incremento);
+  localStorage.setItem(KEY.misiones, JSON.stringify(misiones));
+  if (m.cur >= m.need) {
+    gainCoins(m.coin);
+    SND.coin();
+    toast(`¡Misión completada! +${m.coin} 💰`);
+    setTimeout(() => confetti(30), 200);
+  }
+  renderMisiones();
+  updateNavNotif();
+}
+
+function renderMisiones() {
+  const cont = document.getElementById('misiones-container');
+  const completadas = misiones.filter(m => m.cur >= m.need).length;
+  document.getElementById('misiones-count').textContent = `${completadas}/${misiones.length}`;
+  cont.innerHTML = misiones.map(m => {
+    const done = m.cur >= m.need;
+    const pct = Math.min(100, (m.cur / m.need) * 100);
+    return `
+      <div class="mission-card ${done ? 'done' : ''}">
+        <div class="mission-ico">${m.ico}</div>
+        <div class="mission-body">
+          <strong>${m.txt}</strong>
+          <div class="mission-progress"><div style="width:${pct}%"></div></div>
+          <small>${m.cur}/${m.need}</small>
+        </div>
+        <div class="mission-reward">${done ? '✓' : '+' + m.coin}</div>
+      </div>`;
+  }).join('');
+  updateNavNotif();
+}
+
+function updateNavNotif() {
+  const hayNuevas = misiones.some(m => m.cur >= m.need);
+  document.getElementById('nav-home').classList.toggle('has-notif', hayNuevas);
+  const hoy = new Date().toDateString();
+  document.getElementById('nav-tienda').classList.toggle('has-notif', ultimoRegalo !== hoy);
+}
+
+/* =====================================================================
+   LOGROS
+   ===================================================================== */
+const LOGROS_DEF = [
+  { id: 'c10', ico: '📚', txt: '10 cartas en tu colección', check: () => Object.keys(misCartas).length >= 10 },
+  { id: 'c50', ico: '📖', txt: '50 cartas en tu colección', check: () => Object.keys(misCartas).length >= 50 },
+  { id: 'c100', ico: '🏆', txt: '100 cartas en tu colección', check: () => Object.keys(misCartas).length >= 100 },
+  { id: 'b1', ico: '⚔️', txt: 'Tu primera batalla', check: () => logros.b1 },
+  { id: 'b10', ico: '🥊', txt: '10 batallas jugadas', check: () => (logros.bCount || 0) >= 10 },
+  { id: 'h1', ico: '✍️', txt: 'Tu primera historia', check: () => historias.length >= 1 },
+  { id: 'h5', ico: '📝', txt: '5 historias escritas', check: () => historias.length >= 5 },
+  { id: 'lv5', ico: '🌟', txt: 'Alcanzá el nivel 5', check: () => level >= 5 },
+  { id: 'lv10', ico: '👑', txt: 'Alcanzá el nivel 10', check: () => level >= 10 },
+  { id: 'p1', ico: '🎁', txt: 'Abrí un sobre', check: () => logros.packCount >= 1 },
+  { id: 'p10', ico: '🎊', txt: 'Abrí 10 sobres', check: () => (logros.packCount || 0) >= 10 },
+];
+
+function renderLogros() {
+  const cont = document.getElementById('logros-list');
+  cont.innerHTML = LOGROS_DEF.map(l => {
+    const ok = l.check();
+    return `
+      <div class="mission-card ${ok ? 'done' : ''}" style="border-left-color: ${ok ? 'var(--green)' : 'var(--yellow)'};">
+        <div class="mission-ico">${ok ? l.ico : '🔒'}</div>
+        <div class="mission-body">
+          <strong>${l.txt}</strong>
+          <small>${ok ? 'Desbloqueado' : 'Bloqueado'}</small>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+/* =====================================================================
+   NAVEGACIÓN
+   ===================================================================== */
+function irA(vista) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.getElementById('view-' + vista).classList.add('active');
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('nav-' + vista).classList.add('active');
+  window.scrollTo(0, 0);
+  SND.click();
+  if (vista === 'home') renderHome();
+  if (vista === 'album') renderAlbum();
+  if (vista === 'tienda') renderLogros();
+}
+
+/* =====================================================================
+   API: CARGA DE CARTAS
+   ===================================================================== */
+async function cargarCartas(query = '', page = 1, append = false) {
+  if (cargando) return;
+  cargando = true;
+  const grid = document.getElementById('album-grid');
+  if (!append) {
+    grid.innerHTML = `<div class="empty-state"><div class="spinner"></div><p>Buscando cartas...</p></div>`;
+  }
+  try {
+    let url = `${API_URL}?page=${page}&pageSize=${PAGE_SIZE}&orderBy=-set.releaseDate`;
+    if (query) url += `&q=name:*${encodeURIComponent(query)}*`;
+    const headers = { 'Content-Type': 'application/json' };
+    if (API_KEY) headers['X-Api-Key'] = API_KEY;
+    const r = await fetch(url, { headers });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const json = await r.json();
+    const cartas = (json.data || []).map(c => ({
+      id: c.id,
+      nombre: c.name,
+      tipo: c.types ? c.types.join(' / ') : 'Normal',
+      hp: c.hp ? parseInt(c.hp, 10) : 0,
+      rareza: c.rarity || 'Common',
+      img: c.images?.small || '',
+      imgGrande: c.images?.large || '',
+      set: c.set?.name || '',
+      numero: c.number || ''
+    }));
+    BASE_DATOS = append ? BASE_DATOS.concat(cartas) : cartas;
+    hayMas = cartas.length === PAGE_SIZE;
+    renderAlbum();
+  } catch (e) {
+    console.error(e);
+    if (!append) {
+      grid.innerHTML = `<div class="empty-state"><span class="big">😵</span><p>No se pudieron cargar las cartas.<br><small style="color:#999;">Revisá tu conexión o la API Key.</small></p></div>`;
+    } else {
+      toast('No se pudieron cargar más');
+    }
+  } finally {
+    cargando = false;
+    actualizarBotonMas();
+  }
+}
+
+function actualizarBotonMas() {
+  const btn = document.getElementById('btn-mas');
+  btn.style.display = (hayMas && tabAlbum === 'buscar') ? 'inline-flex' : 'none';
+  btn.disabled = cargando;
+  btn.textContent = cargando ? '⏳ Cargando...' : '➕ Cargar más';
+}
+
+function cargarMas() {
+  if (cargando || !hayMas) return;
+  paginaActual++;
+  cargarCartas(busquedaActual, paginaActual, true);
+}
+
+/* =====================================================================
+   BUSCADOR
+   ===================================================================== */
+let debTimer = null;
+document.addEventListener('DOMContentLoaded', () => {
+  const buscador = document.getElementById('buscador');
+  const clearBtn = document.getElementById('search-x');
+  buscador.addEventListener('input', () => {
+    const v = buscador.value.trim();
+    clearBtn.classList.toggle('show', v.length > 0);
+    clearTimeout(debTimer);
+    debTimer = setTimeout(() => {
+      busquedaActual = v;
+      paginaActual = 1;
+      cargarCartas(v, 1, false);
+    }, 500);
+  });
+  cargarCartas('', 1, false);
+  cargarMisiones();
+  renderMisiones();
+  renderHome();
+  updateHUD();
+  renderHistorias();
+});
+
+function limpiarBusqueda() {
+  document.getElementById('buscador').value = '';
+  document.getElementById('search-x').classList.remove('show');
+  busquedaActual = '';
+  paginaActual = 1;
+  cargarCartas('', 1, false);
+}
+
+/* =====================================================================
+   ÁLBUM
+   ===================================================================== */
+function cambiarTab(tab) {
+  tabAlbum = tab;
+  document.getElementById('tab-buscar').classList.toggle('active', tab === 'buscar');
+  document.getElementById('tab-coleccion').classList.toggle('active', tab === 'coleccion');
+  document.getElementById('panel-buscar').style.display = tab === 'buscar' ? 'block' : 'none';
+  document.getElementById('panel-coleccion').style.display = tab === 'coleccion' ? 'block' : 'none';
+  renderAlbum();
+}
+
+function renderAlbum() {
+  if (tabAlbum === 'coleccion') { renderColeccion(); return; }
+  const grid = document.getElementById('album-grid');
+  if (!BASE_DATOS.length) {
+    grid.innerHTML = `<div class="empty-state"><span class="big">🔍</span><p>No se encontraron cartas.</p></div>`;
+    actualizarBotonMas();
+    return;
+  }
+  grid.innerHTML = BASE_DATOS.map((c, i) => cardTileHTML(c, i)).join('');
+  grid.querySelectorAll('[data-id]').forEach(el => {
+    el.onclick = (e) => toggleCarta(el.dataset.id, e);
+  });
+  actualizarBotonMas();
+}
+
+function renderColeccion() {
+  const grid = document.getElementById('coleccion-grid');
+  const arr = Object.values(misCartas);
+  if (!arr.length) {
+    grid.innerHTML = `<div class="empty-state"><span class="big">📭</span><p>Todavía no tenés cartas.<br>¡Andá a <b>Buscar</b> y marcá las que tengas!</p></div>`;
+    return;
+  }
+  arr.sort((a, b) => a.nombre.localeCompare(b.nombre));
+  grid.innerHTML = arr.map((c, i) => cardTileHTML(c, i)).join('');
+  grid.querySelectorAll('[data-id]').forEach(el => {
+    el.onclick = (e) => toggleCarta(el.dataset.id, e);
+  });
+}
+
+function cardTileHTML(c, i) {
+  const owned = !!misCartas[c.id];
+  return `
+    <div class="card-tile ${owned ? 'owned' : ''}" data-id="${c.id}" style="--i:${i % 12};">
+      <img src="${c.img}" alt="${escapeHTML(c.nombre)}" loading="lazy">
+      <div class="tile-info">
+        <h4>${escapeHTML(c.nombre)}</h4>
+        <small>${escapeHTML(c.tipo)} · ${c.hp} HP</small>
+      </div>
+    </div>`;
+}
+
+function toggleCarta(id, ev) {
+  if (misCartas[id]) {
+    delete misCartas[id];
+    SND.click();
+    toast('Carta quitada');
+  } else {
+    const carta = BASE_DATOS.find(c => c.id === id) || buscarEnCache(id);
+    if (!carta) return;
+    misCartas[id] = carta;
+    SND.success();
+    // FX en la posición del click
+    const x = ev?.clientX || window.innerWidth / 2;
+    const y = ev?.clientY || window.innerHeight / 2;
+    floatPopup(x, y, '+10 XP', 'green');
+    setTimeout(() => floatPopup(x + 40, y + 30, '+2 💰', 'gold'), 200);
+    gainXP(10);
+    gainCoins(2);
+    progresoMision('nuevas');
+    // Confeti si es rara
+    if (esRara(carta.rareza)) {
+      confetti(60);
+      SND.rare();
+      toast('¡Carta rara conseguida! ✨');
+    } else {
+      toast('¡Carta agregada! ⭐');
+    }
+  }
+  localStorage.setItem(KEY.coleccion, JSON.stringify(misCartas));
+  if (tabAlbum === 'buscar') renderAlbum(); else renderColeccion();
+  renderHome();
+  renderHistorias();
+  renderLogros();
+}
+
+function buscarEnCache(id) {
+  return Object.values(misCartas).find(c => c.id === id);
+}
+
+function esRara(rareza) {
+  if (!rareza) return false;
+  const r = rareza.toLowerCase();
+  return r.includes('rare') && !r.includes('common') || r.includes('ultra') || r.includes('secret') || r.includes('holo') && r.includes('rare');
+}
+
+/* =====================================================================
+   HOME
+   ===================================================================== */
+function renderHome() {
+  // Saludo
+  const h = new Date().getHours();
+  const saludo = h < 12 ? '¡Buenos días' : h < 20 ? '¡Buenas tardes' : '¡Buenas noches';
+  document.getElementById('greeting').textContent = `${saludo}, Entrenador!`;
+
+  // Carta destacada
+  const arr = Object.values(misCartas);
+  const feat = document.getElementById('featured');
+  if (!arr.length) {
+    feat.innerHTML = `
+      <div class="featured-inner">
+        <div style="font-size:3.5rem; margin-bottom:10px;">🎴</div>
+        <h3>Tu colección está vacía</h3>
+        <p>Andá al Álbum y marcá tus cartas reales. ¡Cada una suma XP!</p>
+      </div>`;
+  } else {
+    const c = arr[Math.floor(Math.random() * arr.length)];
+    feat.innerHTML = `
+      <div class="featured-inner">
+        <img src="${c.img}" alt="${escapeHTML(c.nombre)}">
+        <h3>${escapeHTML(c.nombre)}</h3>
+        <p>${escapeHTML(c.tipo)} · ${c.hp} HP</p>
+        <div class="star-label">⭐ CARTA ALEATORIA DEL DÍA</div>
+      </div>`;
+  }
+}
+
+/* =====================================================================
+   HISTORIAS
+   ===================================================================== */
+function renderHistorias() {
+  const opciones = Object.values(misCartas).sort((a, b) => a.nombre.localeCompare(b.nombre));
+  const html = opciones.map(c => `<option value="${c.id}">${escapeHTML(c.nombre)}</option>`).join('');
+  document.getElementById('story-p1').innerHTML = html || '<option value="">(Sin cartas)</option>';
+  document.getElementById('story-p2').innerHTML = html || '<option value="">(Sin cartas)</option>';
+
+  const lista = document.getElementById('story-list');
+  if (!historias.length) {
+    lista.innerHTML = '';
+    return;
+  }
+  lista.innerHTML = historias.slice().reverse().map(h => `
+    <div class="story-card">
+      <button class="del" onclick="borrarHistoria(${h.id})">🗑️</button>
+      <h4>📖 ${escapeHTML(h.titulo)}</h4>
+      <p>${escapeHTML(h.texto)}</p>
+      <small>${escapeHTML(h.p1)} y ${escapeHTML(h.p2)} · ${h.fecha}</small>
+    </div>`).join('');
+}
+
+function guardarHistoria() {
+  const p1 = document.getElementById('story-p1').value;
+  const p2 = document.getElementById('story-p2').value;
+  const esc = document.getElementById('story-esc').value.trim();
+  const con = document.getElementById('story-con').value.trim();
+  const txt = document.getElementById('story-txt').value.trim();
+
+  if (!p1 || !p2) { toast('Elegí dos Pokémon'); return; }
+  if (p1 === p2) { toast('Elegí dos distintos'); return; }
+  if (!txt) { toast('Escribí tu historia'); return; }
+
+  const c1 = misCartas[p1]?.nombre || '?';
+  const c2 = misCartas[p2]?.nombre || '?';
+
+  historias.push({
+    id: Date.now(),
+    titulo: `${c1} y ${c2} en ${esc || 'una aventura'}`,
+    p1: c1, p2: c2, esc, con, txt,
+    fecha: new Date().toLocaleDateString('es-AR')
+  });
+  localStorage.setItem(KEY.historias, JSON.stringify(historias));
+
+  document.getElementById('story-esc').value = '';
+  document.getElementById('story-con').value = '';
+  document.getElementById('story-txt').value = '';
+
+  SND.success();
+  gainXP(20);
+  gainCoins(8);
+  progresoMision('historia');
+  confetti(30);
+  toast('¡Historia guardada! +20 XP, +8 💰');
+  renderHistorias();
+  renderLogros();
+  renderHome();
+}
+
+function borrarHistoria(id) {
+  if (!confirm('¿Borrar historia?')) return;
+  historias = historias.filter(h => h.id !== id);
+  localStorage.setItem(KEY.historias, JSON.stringify(historias));
+  renderHistorias();
+}
+
+/* =====================================================================
+   ARENA
+   ===================================================================== */
+function abrirSelector(n) {
+  slotActivo = n;
+  const modal = document.getElementById('selector-modal');
+  const grid = document.getElementById('selector-grid');
+  const arr = Object.values(misCartas).sort((a, b) => a.nombre.localeCompare(b.nombre));
+  if (!arr.length) {
+    grid.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><span class="big">📭</span><p>No tenés cartas todavía.</p></div>`;
+  } else {
+    grid.innerHTML = arr.map((c, i) => `
+      <div class="card-tile" data-pick="${c.id}" style="--i:${i % 8};">
+        <img src="${c.img}" alt="${escapeHTML(c.nombre)}" loading="lazy">
+        <div class="tile-info">
+          <h4>${escapeHTML(c.nombre)}</h4>
+          <small>${c.hp} HP</small>
+        </div>
+      </div>`).join('');
+    grid.querySelectorAll('[data-pick]').forEach(el => {
+      el.onclick = () => elegirParaArena(el.dataset.pick);
+    });
+  }
+  modal.classList.add('show');
+}
+
+function cerrarSelector() {
+  document.getElementById('selector-modal').classList.remove('show');
+}
+
+function elegirParaArena(id) {
+  const c = misCartas[id];
+  if (!c) return;
+  if (slotActivo === 1) slot1 = c; else slot2 = c;
+  pintarSlot(slotActivo, c);
+  SND.click();
+  cerrarSelector();
+}
+
+function pintarSlot(n, c) {
+  const slot = document.getElementById('slot-' + n);
+  slot.innerHTML = `
+    <img src="${c.img}" alt="${escapeHTML(c.nombre)}">
+    <div class="slot-name">${escapeHTML(c.nombre)}</div>
+    <div class="slot-hp"><div style="width:100%"></div></div>`;
+  slot.classList.add('selected');
+}
+
+async function pelear() {
+  if (!slot1 || !slot2) { toast('¡Elegí dos cartas!'); return; }
+  const btn = document.getElementById('btn-fight');
+  btn.disabled = true;
+  btn.textContent = '⚔️ Peleando...';
+
+  const log = document.getElementById('battle-log');
+  log.style.display = 'block';
+  log.innerHTML = '';
+
+  const hp1max = slot1.hp || 50;
+  const hp2max = slot2.hp || 50;
+  let hp1 = hp1max, hp2 = hp2max;
+
+  // Bonus por rareza
+  const bonus = r => {
+    const x = (r || '').toLowerCase();
+    if (x.includes('secret')) return 60;
+    if (x.includes('rainbow')) return 55;
+    if (x.includes('ultra') || x.includes('holo')) return 40;
+    if (x.includes('rare')) return 20;
+    return 0;
+  };
+  const dmgBase = (c) => Math.round((c.hp || 50) / 4 + bonus(c.rareza) / 4 + Math.random() * 8);
+
+  const turnos = [];
+  let turno = 1;
+  // Simular hasta que alguien caiga o 5 turnos
+  let atacante = Math.random() > 0.5 ? 1 : 2;
+  while ((hp1 > 0 && hp2 > 0) && turno <= 8) {
+    if (atacante === 1) {
+      const dmg = dmgBase(slot1);
+      hp2 = Math.max(0, hp2 - dmg);
+      const crit = Math.random() > 0.85;
+      const realDmg = crit ? dmg * 2 : dmg;
+      if (crit) hp2 = Math.max(0, hp2 - dmg); // doble
+      turnos.push(`T${turno} · <b>${escapeHTML(slot1.nombre)}</b> ataca · ${crit ? '<span class="crit">¡CRÍTICO!</span> ' : ''}<span class="hit">-${crit ? dmg : dmg} HP</span>`);
+      // animar
+      animarHit(2);
+    } else {
+      const dmg = dmgBase(slot2);
+      hp1 = Math.max(0, hp1 - dmg);
+      const crit = Math.random() > 0.85;
+      turnos.push(`T${turno} · <b>${escapeHTML(slot2.nombre)}</b> ataca · ${crit ? '<span class="crit">¡CRÍTICO!</span> ' : ''}<span class="hit">-${dmg} HP</span>`);
+      animarHit(1);
+    }
+    // Actualizar barra
+    setTimeout(() => {
+      actualizarHP(1, hp1, hp1max);
+      actualizarHP(2, hp2, hp2max);
+    }, turno * 350);
+    atacante = atacante === 1 ? 2 : 1;
+    turno++;
+    await sleep(350);
+  }
+
+  // Determinar ganador
+  let ganador;
+  if (hp1 > 0 && hp2 <= 0) ganador = 1;
+  else if (hp2 > 0 && hp1 <= 0) ganador = 2;
+  else if (hp1 > hp2) ganador = 1;
+  else if (hp2 > hp1) ganador = 2;
+  else ganador = 0;
+
+  const ganadorCarta = ganador === 1 ? slot1 : ganador === 2 ? slot2 : null;
+  turnos.push(ganadorCarta
+    ? `<span class="win">🏆 ¡Ganó ${escapeHTML(ganadorCarta.nombre)}!</span>`
+    : `<span class="win">🤝 ¡Empate!</span>`);
+
+  log.innerHTML = turnos.map(t => `<div class="line">${t}</div>`).join('');
+
+  if (ganadorCarta) {
+    SND.success();
+    confetti(50);
+    gainXP(15);
+    gainCoins(5);
+    progresoMision('batalla');
+    logros.b1 = true;
+    logros.bCount = (logros.bCount || 0) + 1;
+    localStorage.setItem(KEY.logros, JSON.stringify(logros));
+    toast('¡Victoria! +15 XP, +5 💰');
+  } else {
+    SND.hit();
+    gainXP(5);
+    toast('Empate. +5 XP');
+  }
+
+  btn.disabled = false;
+  btn.textContent = '⚔️ ¡Pelear de nuevo! (+15 XP, +5 💰)';
+  renderLogros();
+}
+
+function actualizarHP(n, hp, max) {
+  const slot = document.getElementById('slot-' + n);
+  const bar = slot.querySelector('.slot-hp > div');
+  if (bar) {
+    const pct = Math.max(0, (hp / max) * 100);
+    bar.style.width = pct + '%';
+    if (pct < 30) bar.style.background = 'linear-gradient(90deg, #ff3b30, #d61e1e)';
+    else if (pct < 60) bar.style.background = 'linear-gradient(90deg, #ffb800, #ff6b35)';
+  }
+}
+
+function animarHit(n) {
+  const slot = document.getElementById('slot-' + n);
+  slot.classList.add('shake', 'hit-flash');
+  SND.hit();
+  setTimeout(() => slot.classList.remove('shake', 'hit-flash'), 500);
+}
+
+function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+
+/* =====================================================================
+   SOBRES
+   ===================================================================== */
+async function comprarSobre(tipo) {
+  const precios = { basico: 30, epico: 70, legendario: 150 };
+  const cantidades = { basico: 1, epico: 3, legendario: 5 };
+  if (coins < precios[tipo]) {
+    toast('No te alcanzan las monedas 💰');
+    SND.hit();
+    return;
+  }
+  gainCoins(-precios[tipo]);
+  SND.pack();
+
+  // Traer cartas aleatorias de la API
+  toast('Abriendo sobre...');
+  try {
+    const url = `${API_URL}?pageSize=${cantidades[tipo]}&orderBy=-set.releaseDate&page=${Math.floor(Math.random() * 20) + 1}`;
+    const headers = { 'Content-Type': 'application/json' };
+    if (API_KEY) headers['X-Api-Key'] = API_KEY;
+    const r = await fetch(url, { headers });
+    const json = await r.json();
+    const cartas = (json.data || []).map(c => ({
+      id: c.id, nombre: c.name,
+      tipo: c.types ? c.types.join(' / ') : 'Normal',
+      hp: c.hp ? parseInt(c.hp, 10) : 0,
+      rareza: c.rarity || 'Common',
+      img: c.images?.small || ''
+    }));
+    if (!cartas.length) { toast('No se pudo abrir'); return; }
+    sobreActual = { cartas, index: 0, tipo };
+    mostrarPack();
+  } catch (e) {
+    console.error(e);
+    toast('Error al abrir el sobre');
+  }
+}
+
+function mostrarPack() {
+  document.getElementById('pack-overlay').classList.add('show');
+  document.getElementById('pack-envelope').style.display = 'grid';
+  document.getElementById('pack-envelope').classList.remove('opening');
+  document.getElementById('pack-reveal').classList.remove('show');
+  document.getElementById('pack-title').textContent = `Sobre ${sobreActual.tipo}`;
+  document.getElementById('pack-sub').textContent = 'Tocá el sobre para abrirlo';
+}
+
+function abrirSobre() {
+  const env = document.getElementById('pack-envelope');
+  env.classList.add('opening');
+  SND.open();
+  setTimeout(() => {
+    env.style.display = 'none';
+    mostrarSiguienteCarta();
+  }, 500);
+}
+
+function mostrarSiguienteCarta() {
+  const { cartas, index } = sobreActual;
+  if (index >= cartas.length) {
+    cerrarSobre();
+    return;
+  }
+  const carta = cartas[index];
+  const rev = document.getElementById('pack-reveal');
+  rev.classList.add('show');
+  document.getElementById('reveal-card').classList.remove('flipped');
+  document.getElementById('reveal-img').src = carta.img;
+  document.getElementById('reveal-name').textContent = carta.nombre;
+  const rar = document.getElementById('reveal-rarity');
+  const rarClass = esUltra(carta.rareza) ? 'ultra' : esRara(carta.rareza) ? 'rara' : 'comun';
+  rar.className = 'reveal-rarity ' + rarClass;
+  rar.textContent = carta.rareza;
+  document.getElementById('pack-actions').style.display = 'none';
+
+  // Flip automático
+  setTimeout(() => {
+    document.getElementById('reveal-card').classList.add('flipped');
+    if (rarClass === 'ultra') { SND.rare(); confetti(80); }
+    else if (rarClass === 'rara') { SND.success(); confetti(30); }
+    else SND.click();
+    setTimeout(() => {
+      document.getElementById('pack-actions').style.display = 'flex';
+    }, 600);
+  }, 300);
+}
+
+function esUltra(rareza) {
+  if (!rareza) return false;
+  const x = rareza.toLowerCase();
+  return x.includes('ultra') || x.includes('secret') || x.includes('rainbow') || x.includes('special');
+}
+
+function guardarDelSobre() {
+  const carta = sobreActual.cartas[sobreActual.index];
+  if (carta && !misCartas[carta.id]) {
+    misCartas[carta.id] = carta;
+    localStorage.setItem(KEY.coleccion, JSON.stringify(misCartas));
+    gainXP(5);
+    gainCoins(1);
+    toast(`¡${carta.nombre} guardado!`);
+  }
+  sobreActual.index++;
+  if (sobreActual.index >= sobreActual.cartas.length) cerrarSobre();
+  else mostrarSiguienteCarta();
+}
+
+function cerrarSobre() {
+  document.getElementById('pack-overlay').classList.remove('show');
+  logros.packCount = (logros.packCount || 0) + 1;
+  localStorage.setItem(KEY.logros, JSON.stringify(logros));
+  sobreActual = null;
+  renderAlbum();
+  renderColeccion();
+  renderHome();
+  renderLogros();
+}
+
+function recargarGratis() {
+  const hoy = new Date().toDateString();
+  if (ultimoRegalo === hoy) { toast('Ya reclamaste hoy'); return; }
+  ultimoRegalo = hoy;
+  localStorage.setItem(KEY.ultimoRegalo, hoy);
+  gainCoins(20);
+  SND.coin();
+  confetti(30);
+  toast('¡+20 monedas de regalo! 💰');
+  updateHUD();
+  updateNavNotif();
+}
+
+/* =====================================================================
+   UTILIDADES
+   ===================================================================== */
+function escapeHTML(s) {
+  return String(s ?? '').replace(/[&<>"']/g, c => ({
+    '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'
+  }[c]));
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') {
+    cerrarSelector();
+    if (sobreActual) cerrarSobre();
+  }
+});
+</script>
 </body>
 </html>
